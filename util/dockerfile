@@ -2,19 +2,22 @@ ARG riscv=/tools/riscv
 ARG verilator_version=4.210
 ARG verible_version=v0.0-3858-g660d1664
 ARG clang_version=20.1.1
+ARG gtkwave_version=3.3.111
 
 # First stage: build the environment
-FROM ubuntu:24.04 as builder
+FROM ubuntu:24.04 AS builder
 
 # Import environment variables from global scope
 ARG riscv
 ARG verilator_version
 ARG verible_version
 ARG clang_version
+ARG gtkwave_version
 ENV RISCV=${riscv}
 ENV VERILATOR_VERSION=${verilator_version}
 ENV VERIBLE_VERSION=${verible_version}
 ENV CLANG_VERSION=${clang_version}
+ENV GTKWAVE_VERSION=${gtkwave_version}
 
 # Install dependancies
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y lcov \
@@ -23,6 +26,11 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y lcov \
     libmpc-dev libmpfr-dev libgmp-dev gperf libtool patchutils bc zlib1g-dev \
     cmake flex bison libexpat-dev gawk tree xterm python3-venv python3-dev ninja-build \
     git wget python3 build-essential make coreutils libfindbin-libs-perl g++ curl \
+    # GTKWave dependencies - Changed to GTK+2.0
+    libgtk2.0-dev libcairo2-dev libpango1.0-dev libtcl8.6 libtk8.6 tcl-dev tk-dev \
+    pkg-config \
+    # Dependencies for llvm/clang
+    lsb-release software-properties-common gnupg \
     && rm -rf /var/lib/apt/lists/*
 
 # Install GCC-RISC-V toolchain
@@ -32,12 +40,16 @@ RUN mkdir -p $RISCV
 RUN mv /corev/corev-openhw-gcc-ubuntu2204-20240530/* $RISCV/
 RUN rm -rf /corev/corev-openhw-gcc-ubuntu2204-20240530
 
-# Install clang
-RUN git clone https://github.com/llvm/llvm-project.git /llvm-project
-RUN cd /llvm-project && git checkout llvmorg-$CLANG_VERSION && mkdir build 
-RUN cd /llvm-project/build && cmake -G "Unix Makefiles" -DLLVM_ENABLE_PROJECTS="clang" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$RISCV -DLLVM_TARGETS_TO_BUILD="RISCV" -DLLVM_DEFAULT_TARGET_TRIPLE=riscv32-corev-elf ../llvm
-RUN cd /llvm-project/build && make -j$(nproc) && make install
-RUN rm -rf /llvm-project
+# Install pre-compiled clang/llvm instead of building from source
+RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+RUN apt-add-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy main"
+RUN apt update && apt install -y clang-14 llvm-14 llvm-14-dev llvm-14-tools
+
+# Create symbolic links to match expected paths
+RUN mkdir -p $RISCV/bin
+RUN for tool in clang clang++ llvm-config llvm-ar llvm-ranlib llvm-objdump; do \
+        ln -sf /usr/bin/$tool-14 $RISCV/bin/$tool; \
+    done
 
 # Install Verilator
 RUN git clone https://github.com/verilator/verilator.git && cd verilator && git checkout v$VERILATOR_VERSION
@@ -50,6 +62,17 @@ RUN rm -rf /verilator
 RUN wget https://github.com/chipsalliance/verible/releases/download/${VERIBLE_VERSION}/verible-${VERIBLE_VERSION}-linux-static-x86_64.tar.gz
 RUN mkdir -p /tools/verible && tar -xf verible-${VERIBLE_VERSION}-linux-static-x86_64.tar.gz -C /tools/verible/
 RUN rm verible-${VERIBLE_VERSION}-linux-static-x86_64.tar.gz
+
+# Install GTKWave
+RUN wget https://sourceforge.net/projects/gtkwave/files/gtkwave-${GTKWAVE_VERSION}/gtkwave-${GTKWAVE_VERSION}.tar.gz
+RUN tar -xf gtkwave-${GTKWAVE_VERSION}.tar.gz
+# Explicitly set PKG_CONFIG_PATH to help configure find GTK+2.0
+RUN cd gtkwave-${GTKWAVE_VERSION} && \
+    export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig && \
+    ./configure --prefix=/tools/gtkwave/${GTKWAVE_VERSION} --with-tcl=/usr/lib/tcl8.6 --with-tk=/usr/lib/tk8.6 && \
+    make -j$(nproc) && \
+    make install
+RUN rm -rf gtkwave-${GTKWAVE_VERSION} gtkwave-${GTKWAVE_VERSION}.tar.gz
 
 # Install conda
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
@@ -68,19 +91,24 @@ RUN apt update && apt install -y picocom
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y build-essential
 
 # Pull busybox image
-FROM busybox:1.35.0-uclibc as busybox
+FROM busybox:1.35.0-uclibc AS busybox
  
-# Pull distroless image
-FROM gcr.io/distroless/cc-debian12
+# Use Ubuntu as base for final image instead of distroless
+FROM ubuntu:24.04
 
 ARG riscv
 ARG verilator_version
 ARG verible_version
 ARG clang_version
+ARG gtkwave_version
 ENV RISCV=${riscv}
 ENV VERILATOR_VERSION=${verilator_version}
 ENV VERIBLE_VERSION=${verible_version}
 ENV CLANG_VERSION=${clang_version}
+ENV GTKWAVE_VERSION=${gtkwave_version}
+
+# Create necessary directories
+RUN mkdir -p /usr/bin /tools/riscv /tools/verilator /tools/verible /tools/gtkwave /opt/conda
 
 # Copy RISC-V toolchain from builder
 COPY --from=builder /tools/riscv /tools/riscv
@@ -90,6 +118,9 @@ COPY --from=builder /tools/verilator /tools/verilator
 
 # Copy Verible from builder
 COPY --from=builder /tools/verible /tools/verible
+
+# Copy GTKWave from builder
+COPY --from=builder /tools/gtkwave /tools/gtkwave
 
 # Copy conda from builder
 COPY --from=builder /opt/conda /opt/conda
@@ -130,10 +161,23 @@ COPY --from=builder /usr/bin/uname /usr/bin/uname
 COPY --from=builder /usr/bin/gcc /usr/bin/gcc
 COPY --from=builder /usr/bin/readelf /usr/bin/readelf
 
+# Copy clang/llvm binaries from builder
+COPY --from=builder /usr/bin/clang-14 /usr/bin/clang-14
+COPY --from=builder /usr/bin/clang++-14 /usr/bin/clang++-14
+COPY --from=builder /usr/bin/llvm-config-14 /usr/bin/llvm-config-14
+COPY --from=builder /usr/bin/llvm-ar-14 /usr/bin/llvm-ar-14
+COPY --from=builder /usr/bin/llvm-ranlib-14 /usr/bin/llvm-ranlib-14
+COPY --from=builder /usr/bin/llvm-objdump-14 /usr/bin/llvm-objdump-14
+
+# Create symbolic links for clang/llvm tools
+RUN for tool in clang clang++ llvm-config llvm-ar llvm-ranlib llvm-objdump; do \
+        ln -sf /usr/bin/$tool-14 /usr/bin/$tool; \
+    done
+
 # Copy libraries from builder
 COPY --from=builder /usr/include/ /usr/include/
 COPY --from=builder /usr/share/gcc /usr/share/gcc
-COPY --from=builder /usr/share/perl /usr/share/perlgi
+COPY --from=builder /usr/share/perl /usr/share/perl
 COPY --from=builder /usr/share/cmake /usr/share/cmake
 COPY --from=builder /usr/share/cmake-3.28 /usr/share/cmake-3.28
 COPY --from=builder /usr/share/perl5 /usr/share/perl5
@@ -150,33 +194,36 @@ COPY --from=builder /usr/lib/x86_64-linux-gnu/perl-base /usr/lib/x86_64-linux-gn
 COPY --from=builder /usr/lib /usr/lib
 COPY --from=builder /usr/libexec /usr/libexec
 
+# Copy LLVM/Clang libraries
+COPY --from=builder /usr/lib/llvm-14 /usr/lib/llvm-14
+
 # Copy perl binaries from builder
 COPY --from=builder /etc/perl /etc/perl
 
-# Copy bash and system binaries 
-COPY --from=builder /bin/bash /bin/bash
-COPY --from=builder /usr/bin/bash /usr/bin/bash
-COPY --from=busybox /bin/sh /bin/sh
-COPY --from=busybox /bin/mkdir /bin/mkdir
-COPY --from=busybox /bin/cat /bin/cat
-COPY --from=busybox /bin/dirname /bin/dirname
-COPY --from=busybox /bin/rm /bin/rm
-COPY --from=busybox /bin/which /bin/which
-COPY --from=busybox /bin/ls /bin/ls
-COPY --from=busybox /bin/echo /bin/echo
-COPY --from=busybox /bin/tee /bin/tee
-COPY --from=busybox /bin/sed /bin/sed
-COPY --from=busybox /bin/find /bin/find
-COPY --from=busybox /bin/tr /bin/tr
-
 # Set PATH
-ENV PATH=/tools/verible/verible-${VERIBLE_VERSION}/bin:/tools/verilator/${VERILATOR_VERSION}/bin:/opt/conda/envs/core-v-mini-mcu/bin:/opt/conda/condabin:${RISCV}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV PATH=/tools/gtkwave/${GTKWAVE_VERSION}/bin:/tools/verible/verible-${VERIBLE_VERSION}/bin:/tools/verilator/${VERILATOR_VERSION}/bin:/opt/conda/envs/core-v-mini-mcu/bin:/opt/conda/condabin:${RISCV}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Install minimal required packages
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    ca-certificates \
+    libglib2.0-0 \
+    libcairo2 \
+    libpango-1.0-0 \
+    libgtk2.0-0 \
+    libpangocairo-1.0-0 \
+    libgdk-pixbuf2.0-0 \
+    libtcl8.6 \
+    libtk8.6 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Select workdir
 WORKDIR /workspace/x-heep
 
 # Set conda environment
-RUN conda init bash && echo "conda activate core-v-mini-mcu" >> /root/.bashrc
+RUN echo "conda init bash && echo 'conda activate core-v-mini-mcu' >> /root/.bashrc" > /tmp/setup_conda.sh && \
+    bash /tmp/setup_conda.sh && \
+    rm /tmp/setup_conda.sh
 
 RUN echo "echo ' ' " >> /root/.bashrc
 RUN echo "echo '  ' " >> /root/.bashrc
