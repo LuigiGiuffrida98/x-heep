@@ -94,7 +94,7 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y build-essential
 FROM busybox:1.35.0-uclibc AS busybox
 
 # Openroad
-FROM hdlc/openroad AS OpenROAD
+FROM hdlc/openroad:gui AS OpenROAD
  
 # Use Ubuntu as base for final image instead of distroless
 FROM ubuntu:24.04
@@ -203,7 +203,7 @@ COPY --from=builder /usr/lib/llvm-14 /usr/lib/llvm-14
 # Copy perl binaries from builder
 COPY --from=builder /etc/perl /etc/perl
 
-# Copy OpenROAD and its dependencies
+# Copy OpenROAD and its dependencies from OpenROAD stage
 COPY --from=OpenROAD /usr/local/bin/openroad /usr/local/bin/openroad
 COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libtcl8.6.so /usr/lib/x86_64-linux-gnu/
 COPY --from=OpenROAD /opt/or-tools/lib/libortools.so.9 /opt/or-tools/lib/
@@ -211,6 +211,33 @@ COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libomp.so.5 /usr/lib/x86_64-linux
 COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libspdlog.so.1 /usr/lib/x86_64-linux-gnu/
 COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libfmt.so.7 /usr/lib/x86_64-linux-gnu/
 COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libpython3.9.so.1.0 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libQt5Core.so.5 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libGL.so.1 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libpng16.so.16 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libharfbuzz.so.0 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libmd4c.so.0 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libdouble-conversion.so.3 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libicui18n.so.67 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libicuuc.so.67 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libpcre2-16.so.0 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libzstd.so.1 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libGLX.so.0 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libgraphite2.so.3 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libicudata.so.67 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /lib/x86_64-linux-gnu/libpcre.so.3 /lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libX11.so.6 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libbrotlidec.so.1 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libxcb.so.1 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libbrotlicommon.so.1 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libXau.so.6 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libXdmcp.so.6 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libbsd.so.0 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libmd.so.0 /usr/lib/x86_64-linux-gnu/
 
 # Set PATH
 ENV PATH=/tools/gtkwave/${GTKWAVE_VERSION}/bin:/tools/verible/verible-${VERIBLE_VERSION}/bin:/tools/verilator/${VERILATOR_VERSION}/bin:/opt/conda/envs/core-v-mini-mcu/bin:/opt/conda/condabin:${RISCV}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -226,8 +253,15 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     libgdk-pixbuf2.0-0 \
     libtcl8.6 \
     libtk8.6 \
+    qtbase5-dev \
+    qtbase5-dev-tools \
+    libqt5gui5 \
+    libqt5core5a \
+    libqt5widgets5 \
+    libxcb-xinerama0 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Select workdir
 WORKDIR /workspace/x-heep
