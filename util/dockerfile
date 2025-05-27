@@ -92,6 +92,9 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y build-essential
 
 # Pull busybox image
 FROM busybox:1.35.0-uclibc AS busybox
+
+# Openroad
+FROM hdlc/openroad AS OpenROAD
  
 # Use Ubuntu as base for final image instead of distroless
 FROM ubuntu:24.04
@@ -199,6 +202,15 @@ COPY --from=builder /usr/lib/llvm-14 /usr/lib/llvm-14
 
 # Copy perl binaries from builder
 COPY --from=builder /etc/perl /etc/perl
+
+# Copy OpenROAD and its dependencies
+COPY --from=OpenROAD /usr/local/bin/openroad /usr/local/bin/openroad
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libtcl8.6.so /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /opt/or-tools/lib/libortools.so.9 /opt/or-tools/lib/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libomp.so.5 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libspdlog.so.1 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libfmt.so.7 /usr/lib/x86_64-linux-gnu/
+COPY --from=OpenROAD /usr/lib/x86_64-linux-gnu/libpython3.9.so.1.0 /usr/lib/x86_64-linux-gnu/
 
 # Set PATH
 ENV PATH=/tools/gtkwave/${GTKWAVE_VERSION}/bin:/tools/verible/verible-${VERIBLE_VERSION}/bin:/tools/verilator/${VERILATOR_VERSION}/bin:/opt/conda/envs/core-v-mini-mcu/bin:/opt/conda/condabin:${RISCV}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
