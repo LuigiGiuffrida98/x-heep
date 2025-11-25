@@ -35,7 +35,6 @@ WHITELIST = [
 
 # Blacklist of apps to skip
 BLACKLIST = [
-    "demo_spi_master_slave",
     "example_spi_read",
     "example_spidma_powergate",
     "example_spi_write",
