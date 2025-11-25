@@ -8,7 +8,6 @@ on:
 
 permissions:
   packages: read
-  pull-requests: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -57,17 +56,6 @@ jobs:
         run: |
           make mcu-gen X_HEEP_CFG=configs/ci.hjson && \
           python3 test/test_apps/test_apps.py --compilers gcc --compiler-paths /tools/riscv --compiler-prefixes riscv32-corev- --compile-only
-      - name: Comment on PR if job fails
-        if: failure() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '❌ **Compile All Apps** job failed!\n\nPlease check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.'
-            })
 
   simulate-apps:
     name: Simulate All Apps
@@ -86,17 +74,6 @@ jobs:
         run: |
           make mcu-gen X_HEEP_CFG=configs/ci.hjson && \
           python3 test/test_apps/test_apps.py --compilers gcc --compiler-paths /tools/riscv --compiler-prefixes riscv32-corev-
-      - name: Comment on PR if job fails
-        if: failure() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '❌ **Simulate All Apps** job failed!\n\nPlease check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.'
-            })
 
   lint:
     name: Lint Generated Files
@@ -117,17 +94,6 @@ jobs:
         run: |
           make mcu-gen && \
           util/git-diff.py --error-msg '::error ::Found differences in generated SystemVerilog files.'
-      - name: Comment on PR if job fails
-        if: failure() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '❌ **Lint Generated Files** job failed!\n\nGenerated SystemVerilog files are inconsistent. Please run `make mcu-gen` and commit the changes.\n\nCheck the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.'
-            })
 
   gen-peripherals:
     name: Test Peripherals Generation
@@ -146,17 +112,6 @@ jobs:
           make clean-all
           # Run the test script
           python3 test/test_x_heep_gen/test_peripherals.py
-      - name: Comment on PR if job fails
-        if: failure() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '❌ **Test Peripherals Generation** job failed!\n\nPlease check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.'
-            })
 
   gen-pads:
     name: Test Pad Generation
@@ -175,17 +130,6 @@ jobs:
           make clean-all
           # Run the test script
           make test_kwargs
-      - name: Comment on PR if job fails
-        if: failure() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '❌ **Test Pad Generation** job failed!\n\nPlease check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.'
-            })
 
   check-vendor:
     name: Vendor up-to-date
@@ -202,17 +146,6 @@ jobs:
         run: |
           find . -name '*.vendor.hjson' | xargs -n1 util/vendor.py --verbose &&
           util/git-diff.py --error-msg '::error ::Found differences, please re-vendor.'
-      - name: Comment on PR if job fails
-        if: failure() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '❌ **Vendor up-to-date** job failed!\n\nVendored dependencies are out of date. Please re-run the vendor script and commit the changes.\n\nCheck the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.'
-            })
 
   black-formatter:
     name: Check Python code formatting
@@ -230,14 +163,3 @@ jobs:
             util/c_gen.py
             test/test_x_heep_gen
           version: "~= 24.8.0"
-      - name: Comment on PR if job fails
-        if: failure() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '❌ **Check Python code formatting** job failed!\n\nPython code is not properly formatted. Please run `black` on the affected files.\n\nCheck the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.'
-            })
