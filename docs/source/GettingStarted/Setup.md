@@ -18,7 +18,7 @@ The Docker image provides built-in shortcuts (as Bash functions) to select among
 
 | Shortcut | Description | Configuration |
 | -------- | ----------- | ------------- |
-| `init_corev` | Use the Embecosm CORE-V toolchain with PULP extension | `COMPILER=gcc`<br>`COMPILER_PREFIX=riscv32-unknown-`<br>`ARCH=rv32imc_zicsr_zifencei_xcvhwlp_xcvmem_xcvmac_xcvbi_xcvalu_xcvsimd_xcvbitmanip` |
+| `init_corev` | Use the Embecosm CORE-V toolchain with PULP extension | `COMPILER=gcc`<br>`COMPILER_PREFIX=riscv32-corev-`<br>`ARCH=rv32imc_zicsr_zifencei_xcvhwlp_xcvmem_xcvmac_xcvbi_xcvalu_xcvsimd_xcvbitmanip` |
 | `init_gcc` | Use the GCC toolchain | `COMPILER=gcc`<br>`COMPILER_PREFIX=riscv32-unknown-`<br>`ARCH=rv32imc_zicsr` |
 | `init_clang` | Use the LLVM/Clang toolchain | `COMPILER=clang`<br>`COMPILER_PREFIX=riscv32-unknown-`<br>`ARCH=rv32imc_zicsr` |
 
