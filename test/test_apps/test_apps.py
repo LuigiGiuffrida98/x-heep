@@ -121,19 +121,20 @@ class Application:
         return all(self.compilation_success.values())
 
 
-def compile_app(an_app, compiler_path, compiler_prefix, compiler, linker, dry_run=False):
+def compile_app(an_app, compiler_path, compiler_prefix, compiler, linker, dry_run=False, verbose=True):
     """
     Compile an_app with the compiler and linker. Outputs if
     it finishes with errors or without.
 
     Returns True if the compilation succeded and False otherwise.
     """
-    print(
-        BColors.OKBLUE
-        + f"Compiling {an_app.name} with {compiler} ({compiler_prefix}) and linker {linker}"
-        + BColors.ENDC,
-        flush=True,
-    )
+    if verbose:
+        print(
+            BColors.OKBLUE
+            + f"Compiling {an_app.name} with {compiler} ({compiler_prefix}) and linker {linker}"
+            + BColors.ENDC,
+            flush=True,
+        )
     try:
         compile_command = ["make", "app", f"PROJECT={an_app.name}"]
         os.environ["RISCV_XHEEP"] = compiler_path
@@ -145,45 +146,50 @@ def compile_app(an_app, compiler_path, compiler_prefix, compiler, linker, dry_ru
             compile_command.append(f"LINKER={linker}")
 
         if dry_run:
-            env_str = f"RISCV_XHEEP={compiler_path} " if compiler_path else ""
-            print(BColors.OKCYAN + f"[DRY RUN] {env_str}{' '.join(compile_command)}" + BColors.ENDC, flush=True)
+            if verbose:
+                env_str = f"RISCV_XHEEP={compiler_path} " if compiler_path else ""
+                print(BColors.OKCYAN + f"[DRY RUN] {env_str}{' '.join(compile_command)}" + BColors.ENDC, flush=True)
             return True
 
         _ = subprocess.run(
             compile_command, capture_output=True, check=True
         )
     except subprocess.CalledProcessError as exc:
-        print(
-            BColors.FAIL
-            + f"Error compiling {an_app.name} with {compiler} and {linker} linker."
-            + BColors.ENDC
-        )
-        print(exc.stderr.decode("utf-8"), flush=True)
+        if verbose:
+            print(
+                BColors.FAIL
+                + f"Error compiling {an_app.name} with {compiler} and {linker} linker."
+                + BColors.ENDC
+            )
+            print(exc.stderr.decode("utf-8"), flush=True)
         return False
     else:
-        print(
-            BColors.OKGREEN
-            + f"Compiled {an_app.name} with {compiler} and {linker} linker successfully."
-            + BColors.ENDC,
-            flush=True,
-        )
+        if verbose:
+            print(
+                BColors.OKGREEN
+                + f"Compiled {an_app.name} with {compiler} and {linker} linker successfully."
+                + BColors.ENDC,
+                flush=True,
+            )
         return True
 
 
-def run_app(an_app, simulator, dry_run=False):
+def run_app(an_app, simulator, dry_run=False, verbose=True):
     """
     Runs an_app with the simulator. Checks if it times out. Outputs if
     it finishes with errors or without.
 
     Returns the SimResult for the simulation of an_app.
     """
-    print(
-        BColors.OKBLUE + f"Running {an_app.name} with {simulator}..." + BColors.ENDC,
-        flush=True,
-    )
+    if verbose:
+        print(
+            BColors.OKBLUE + f"Running {an_app.name} with {simulator}..." + BColors.ENDC,
+            flush=True,
+        )
     
     if dry_run:
-        print(BColors.OKCYAN + f"[DRY RUN] make {simulator}-run" + BColors.ENDC, flush=True)
+        if verbose:
+            print(BColors.OKCYAN + f"[DRY RUN] make {simulator}-run" + BColors.ENDC, flush=True)
         return SimResult.PASSED
     
     try:
@@ -194,46 +200,51 @@ def run_app(an_app, simulator, dry_run=False):
             check=False,
         )
     except subprocess.TimeoutExpired:
-        print(
-            BColors.FAIL
-            + f"Simulation of {an_app.name} with {simulator} timed out."
-            + BColors.ENDC,
-            flush=True,
-        )
+        if verbose:
+            print(
+                BColors.FAIL
+                + f"Simulation of {an_app.name} with {simulator} timed out."
+                + BColors.ENDC,
+                flush=True,
+            )
         return SimResult.TIMED_OUT
     else:
         match = re.search(
             ERROR_PATTERN_DICT[simulator], str(run_output.stdout.decode("utf-8"))
         )
         if match and match.group(1) == "0":
-            print(
-                BColors.OKGREEN
-                + f"Ran {an_app.name} with {simulator} successfully."
-                + BColors.ENDC,
-                flush=True,
-            )
+            if verbose:
+                print(
+                    BColors.OKGREEN
+                    + f"Ran {an_app.name} with {simulator} successfully."
+                    + BColors.ENDC,
+                    flush=True,
+                )
             return SimResult.PASSED
         else:
-            print(
-                BColors.FAIL
-                + f"Simulation of {an_app.name} with {simulator} failed."
-                + BColors.ENDC
-            )
-            print(BColors.FAIL + str(run_output.stdout.decode("utf-8")) + BColors.ENDC)
+            if verbose:
+                print(
+                    BColors.FAIL
+                    + f"Simulation of {an_app.name} with {simulator} failed."
+                    + BColors.ENDC
+                )
+                print(BColors.FAIL + str(run_output.stdout.decode("utf-8")) + BColors.ENDC)
             return SimResult.FAILED
 
 
-def build_simulator(simulator, dry_run=False):
+def build_simulator(simulator, dry_run=False, verbose=True):
     """
     Build the simulator model.
     """
-    print(
-        BColors.OKBLUE + f"Generating {simulator} model..." + BColors.ENDC,
-        flush=True,
-    )
+    if verbose:
+        print(
+            BColors.OKBLUE + f"Generating {simulator} model..." + BColors.ENDC,
+            flush=True,
+        )
     
     if dry_run:
-        print(BColors.OKCYAN + f"[DRY RUN] make {simulator}-build" + BColors.ENDC, flush=True)
+        if verbose:
+            print(BColors.OKCYAN + f"[DRY RUN] make {simulator}-build" + BColors.ENDC, flush=True)
         return
     
     try:
@@ -409,6 +420,9 @@ def main():
         "--dry-run", action="store_true", help="Print the commands that would be run without executing them"
     )
     parser.add_argument(
+        "--table", action="store_true", help="Print results in a table format"
+    )
+    parser.add_argument(
         "--compilers",
         help="Override default list of compilers to test.",
     )
@@ -468,7 +482,23 @@ def main():
 
     if not args.compile_only:
         for simulator in SIMULATORS:
-            build_simulator(simulator, args.dry_run)
+            build_simulator(simulator, args.dry_run, verbose=not args.table)
+
+    # Print table header if table mode is enabled
+    if args.table:
+        # Calculate column widths
+        max_app_name_len = max(len(app.name) for app in app_list if not in_list(app.name, BLACKLIST))
+        max_app_name_len = max(max_app_name_len, len("Application"))
+        
+        # Print header
+        header = f"{'Application':<{max_app_name_len}}"
+        for compiler in compilers:
+            header += f" | {compiler:>10}"
+        if not args.compile_only:
+            for simulator in SIMULATORS:
+                header += f" | {simulator:>10}"
+        print(BColors.BOLD + header + BColors.ENDC)
+        print(BColors.BOLD + "-" * len(header) + BColors.ENDC)
 
     # Compile every app and run with the simulators
     for an_app in app_list:
@@ -478,14 +508,16 @@ def main():
             #   so the simulation is done with gcc
             for (compiler_path, compiler_prefix, compiler) in zip(compiler_paths, compiler_prefixes, compilers):
                 if in_list(an_app.name, CLANG_BLACKLIST) and compiler == "clang":
-                    print(
-                        BColors.WARNING
-                        + f"Skipping compiling {an_app.name} with {compiler}..."
-                        + BColors.ENDC,
-                        flush=True,
-                    )
+                    if not args.table:
+                        print(
+                            BColors.WARNING
+                            + f"Skipping compiling {an_app.name} with {compiler}..."
+                            + BColors.ENDC,
+                            flush=True,
+                        )
+                    an_app.set_compilation_status(compiler, None)  # Mark as skipped
                 else:
-                    compilation_result = compile_app(an_app, compiler_path, compiler_prefix, compiler, "on_chip", args.dry_run)
+                    compilation_result = compile_app(an_app, compiler_path, compiler_prefix, compiler, "on_chip", args.dry_run, verbose=not args.table)
                     an_app.set_compilation_status(compiler, compilation_result)
 
             # Run the app with every simulator if the compilation was successful
@@ -496,20 +528,67 @@ def main():
                         an_app.name, VERILATOR_BLACKLIST
                     ):
                         an_app.add_simulation_result(simulator, SimResult.SKIPPED)
-                        print(
-                            BColors.WARNING
-                            + f"Skipping running {an_app.name} with verilator..."
-                            + BColors.ENDC,
-                            flush=True,
-                        )
+                        if not args.table:
+                            print(
+                                BColors.WARNING
+                                + f"Skipping running {an_app.name} with verilator..."
+                                + BColors.ENDC,
+                                flush=True,
+                            )
                     else:
-                        simulation_result = run_app(an_app, simulator, args.dry_run)
+                        simulation_result = run_app(an_app, simulator, args.dry_run, verbose=not args.table)
                         an_app.add_simulation_result(simulator, simulation_result)
+            
+            # Print table row if table mode is enabled
+            if args.table:
+                row = f"{an_app.name:<{max_app_name_len}}"
+                for compiler in compilers:
+                    if compiler not in an_app.compilation_success:
+                        status = "SKIPPED"
+                        color = BColors.WARNING
+                    elif an_app.compilation_success[compiler] is None:
+                        status = "SKIPPED"
+                        color = BColors.WARNING
+                    elif args.dry_run:
+                        status = "DRY RUN"
+                        color = BColors.OKCYAN
+                    elif an_app.compilation_success[compiler]:
+                        status = "OK"
+                        color = BColors.OKGREEN
+                    else:
+                        status = "FAIL"
+                        color = BColors.FAIL
+                    row += f" | {color}{status:>10}{BColors.ENDC}"
+                
+                if not args.compile_only:
+                    for simulator in SIMULATORS:
+                        if simulator not in an_app.simulation_results:
+                            status = "SKIPPED"
+                            color = BColors.WARNING
+                        elif an_app.simulation_results[simulator] == SimResult.SKIPPED:
+                            status = "SKIPPED"
+                            color = BColors.WARNING
+                        elif args.dry_run:
+                            status = "DRY RUN"
+                            color = BColors.OKCYAN
+                        elif an_app.simulation_results[simulator] == SimResult.PASSED:
+                            status = "OK"
+                            color = BColors.OKGREEN
+                        elif an_app.simulation_results[simulator] == SimResult.TIMED_OUT:
+                            status = "TIMEOUT"
+                            color = BColors.FAIL
+                        else:
+                            status = "FAIL"
+                            color = BColors.FAIL
+                        row += f" | {color}{status:>10}{BColors.ENDC}"
+                
+                print(row, flush=True)
         else:
-            print(
-                BColors.WARNING + f"Skipping {an_app.name}..." + BColors.ENDC,
-                flush=True,
-            )
+            if not args.table:
+                print(
+                    BColors.WARNING + f"Skipping {an_app.name}..." + BColors.ENDC,
+                    flush=True,
+                )
 
     # Filter and print the results
     (
@@ -520,14 +599,28 @@ def main():
         simulation_timed_out_apps,
     ) = filter_results(app_list)
 
-    print_results(
-        app_list,
-        skipped_apps,
-        ok_apps,
-        compilation_failed_apps,
-        simulation_failed_apps,
-        simulation_timed_out_apps,
-    )
+    # Only print detailed results if not in table mode
+    if not args.table:
+        print_results(
+            app_list,
+            skipped_apps,
+            ok_apps,
+            compilation_failed_apps,
+            simulation_failed_apps,
+            simulation_timed_out_apps,
+        )
+    else:
+        # Print summary in table mode
+        print()
+        print(BColors.BOLD + f"Summary: {len(ok_apps)}/{len(app_list)} apps succeeded" + BColors.ENDC)
+        if len(skipped_apps) > 0:
+            print(BColors.WARNING + f"Skipped: {len(skipped_apps)}" + BColors.ENDC)
+        if len(compilation_failed_apps) > 0:
+            print(BColors.FAIL + f"Compilation failed: {len(compilation_failed_apps)}" + BColors.ENDC)
+        if len(simulation_failed_apps) > 0:
+            print(BColors.FAIL + f"Simulation failed: {len(simulation_failed_apps)}" + BColors.ENDC)
+        if len(simulation_timed_out_apps) > 0:
+            print(BColors.FAIL + f"Timed out: {len(simulation_timed_out_apps)}" + BColors.ENDC)
 
     # Exit with error if any app failed to compile or run
     if len(compilation_failed_apps) > 0 or len(simulation_failed_apps) > 0:
