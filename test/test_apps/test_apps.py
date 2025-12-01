@@ -490,13 +490,20 @@ def main():
         max_app_name_len = max(len(app.name) for app in app_list if not in_list(app.name, BLACKLIST))
         max_app_name_len = max(max_app_name_len, len("Application"))
         
+        # Calculate max column width for compiler columns
+        max_col_width = 10
+        for compiler, prefix in zip(compilers, compiler_prefixes):
+            col_name = f"{compiler}({prefix})"
+            max_col_width = max(max_col_width, len(col_name))
+        
         # Print header
         header = f"{'Application':<{max_app_name_len}}"
-        for compiler in compilers:
-            header += f" | {compiler:>10}"
+        for compiler, prefix in zip(compilers, compiler_prefixes):
+            col_name = f"{compiler}({prefix})"
+            header += f" | {col_name:>{max_col_width}}"
         if not args.compile_only:
             for simulator in SIMULATORS:
-                header += f" | {simulator:>10}"
+                header += f" | {simulator:>{max_col_width}}"
         print(BColors.BOLD + header + BColors.ENDC)
         print(BColors.BOLD + "-" * len(header) + BColors.ENDC)
 
@@ -558,7 +565,7 @@ def main():
                     else:
                         status = "FAIL"
                         color = BColors.FAIL
-                    row += f" | {color}{status:>10}{BColors.ENDC}"
+                    row += f" | {color}{status:>{max_col_width}}{BColors.ENDC}"
                 
                 if not args.compile_only:
                     for simulator in SIMULATORS:
@@ -580,7 +587,7 @@ def main():
                         else:
                             status = "FAIL"
                             color = BColors.FAIL
-                        row += f" | {color}{status:>10}{BColors.ENDC}"
+                        row += f" | {color}{status:>{max_col_width}}{BColors.ENDC}"
                 
                 print(row, flush=True)
         else:
