@@ -130,7 +130,7 @@ def compile_app(an_app, compiler_path, compiler_prefix, compiler, linker, dry_ru
     """
     print(
         BColors.OKBLUE
-        + f"Compiling {an_app.name} with {compiler} and linker {linker}"
+        + f"Compiling {an_app.name} with {compiler} ({compiler_prefix}) and linker {linker}"
         + BColors.ENDC,
         flush=True,
     )
@@ -477,8 +477,6 @@ def main():
             # Compile the app with every compiler, leaving gcc for last
             #   so the simulation is done with gcc
             for (compiler_path, compiler_prefix, compiler) in zip(compiler_paths, compiler_prefixes, compilers):
-                if compiler == "gcc":
-                    continue
                 if in_list(an_app.name, CLANG_BLACKLIST) and compiler == "clang":
                     print(
                         BColors.WARNING
@@ -489,8 +487,6 @@ def main():
                 else:
                     compilation_result = compile_app(an_app, compiler_path, compiler_prefix, compiler, "on_chip", args.dry_run)
                     an_app.set_compilation_status(compiler, compilation_result)
-            compilation_result = compile_app(an_app, compiler_paths[compilers.index("gcc")], compiler_prefixes[compilers.index("gcc")], "gcc", "on_chip", args.dry_run)
-            an_app.set_compilation_status("gcc", compilation_result)
 
             # Run the app with every simulator if the compilation was successful
             if not args.compile_only and an_app.compilation_succeeded:
