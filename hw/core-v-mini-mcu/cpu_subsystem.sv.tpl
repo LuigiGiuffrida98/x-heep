@@ -11,13 +11,7 @@ module cpu_subsystem
   import core_v_mini_mcu_pkg::*;
 #(
     parameter BOOT_ADDR = 'h180,
-    parameter COREV_PULP =  0, // PULP ISA Extension (incl. custom CSRs and hardware loop, excl. p.elw)
-    parameter FPU = 0,  // Floating Point Unit (interfaced via APU interface)
-    parameter ZFINX = 0,  // Float-in-General Purpose registers
-    parameter NUM_MHPMCOUNTERS = 1,
-    parameter DM_HALTADDRESS = '0,
-    parameter X_EXT = 0,  // eXtension interface in cv32e40x
-    parameter core_v_mini_mcu_pkg::cpu_type_e CPU_TYPE = core_v_mini_mcu_pkg::CpuType
+    parameter DM_HALTADDRESS = '0
 ) (
     // Clock and Reset
     input logic clk_i,
@@ -64,7 +58,7 @@ module cpu_subsystem
   assign core_instr_req_o.we    = '0;
   assign core_instr_req_o.be    = 4'b1111;
 
-  if (CPU_TYPE == cv32e20) begin : gen_cv32e20
+% if cpu.name == "cv32e20":
 
     cve2_xif_wrapper #(
 % if cpu.is_defined("rv32e"):
@@ -73,7 +67,13 @@ module cpu_subsystem
 % if cpu.is_defined("rv32m"):
         .RV32M(cve2_pkg::${cpu.get_sv_str("rv32m")}),
 % endif
-        .XInterface(X_EXT)
+% if cpu.is_defined("XInterface"):
+        .X_INTERFACE(${cpu.get_sv_str("XInterface")}),
+% endif
+% if cpu.is_defined("num_mhpmcounters"):
+        .MHPMCounterNum(${cpu.get_sv_str("num_mhpmcounters")}),
+% endif
+        .MHPMCounterWidth(40)
     ) cv32e20_i (
         .clk_i (clk_i),
         .rst_ni(rst_ni),
@@ -148,12 +148,15 @@ module cpu_subsystem
     assign irq_ack_o = '0;
     assign irq_id_o  = '0;
 
-  end else if (CPU_TYPE == cv32e40x) begin : gen_cv32e40x
+% elif cpu.name == "cv32e40x":
 
-    // instantiate the core
     cv32e40x_core #(
-        .NUM_MHPMCOUNTERS(NUM_MHPMCOUNTERS),
-        .X_EXT(X_EXT[0]),
+% if cpu.is_defined("x_ext"):
+        .X_EXT(${cpu.get_sv_str("x_ext")}),
+% endif
+% if cpu.is_defined("num_mhpmcounters"):
+        .NUM_MHPMCOUNTERS(${cpu.get_sv_str("num_mhpmcounters")}),
+% endif
         .DBG_NUM_TRIGGERS('0)
     ) cv32e40x_core_i (
         // Clock and reset
@@ -243,18 +246,33 @@ module cpu_subsystem
     assign irq_ack_o = '0;
     assign irq_id_o  = '0;
 
-  end else if (CPU_TYPE == cv32e40px) begin : gen_cv32e40px
+% elif cpu.name == "cv32e40px":
 
     import cv32e40px_core_v_xif_pkg::*;
 
-    // instantiate the core
     cv32e40px_top #(
-        .COREV_X_IF      (X_EXT),
-        .COREV_PULP      (COREV_PULP),
-        .COREV_CLUSTER   (0),
-        .FPU             (FPU),
-        .ZFINX           (ZFINX),
-        .NUM_MHPMCOUNTERS(NUM_MHPMCOUNTERS)
+% if cpu.is_defined("fpu"):
+        .FPU(${cpu.get_sv_str("fpu")}),
+% endif
+% if cpu.is_defined("fpu_addmul_lat"):
+        .FPU_ADDMUL_LAT(${cpu.get_sv_str("fpu_addmul_lat")}),
+% endif
+% if cpu.is_defined("fpu_others_lat"):
+        .FPU_OTHERS_LAT(${cpu.get_sv_str("fpu_others_lat")}),
+% endif
+% if cpu.is_defined("zfinx"):
+        .ZFINX(${cpu.get_sv_str("zfinx")}),
+% endif
+% if cpu.is_defined("corev_pulp"):
+        .COREV_PULP(${cpu.get_sv_str("corev_pulp")}),
+% endif
+% if cpu.is_defined("num_mhpmcounters"):
+        .NUM_MHPMCOUNTERS(${cpu.get_sv_str("num_mhpmcounters")}),
+% endif
+% if cpu.is_defined("corev_x_if"):
+        .COREV_X_IF(${cpu.get_sv_str("corev_x_if")}),
+% endif
+        .COREV_CLUSTER(0)
     ) cv32e40px_top_i (
         .clk_i (clk_i),
         .rst_ni(rst_ni),
@@ -329,9 +347,9 @@ module cpu_subsystem
 
     );
 
-  end else begin : gen_cv32e40p
+% else:
 
-    // instantiate the core
+
     cv32e40p_top #(
 % if cpu.is_defined("fpu"):
         .FPU(${cpu.get_sv_str("fpu")}),
@@ -393,6 +411,6 @@ module cpu_subsystem
         .core_sleep_o
     );
 
-  end
+% endif
 
 endmodule
