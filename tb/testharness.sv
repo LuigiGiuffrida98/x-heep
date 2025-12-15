@@ -239,10 +239,6 @@ module testharness #(
 
   // X-HEEP system instance
   x_heep_system #(
-      .COREV_PULP(COREV_PULP),
-      .FPU(FPU),
-      .ZFINX(ZFINX),
-      .X_EXT(X_EXT),
       .EXT_XBAR_NMASTER(HEEP_EXT_XBAR_NMASTER),
       .AO_SPC_NUM(AO_SPC_NUM)
   ) x_heep_system_i (

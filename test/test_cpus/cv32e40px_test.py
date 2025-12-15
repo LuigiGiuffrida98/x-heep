@@ -1,5 +1,5 @@
 from x_heep_gen.xheep import XHeep
-from x_heep_gen.cpu.cv32e40p import cv32e40p
+from x_heep_gen.cpu.cv32e40px import cv32e40px
 from x_heep_gen.bus_type import BusType
 from x_heep_gen.memory_ss.memory_ss import MemorySS
 from x_heep_gen.memory_ss.linker_section import LinkerSection
@@ -35,7 +35,7 @@ from x_heep_gen.peripherals.user_peripherals import (
 
 def config():
     system = XHeep(BusType.NtoM)
-    system.set_cpu(cv32e40p())
+    system.set_cpu(cv32e40px())
 
     memory_ss = MemorySS()
     memory_ss.add_ram_banks([32] * 6)
