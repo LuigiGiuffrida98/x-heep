@@ -57,21 +57,18 @@ module cpu_subsystem
   assign core_instr_req_o.be    = 4'b1111;
 
 
-
-  cv32e40p_top #(
-      .COREV_CLUSTER(0)
-  ) cv32e40p_top_i (
+  cve2_xif_wrapper #(
+      .MHPMCounterWidth(40)
+  ) cv32e20_i (
       .clk_i (clk_i),
       .rst_ni(rst_ni),
 
-      .pulp_clock_en_i(1'b1),
-      .scan_cg_en_i   (1'b0),
+      .test_en_i(1'b0),
 
-      .boot_addr_i        (BOOT_ADDR),
-      .mtvec_addr_i       (32'h0),
-      .dm_halt_addr_i     (DM_HALTADDRESS),
       .hart_id_i,
+      .boot_addr_i(BOOT_ADDR),
       .dm_exception_addr_i(32'h0),
+      .dm_halt_addr_i(DM_HALTADDRESS),
 
       .instr_addr_o  (core_instr_req_o.addr),
       .instr_req_o   (core_instr_req_o.req),
@@ -88,18 +85,53 @@ module cpu_subsystem
       .data_gnt_i   (core_data_resp_i.gnt),
       .data_rvalid_i(core_data_resp_i.rvalid),
 
-      .irq_i    (irq_i),
-      .irq_ack_o(irq_ack_o),
-      .irq_id_o (irq_id_o),
+      .irq_software_i(irq_i[3]),
+      .irq_timer_i   (irq_i[7]),
+      .irq_external_i(irq_i[11]),
+      .irq_fast_i    (irq_i[31:16]),
 
-      .debug_req_i      (debug_req_i),
-      .debug_havereset_o(),
-      .debug_running_o  (),
-      .debug_halted_o   (),
+      .debug_req_i(debug_req_i),
+      .debug_halted_o(),
+
+      // CORE-V-XIF
+      // Compressed interface
+      .x_compressed_valid_o(xif_compressed_if.compressed_valid),
+      .x_compressed_ready_i(xif_compressed_if.compressed_ready),
+      .x_compressed_req_o  (xif_compressed_if.compressed_req),
+      .x_compressed_resp_i (xif_compressed_if.compressed_resp),
+
+      // Issue Interface
+      .x_issue_valid_o(xif_issue_if.issue_valid),
+      .x_issue_ready_i(xif_issue_if.issue_ready),
+      .x_issue_req_o  (xif_issue_if.issue_req),
+      .x_issue_resp_i (xif_issue_if.issue_resp),
+
+      // Commit Interface
+      .x_commit_valid_o(xif_commit_if.commit_valid),
+      .x_commit_o(xif_commit_if.commit),
+
+      // Memory Request/Response Interface
+      .x_mem_valid_i(xif_mem_if.mem_valid),
+      .x_mem_ready_o(xif_mem_if.mem_ready),
+      .x_mem_req_i  (xif_mem_if.mem_req),
+      .x_mem_resp_o (xif_mem_if.mem_resp),
+
+      // Memory Result Interface
+      .x_mem_result_valid_o(xif_mem_result_if.mem_result_valid),
+      .x_mem_result_o(xif_mem_result_if.mem_result),
+
+      // Result Interface
+      .x_result_valid_i(xif_result_if.result_valid),
+      .x_result_ready_o(xif_result_if.result_ready),
+      .x_result_i(xif_result_if.result),
 
       .fetch_enable_i(fetch_enable),
+
       .core_sleep_o
   );
+
+  assign irq_ack_o = '0;
+  assign irq_id_o  = '0;
 
 
 endmodule
