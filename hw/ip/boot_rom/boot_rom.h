@@ -3,22 +3,22 @@
 const int reset_vec_size = 59;
 
 uint32_t reset_vec[reset_vec_size] = {
-    0x200405b7,
+    0x200605b7,
     0x0005c503,
     0x41c8c119,
     0x05b79502,
-    0xc5032000,
+    0xc5032004,
     0xe5110085,
     0x00c5c503,
     0x498cd175,
     0xc5039582,
     0xc9110145,
-    0x200285b7,
+    0x200c85b7,
     0xc1884505,
     0x400005b7,
     0x18058593,
     0x05b79582,
-    0x05372002,
+    0x0537200c,
     0x4998a000,
     0xc9988f49,
     0x0fff0737,
@@ -60,6 +60,6 @@ uint32_t reset_vec[reset_vec_size] = {
     0x93e3fec4,
     0x8693fe74,
     0xf2e9f006,
-    0x200005b7,
+    0x200405b7,
     0x96024990
 };

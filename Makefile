@@ -29,14 +29,14 @@ ifndef CONDA_DEFAULT_ENV
 $(info USING VENV)
 FUSESOC 	= $(PWD)/$(VENV)/fusesoc
 PYTHON  	= $(PWD)/$(VENV)/python
-RV_PROFILE 	= $(PWD)/$(VENV)/rv_profile
-AREA_PLOT  	= $(PWD)/$(VENV)/area-plot
+# RV_PROFILE 	= $(PWD)/$(VENV)/rv_profile
+# AREA_PLOT  	= $(PWD)/$(VENV)/area-plot
 else
 $(info USING MINICONDA $(CONDA_DEFAULT_ENV))
 FUSESOC 	:= $(shell which fusesoc)
 PYTHON  	:= $(shell which python)
-RV_PROFILE  := $(shell which rv_profile)
-AREA_PLOT   := $(shell which area-plot)
+# RV_PROFILE  := $(shell which rv_profile)
+# AREA_PLOT   := $(shell which area-plot)
 endif
 
 # Build directories
@@ -171,7 +171,7 @@ mcu-gen:
 	bash -c "cd hw/ip/pdm2pcm; source pdm2pcm_gen.sh; cd ../../../"
 	bash -c "cd hw/system/pad_control; source pad_control_gen.sh; cd ../../../"
 	bash -c "cd hw/ip/dma; source dma_gen.sh; cd ../../../"
-	$(MAKE) -C hw/ip/boot_rom
+	bash -c "cd hw/ip/boot_rom; make clean; make all; cd ../../../"
 	$(MAKE) verible
 
 ## Display mcu_gen.py help
