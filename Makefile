@@ -171,7 +171,7 @@ mcu-gen:
 	bash -c "cd hw/ip/pdm2pcm; source pdm2pcm_gen.sh; cd ../../../"
 	bash -c "cd hw/system/pad_control; source pad_control_gen.sh; cd ../../../"
 	bash -c "cd hw/ip/dma; source dma_gen.sh; cd ../../../"
-	$(MAKE) -C hw/ip/boot_rom
+	bash -c "cd hw/ip/boot_rom; make clean; make all; cd ../../../"
 	$(MAKE) verible
 
 ## Display mcu_gen.py help
