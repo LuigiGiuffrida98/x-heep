@@ -38,7 +38,8 @@ def config():
     system.set_cpu(cv32e40p())
 
     memory_ss = MemorySS()
-    memory_ss.add_ram_banks([32] * 6)
+    memory_ss.add_ram_banks_il([32] * 2)
+    memory_ss.add_ram_banks_il([32] * 4)
     memory_ss.add_linker_section(LinkerSection.by_size("code", 0, 0x00000E800))
     memory_ss.add_linker_section(LinkerSection("data", 0x00000E800, None))
     system.set_memory_ss(memory_ss)
