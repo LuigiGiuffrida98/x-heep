@@ -1,5 +1,6 @@
 from .cv32e40p import cv32e40p
 
+
 class cv32e40px(cv32e40p):
 
     def __init__(
@@ -12,17 +13,23 @@ class cv32e40px(cv32e40p):
         num_mhpmcounters=None,
         corev_x_if=None,
     ):
-        super().__init__(fpu, fpu_addmul_lat, fpu_others_lat, zfinx, corev_pulp, num_mhpmcounters)
+        super().__init__(
+            fpu, fpu_addmul_lat, fpu_others_lat, zfinx, corev_pulp, num_mhpmcounters
+        )
         self.name = "cv32e40px"
 
         if corev_x_if is not None:
             if isinstance(corev_x_if, str):
                 if corev_x_if.lower() not in ("true", "false", "1", "0"):
-                    raise ValueError(f"COREV_X_IF must be 0, 1, True, or False, got '{corev_x_if}'")
+                    raise ValueError(
+                        f"COREV_X_IF must be 0, 1, True, or False, got '{corev_x_if}'"
+                    )
                 corev_x_if = corev_x_if.lower() in ("true", "1")
 
             if corev_x_if not in (0, 1, True, False):
-                raise ValueError(f"COREV_X_IF must be 0, 1, True, or False, got '{corev_x_if}'")
+                raise ValueError(
+                    f"COREV_X_IF must be 0, 1, True, or False, got '{corev_x_if}'"
+                )
 
             self.params["corev_x_if"] = bool(corev_x_if)
 

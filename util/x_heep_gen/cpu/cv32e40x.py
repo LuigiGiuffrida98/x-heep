@@ -1,21 +1,24 @@
 from .cpu import CPU
 
+
 class cv32e40x(CPU):
 
     def __init__(self, x_ext=None, num_mhpmcounters=None):
         super().__init__("cv32e40x")
-        
+
         if x_ext is not None:
             if isinstance(x_ext, str):
                 if x_ext.lower() not in ("true", "false", "1", "0"):
-                    raise ValueError(f"X_EXT must be 0, 1, True, or False, got '{x_ext}'")
+                    raise ValueError(
+                        f"X_EXT must be 0, 1, True, or False, got '{x_ext}'"
+                    )
                 x_ext = x_ext.lower() in ("true", "1")
 
             if x_ext not in (0, 1, True, False):
                 raise ValueError(f"X_EXT must be 0, 1, True, or False, got '{x_ext}'")
-            
+
             self.params["x_ext"] = bool(x_ext)
-        
+
         if num_mhpmcounters is not None:
             if isinstance(num_mhpmcounters, str):
                 try:
@@ -40,7 +43,7 @@ class cv32e40x(CPU):
         """
         if not self.is_defined(param_name):
             return ""
-        
+
         value = self.params.get(param_name)
         if param_name == "x_ext":
             return "1" if value else "0"
