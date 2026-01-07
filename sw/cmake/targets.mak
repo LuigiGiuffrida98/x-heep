@@ -22,6 +22,7 @@ build : build/Makefile
 setup : build/Makefile
 
 build/Makefile : CMakeLists.txt ${CMAKE_DIR}/riscv.cmake
+	@echo ${COMPILER_FLAGS}
 	@if [ ! -d build ] ; then mkdir build ; fi
 	@cd build;  \
 		${CMAKE} \
