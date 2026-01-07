@@ -22,6 +22,7 @@ build : build/Makefile
 setup : build/Makefile
 
 build/Makefile : CMakeLists.txt ${CMAKE_DIR}/riscv.cmake
+	@echo ${COMPILER_FLAGS}
 	@if [ ! -d build ] ; then mkdir build ; fi
 	@cd build;  \
 		${CMAKE} \
@@ -36,7 +37,7 @@ build/Makefile : CMakeLists.txt ${CMAKE_DIR}/riscv.cmake
 			-DLINKER:STRING=${LINKER} \
 			-DCOMPILER:STRING=${COMPILER} \
 			-DCOMPILER_PREFIX:STRING=${COMPILER_PREFIX} \
-			-DCOMPILER_FLAGS:STRING=${COMPILER_FLAGS}\
+			-DCOMPILER_FLAGS:STRING="${COMPILER_FLAGS}"\
 			-DCLANG_LINKER_USE_LD:BOOL=${CLANG_LINKER_USE_LD}\
 			-DVERBOSE:STRING=${VERBOSE} \
 		    ../ 
