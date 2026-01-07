@@ -57,9 +57,9 @@ module cpu_subsystem
   assign core_instr_req_o.be    = 4'b1111;
 
 
-  cve2_xif_wrapper #(
-      .MHPMCounterWidth(40)
-  ) cv32e20_i (
+
+
+  cve2_xif_wrapper #() cv32e20_i (
       .clk_i (clk_i),
       .rst_ni(rst_ni),
 

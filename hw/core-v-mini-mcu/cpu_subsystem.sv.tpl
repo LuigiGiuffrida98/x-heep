@@ -60,20 +60,24 @@ module cpu_subsystem
 
 % if cpu.name == "cv32e20":
 
+<%
+cv32e20_params = []
+
+if cpu.is_defined("rv32e"):
+    cv32e20_params.append(f".RV32E({cpu.get_sv_str('rv32e')})")
+
+if cpu.is_defined("rv32m"):
+    cv32e20_params.append(f".RV32M(cve2_pkg::{cpu.get_sv_str('rv32m')})")
+
+if cpu.is_defined("cv_x_if"):
+    cv32e20_params.append(f".X_INTERFACE({cpu.get_sv_str('cv_x_if')})")
+
+if cpu.is_defined("num_mhpmcounters"):
+    cv32e20_params.append(f".MHPMCounterNum({cpu.get_sv_str('num_mhpmcounters')})")
+%>
+
     cve2_xif_wrapper #(
-% if cpu.is_defined("rv32e"):
-        .RV32E(${cpu.get_sv_str("rv32e")}),
-% endif
-% if cpu.is_defined("rv32m"):
-        .RV32M(cve2_pkg::${cpu.get_sv_str("rv32m")}),
-% endif
-% if cpu.is_defined("XInterface"):
-        .X_INTERFACE(${cpu.get_sv_str("XInterface")}),
-% endif
-% if cpu.is_defined("num_mhpmcounters"):
-        .MHPMCounterNum(${cpu.get_sv_str("num_mhpmcounters")}),
-% endif
-        .MHPMCounterWidth(40)
+${",\n".join(cv32e20_params)}
     ) cv32e20_i (
         .clk_i (clk_i),
         .rst_ni(rst_ni),
@@ -150,14 +154,20 @@ module cpu_subsystem
 
 % elif cpu.name == "cv32e40x":
 
+<%
+cv32e40x_params = []
+
+if cpu.is_defined("cv_x_if"):
+    cv32e40x_params.append(f".X_EXT({cpu.get_sv_str('cv_x_if')})")
+
+if cpu.is_defined("num_mhpmcounters"):
+    cv32e40x_params.append(f".NUM_MHPMCOUNTERS({cpu.get_sv_str('num_mhpmcounters')})")
+
+cv32e40x_params.append(f".DBG_NUM_TRIGGERS(0)")
+%>
+
     cv32e40x_core #(
-% if cpu.is_defined("x_ext"):
-        .X_EXT(${cpu.get_sv_str("x_ext")}),
-% endif
-% if cpu.is_defined("num_mhpmcounters"):
-        .NUM_MHPMCOUNTERS(${cpu.get_sv_str("num_mhpmcounters")}),
-% endif
-        .DBG_NUM_TRIGGERS('0)
+${",\n".join(cv32e40x_params)}
     ) cv32e40x_core_i (
         // Clock and reset
         .clk_i(clk_i),
@@ -250,29 +260,33 @@ module cpu_subsystem
 
     import cv32e40px_core_v_xif_pkg::*;
 
+<%
+cv32e40px_params = []
+
+if cpu.is_defined("fpu"):
+    cv32e40px_params.append(f".FPU({cpu.get_sv_str('fpu')})")
+
+if cpu.is_defined("fpu_addmul_lat"):
+    cv32e40px_params.append(f".FPU_ADDMUL_LAT({cpu.get_sv_str('fpu_addmul_lat')})")
+
+if cpu.is_defined("fpu_others_lat"):
+    cv32e40px_params.append(f".FPU_OTHERS_LAT({cpu.get_sv_str('fpu_others_lat')})")
+
+if cpu.is_defined("zfinx"):
+    cv32e40px_params.append(f".ZFINX({cpu.get_sv_str('zfinx')})")
+
+if cpu.is_defined("corev_pulp"):
+    cv32e40px_params.append(f".COREV_PULP({cpu.get_sv_str('corev_pulp')})")
+
+if cpu.is_defined("num_mhpmcounters"):
+    cv32e40px_params.append(f".NUM_MHPMCOUNTERS({cpu.get_sv_str('num_mhpmcounters')})")
+
+if cpu.is_defined("cv_x_if"):
+    cv32e40px_params.append(f".COREV_X_IF({cpu.get_sv_str('cv_x_if')})")
+%>
+
     cv32e40px_top #(
-% if cpu.is_defined("fpu"):
-        .FPU(${cpu.get_sv_str("fpu")}),
-% endif
-% if cpu.is_defined("fpu_addmul_lat"):
-        .FPU_ADDMUL_LAT(${cpu.get_sv_str("fpu_addmul_lat")}),
-% endif
-% if cpu.is_defined("fpu_others_lat"):
-        .FPU_OTHERS_LAT(${cpu.get_sv_str("fpu_others_lat")}),
-% endif
-% if cpu.is_defined("zfinx"):
-        .ZFINX(${cpu.get_sv_str("zfinx")}),
-% endif
-% if cpu.is_defined("corev_pulp"):
-        .COREV_PULP(${cpu.get_sv_str("corev_pulp")}),
-% endif
-% if cpu.is_defined("num_mhpmcounters"):
-        .NUM_MHPMCOUNTERS(${cpu.get_sv_str("num_mhpmcounters")}),
-% endif
-% if cpu.is_defined("corev_x_if"):
-        .COREV_X_IF(${cpu.get_sv_str("corev_x_if")}),
-% endif
-        .COREV_CLUSTER(0)
+${",\n".join(cv32e40px_params)}
     ) cv32e40px_top_i (
         .clk_i (clk_i),
         .rst_ni(rst_ni),
@@ -349,27 +363,30 @@ module cpu_subsystem
 
 % else:
 
+<%
+cv32e40p_params = []
+
+if cpu.is_defined("fpu"):
+    cv32e40p_params.append(f".FPU({cpu.get_sv_str('fpu')})")
+
+if cpu.is_defined("fpu_addmul_lat"):
+    cv32e40p_params.append(f".FPU_ADDMUL_LAT({cpu.get_sv_str('fpu_addmul_lat')})")
+
+if cpu.is_defined("fpu_others_lat"):
+    cv32e40p_params.append(f".FPU_OTHERS_LAT({cpu.get_sv_str('fpu_others_lat')})")
+
+if cpu.is_defined("zfinx"):
+    cv32e40p_params.append(f".ZFINX({cpu.get_sv_str('zfinx')})")
+
+if cpu.is_defined("corev_pulp"):
+    cv32e40p_params.append(f".COREV_PULP({cpu.get_sv_str('corev_pulp')})")
+
+if cpu.is_defined("num_mhpmcounters"):
+    cv32e40p_params.append(f".NUM_MHPMCOUNTERS({cpu.get_sv_str('num_mhpmcounters')})")
+%>
 
     cv32e40p_top #(
-% if cpu.is_defined("fpu"):
-        .FPU(${cpu.get_sv_str("fpu")}),
-% endif
-% if cpu.is_defined("fpu_addmul_lat"):
-        .FPU_ADDMUL_LAT(${cpu.get_sv_str("fpu_addmul_lat")}),
-% endif
-% if cpu.is_defined("fpu_others_lat"):
-        .FPU_OTHERS_LAT(${cpu.get_sv_str("fpu_others_lat")}),
-% endif
-% if cpu.is_defined("zfinx"):
-        .ZFINX(${cpu.get_sv_str("zfinx")}),
-% endif
-% if cpu.is_defined("corev_pulp"):
-        .COREV_PULP(${cpu.get_sv_str("corev_pulp")}),
-% endif
-% if cpu.is_defined("num_mhpmcounters"):
-        .NUM_MHPMCOUNTERS(${cpu.get_sv_str("num_mhpmcounters")}),
-% endif
-        .COREV_CLUSTER(0)
+${",\n".join(cv32e40p_params)}
     ) cv32e40p_top_i (
         .clk_i (clk_i),
         .rst_ni(rst_ni),

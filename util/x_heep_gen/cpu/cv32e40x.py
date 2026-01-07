@@ -3,21 +3,21 @@ from .cpu import CPU
 
 class cv32e40x(CPU):
 
-    def __init__(self, x_ext=None, num_mhpmcounters=None):
+    def __init__(self, cv_x_if=None, num_mhpmcounters=None):
         super().__init__("cv32e40x")
 
-        if x_ext is not None:
-            if isinstance(x_ext, str):
-                if x_ext.lower() not in ("true", "false", "1", "0"):
+        if cv_x_if is not None:
+            if isinstance(cv_x_if, str):
+                if cv_x_if.lower() not in ("true", "false", "1", "0"):
                     raise ValueError(
-                        f"X_EXT must be 0, 1, True, or False, got '{x_ext}'"
+                        f"cv_x_if must be 0, 1, True, or False, got '{cv_x_if}'"
                     )
-                x_ext = x_ext.lower() in ("true", "1")
+                cv_x_if = cv_x_if.lower() in ("true", "1")
 
-            if x_ext not in (0, 1, True, False):
-                raise ValueError(f"X_EXT must be 0, 1, True, or False, got '{x_ext}'")
+            if cv_x_if not in (0, 1, True, False):
+                raise ValueError(f"cv_x_if must be 0, 1, True, or False, got '{cv_x_if}'")
 
-            self.params["x_ext"] = bool(x_ext)
+            self.params["cv_x_if"] = bool(cv_x_if)
 
         if num_mhpmcounters is not None:
             if isinstance(num_mhpmcounters, str):
@@ -25,12 +25,12 @@ class cv32e40x(CPU):
                     num_mhpmcounters = int(num_mhpmcounters.lower())
                 except:
                     raise ValueError(
-                        f"NUM_MHPMCOUNTERS must be a number, got '{num_mhpmcounters}'"
+                        f"num_mhpmcounters must be a number, got '{num_mhpmcounters}'"
                     )
 
             if num_mhpmcounters < 0:
                 raise ValueError(
-                    f"NUM_MHPMCOUNTERS must be a positive number, got '{num_mhpmcounters}'"
+                    f"num_mhpmcounters must be a positive number, got '{num_mhpmcounters}'"
                 )
 
             self.params["num_mhpmcounters"] = num_mhpmcounters
@@ -45,9 +45,7 @@ class cv32e40x(CPU):
             return ""
 
         value = self.params.get(param_name)
-        if param_name == "x_ext":
+        if param_name == "cv_x_if":
             return "1" if value else "0"
-        elif param_name == "num_mhpmcounters":
-            return str(value)
         else:
             return str(value)
