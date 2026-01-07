@@ -48,6 +48,10 @@ def config():
     user_peripheral_domain = UserPeripheralDomain()
 
     # Base peripherals. All base peripherals must be added. They can be either added with "add_peripheral" or "add_missing_peripherals" (adds all base peripherals).
+    base_peripheral_domain.add_peripheral(SOC_ctrl(0x00000000))
+    base_peripheral_domain.add_peripheral(Bootrom(0x00010000))
+    base_peripheral_domain.add_peripheral(SPI_flash(0x00020000, 0x00008000))
+    base_peripheral_domain.add_peripheral(SPI_memio(0x00028000, 0x00008000))
     base_peripheral_domain.add_peripheral(
         DMA(
             address=0x30000,
@@ -57,7 +61,12 @@ def config():
             num_channels_per_master_port=2,
         )
     )
-    base_peripheral_domain.add_missing_peripherals()
+    base_peripheral_domain.add_peripheral(Power_manager(0x00040000))
+    base_peripheral_domain.add_peripheral(RV_timer_ao(0x00050000))
+    base_peripheral_domain.add_peripheral(Fast_intr_ctrl(0x00060000))
+    base_peripheral_domain.add_peripheral(Ext_peripheral(0x00070000))
+    base_peripheral_domain.add_peripheral(Pad_control(0x00080000))
+    base_peripheral_domain.add_peripheral(GPIO_ao(0x00090000))
 
     # User peripherals. All are optional. They must be added with "add_peripheral".
     user_peripheral_domain.add_peripheral(RV_plic(0x00000000))

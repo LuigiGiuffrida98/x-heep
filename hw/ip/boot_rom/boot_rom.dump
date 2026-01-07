@@ -5,15 +5,15 @@ boot_rom.elf:     file format elf32-littleriscv
 Disassembly of section .text:
 
 00000000 <entry>:
-   0:	200605b7          	lui	a1,0x20060
-   4:	0005c503          	lbu	a0,0(a1) # 20060000 <_end+0x2005ff14>
+   0:	200405b7          	lui	a1,0x20040
+   4:	0005c503          	lbu	a0,0(a1) # 20040000 <_end+0x2003ff14>
    8:	c119                	beqz	a0,e <boot>
    a:	41c8                	lw	a0,4(a1)
    c:	9502                	jalr	a0
 
 0000000e <boot>:
-   e:	200405b7          	lui	a1,0x20040
-  12:	0085c503          	lbu	a0,8(a1) # 20040008 <_end+0x2003ff1c>
+   e:	200005b7          	lui	a1,0x20000
+  12:	0085c503          	lbu	a0,8(a1) # 20000008 <_end+0x1fffff1c>
   16:	e511                	bnez	a0,22 <_jump_to_flash>
 
 00000018 <_jump_to_debug_rom>:
@@ -27,7 +27,7 @@ Disassembly of section .text:
   26:	c911                	beqz	a0,3a <_copy_from_flash>
 
 00000028 <_execute_from_flash>:
-  28:	200c85b7          	lui	a1,0x200c8
+  28:	200285b7          	lui	a1,0x20028
   2c:	4505                	li	a0,1
   2e:	c188                	sw	a0,0(a1)
   30:	400005b7          	lui	a1,0x40000
@@ -35,7 +35,7 @@ Disassembly of section .text:
   38:	9582                	jalr	a1
 
 0000003a <_copy_from_flash>:
-  3a:	200c05b7          	lui	a1,0x200c0
+  3a:	200205b7          	lui	a1,0x20020
   3e:	a0000537          	lui	a0,0xa0000
   42:	4998                	lw	a4,16(a1)
   44:	8f49                	or	a4,a4,a0
@@ -86,7 +86,7 @@ Disassembly of section .text:
   ac:	0ff40213          	addi	tp,s0,255 # 80000ff <_end+0x8000013>
 
 000000b0 <_read_32B_chunk>:
-  b0:	0245a223          	sw	tp,36(a1) # 200c0024 <_end+0x200bff38>
+  b0:	0245a223          	sw	tp,36(a1) # 20020024 <_end+0x2001ff38>
   b4:	0001                	nop
 
 000000b6 <_wait_spi_ready_read_32B_chunk>:
@@ -109,6 +109,6 @@ Disassembly of section .text:
   da:	fe7493e3          	bne	s1,t2,c0 <_wait_spi_rxwm_8_words>
   de:	f0068693          	addi	a3,a3,-256
   e2:	f2e9                	bnez	a3,a4 <_32B_chunk_loop>
-  e4:	200405b7          	lui	a1,0x20040
+  e4:	200005b7          	lui	a1,0x20000
   e8:	4990                	lw	a2,16(a1)
   ea:	9602                	jalr	a2
