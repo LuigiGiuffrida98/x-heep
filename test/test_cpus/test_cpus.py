@@ -115,7 +115,7 @@ def generate_mcu(cpu_config, base_dir, verbose=True):
         )
 
     try:
-        x_heep_cfg = os.path.join(base_dir, "test", "test_cpus", "python_unsupported.hjson")
+        x_heep_cfg = os.path.join(base_dir, "configs", "python_unsupported.hjson")
         python_cfg = os.path.join(base_dir, "test", "test_cpus", f"{cpu_config.name}_test.py")
         
         generate_command = [
