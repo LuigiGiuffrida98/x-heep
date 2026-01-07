@@ -15,7 +15,9 @@ class cv32e40x(CPU):
                 cv_x_if = cv_x_if.lower() in ("true", "1")
 
             if cv_x_if not in (0, 1, True, False):
-                raise ValueError(f"cv_x_if must be 0, 1, True, or False, got '{cv_x_if}'")
+                raise ValueError(
+                    f"cv_x_if must be 0, 1, True, or False, got '{cv_x_if}'"
+                )
 
             self.params["cv_x_if"] = bool(cv_x_if)
 
