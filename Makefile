@@ -102,7 +102,7 @@ MCU_GEN_TEMPLATES = \
 # Compiler options are 'gcc' (default) and 'clang'
 COMPILER 		?= gcc
 # Compiler prefix options are 'riscv32-corev-' (default) and 'riscv32-unknown-'
-COMPILER_PREFIX ?= $(shell [ -d "$(RISCV_XHEEP)/bin" ] && ls $(RISCV_XHEEP)/bin/riscv32-*-gcc 2>/dev/null | head -1 | xargs basename | sed 's/-gcc$$//' || echo riscv32-corev-)
+COMPILER_PREFIX ?= $(shell basename $$(ls $(RISCV_XHEEP)/bin/*gcc 2>/dev/null | head -1) | sed 's/elf-gcc$$//')
 # Compiler flags to be passed (for both linking and compiling)
 COMPILER_FLAGS 	?=
 # Arch options are any RISC-V ISA string supported by the CPU. Default 'rv32imc_zicsr'
@@ -155,6 +155,9 @@ conda:
 	conda env create -f util/conda_environment.yml
 
 ## @section Installation
+
+debug:
+	@echo "COMPILER_PREFIX: $(COMPILER_PREFIX)"
 
 ## Generates mcu files core-v-mini-mcu files and build the design with fusesoc
 ## @param CPU=[cv32e20(default),cv32e40p,cv32e40x,cv32e40px]
