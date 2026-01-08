@@ -156,9 +156,6 @@ conda:
 
 ## @section Installation
 
-debug:
-	@echo "COMPILER_PREFIX: $(COMPILER_PREFIX)"
-
 ## Generates mcu files core-v-mini-mcu files and build the design with fusesoc
 ## @param CPU=[cv32e20(default),cv32e40p,cv32e40x,cv32e40px]
 ## @param BUS=[onetoM(default),NtoM]
