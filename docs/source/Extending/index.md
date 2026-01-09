@@ -66,7 +66,6 @@ First, install the compiler as written [here](https://github.com/esl-epfl/xheep_
 
     cpu_features: {
         cv_x_if: true
-        ...
     }
 
     ...
