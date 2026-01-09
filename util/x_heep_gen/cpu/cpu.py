@@ -29,7 +29,7 @@ class CPU:
         :return: True if the parameter is defined, False otherwise.
         """
         return param_name in self.params
-    
+
     def get_param(self, param_name: str):
         """
         Get the value of a given parameter.
