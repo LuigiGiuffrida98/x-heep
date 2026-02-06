@@ -7,8 +7,30 @@ from .peripherals.base_peripherals_domain import BasePeripheralDomain
 from .peripherals.user_peripherals_domain import UserPeripheralDomain
 from .pads.PadRing import PadRing
 
+class System:
+    # ------------------------------------------------------------
+    # CPU
+    # ------------------------------------------------------------
 
-class XHeep:
+    def set_cpu(self, cpu: CPU):
+        """
+        Sets the CPU of the system.
+
+        :param CPU cpu: The CPU to set.
+        :raise TypeError: when cpu is of incorrect type.
+        """
+        if not isinstance(cpu, CPU):
+            raise TypeError(f"XHeep.cpu should be of type CPU not {type(self._cpu)}")
+        self._cpu = cpu
+
+    def cpu(self) -> CPU:
+        """
+        :return: the configured CPU
+        :rtype: CPU
+        """
+        return self._cpu
+
+class XHeep(System):
     """
     Represents the whole X-HEEP system.
 
@@ -41,28 +63,6 @@ class XHeep:
         self._padring: PadRing = None
 
         self._extensions = {}
-
-    # ------------------------------------------------------------
-    # CPU
-    # ------------------------------------------------------------
-
-    def set_cpu(self, cpu: CPU):
-        """
-        Sets the CPU of the system.
-
-        :param CPU cpu: The CPU to set.
-        :raise TypeError: when cpu is of incorrect type.
-        """
-        if not isinstance(cpu, CPU):
-            raise TypeError(f"XHeep.cpu should be of type CPU not {type(self._cpu)}")
-        self._cpu = cpu
-
-    def cpu(self) -> CPU:
-        """
-        :return: the configured CPU
-        :rtype: CPU
-        """
-        return self._cpu
 
     # ------------------------------------------------------------
     # Bus

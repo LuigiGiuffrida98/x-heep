@@ -15,11 +15,11 @@ import logging
 import pickle
 from jsonref import JsonRef
 from mako.template import Template
-import x_heep_gen.load_config
-from x_heep_gen.load_config import load_peripherals_config
-from x_heep_gen.pads.PadRing import PadRing
-from x_heep_gen.xheep import BusType
-from x_heep_gen.cpu.cpu import CPU
+import system_gen.load_config
+from system_gen.load_config import load_peripherals_config
+from system_gen.pads.PadRing import PadRing
+from system_gen.system import BusType
+from system_gen.cpu.cpu import CPU
 import os
 
 
@@ -78,11 +78,11 @@ def generate_xheep(args):
     # If using the Python config file, the HJSON parameters that are supported by Python will be ignored
     # except for the peripherals. Any peripheral not configured in Python will be added from the HJSON config.
     if args.python_config != None and args.python_config != "":
-        xheep = x_heep_gen.load_config.load_cfg_file(
+        xheep = system_gen.load_config.load_cfg_file(
             pathlib.PurePath(str(args.python_config))
         )
     else:
-        xheep = x_heep_gen.load_config.load_cfg_file(pathlib.PurePath(str(args.config)))
+        xheep = system_gen.load_config.load_cfg_file(pathlib.PurePath(str(args.config)))
 
     # We still need to load from the HJSON config the configuration options that are not yet supported in the Python model of X-HEEP
     with open(args.config, "r") as file:

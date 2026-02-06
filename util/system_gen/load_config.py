@@ -13,7 +13,7 @@ from .cpu.cv32e40px import cv32e40px
 from .cpu.cv32e40x import cv32e40x
 from .memory_ss.memory_ss import MemorySS
 from .memory_ss.linker_section import LinkerSection
-from .xheep import BusType, XHeep
+from .system import BusType, XHeep
 from .peripherals.base_peripherals_domain import BasePeripheralDomain
 from .peripherals.user_peripherals_domain import UserPeripheralDomain
 from .peripherals.base_peripherals import (
