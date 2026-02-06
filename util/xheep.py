@@ -1,10 +1,10 @@
-from system_gen.system import System
-from system_gen.bus_type import BusType
-from system_gen.memory_ss.memory_ss import MemorySS
-from system_gen.peripherals.abstractions import PeripheralDomain
-from system_gen.peripherals.base_peripherals_domain import BasePeripheralDomain
-from system_gen.peripherals.user_peripherals_domain import UserPeripheralDomain
-from system_gen.pads.PadRing import PadRing
+from SystemGen.system import System
+from SystemGen.bus_type import BusType
+from SystemGen.memory_ss.memory_ss import MemorySS
+from SystemGen.peripherals.abstractions import PeripheralDomain
+from SystemGen.peripherals.base_peripherals_domain import BasePeripheralDomain
+from SystemGen.peripherals.user_peripherals_domain import UserPeripheralDomain
+from SystemGen.pads.PadRing import PadRing
 
 
 class XHeep(System):
