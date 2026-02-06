@@ -1,6 +1,6 @@
 import importlib
 from pathlib import PurePath
-from typing import List, Union
+from typing import Callable, List, Union
 import hjson
 import os
 import sys
@@ -13,7 +13,8 @@ from .cpu.cv32e40px import cv32e40px
 from .cpu.cv32e40x import cv32e40x
 from .memory_ss.memory_ss import MemorySS
 from .memory_ss.linker_section import LinkerSection
-from .system import BusType, XHeep
+from .bus_type import BusType
+from .system import System
 from .peripherals.base_peripherals_domain import BasePeripheralDomain
 from .peripherals.user_peripherals_domain import UserPeripheralDomain
 from .peripherals.base_peripherals import (
@@ -219,11 +220,11 @@ def load_linker_config(memory_ss: MemorySS, config: list):
         memory_ss.add_linker_section(LinkerSection(name, start, end))
 
 
-def load_peripherals_config(system: XHeep, config_path: str):
+def load_peripherals_config(system: System, config_path: str):
     """
     Reads the whole peripherals configuration.
 
-    :param XHeep system: the system object where the peripherals should be added.
+    :param System system: the system object where the peripherals should be added.
     :param str config_path: The path to the configuration file.
     :raise ValueError: If config file does not exist or if peripheral name doesn't match a peripheral class.
     """
@@ -259,7 +260,7 @@ def load_peripherals_config(system: XHeep, config_path: str):
                     # Skip if peripheral was already added by python configuration
                     if (
                         system.are_base_peripherals_configured()
-                        and system._base_peripheral_domain.contains_peripheral(
+                        and system.get_base_peripheral_domain().contains_peripheral(
                             peripheral_name
                         )
                     ):
@@ -380,7 +381,7 @@ def load_peripherals_config(system: XHeep, config_path: str):
                     # Skip if peripheral was already added by python configuration
                     if (
                         system.are_user_peripherals_configured()
-                        and system._user_peripheral_domain.contains_peripheral(
+                        and system.get_user_peripheral_domain().contains_peripheral(
                             peripheral_name
                         )
                     ):
@@ -420,11 +421,11 @@ def load_peripherals_config(system: XHeep, config_path: str):
 
 
 def load_cpu_config(
-    system: XHeep, cpu_type_config: str, cpu_features_config: hjson.OrderedDict
+    system: System, cpu_type_config: str, cpu_features_config: hjson.OrderedDict
 ):
     """
     Reads the cpu configuration.
-    :param XHeep system: the system object where the cpu should be set.
+    :param System system: the system object where the cpu should be set.
     :param str cpu_type_config: The cpu type configuration.
     :param hjson.OrderedDict cpu_features_config: The cpu features configuration.
     """
@@ -462,13 +463,14 @@ def load_cpu_config(
     system.set_cpu(cpu)
 
 
-def load_cfg_hjson(src: str) -> XHeep:
+def load_cfg_hjson(src: str, system_factory: Callable[[BusType], System]) -> System:
     """
     Loads the configuration passed as a hjson string and creates an object representing the mcu.
 
     :param str src: configuration content
     :return: the object representing the mcu configuration
-    :rtype: XHeep
+    :param Callable system_factory: factory that returns a System instance for a given bus type.
+    :rtype: System
     :raise RuntimeError: when and invalid configuration is passed or when the sanity checks failed
     """
     config = hjson.loads(src, parse_int=int, object_pairs_hook=hjson.OrderedDict)
@@ -498,7 +500,10 @@ def load_cfg_hjson(src: str) -> XHeep:
     if cpu_type_config is None:
         raise RuntimeError("No CPU type configuration found")
 
-    system = XHeep(BusType(bus_config))
+    if system_factory is None:
+        raise RuntimeError("system_factory is required for HJSON configuration")
+
+    system = system_factory(BusType(bus_config))
     memory_ss = MemorySS()
 
     load_ram_config(memory_ss, mem_config)
@@ -513,13 +518,16 @@ def load_cfg_hjson(src: str) -> XHeep:
     return system
 
 
-def load_cfg_file(f: PurePath) -> XHeep:
+def load_cfg_file(
+    f: PurePath, system_factory: Callable[[BusType], System] = None
+) -> System:
     """
     Load the Configuration by extension type. It currently supports .hjson and .py
 
     :param PurePath f: path of the configuration
     :return: the object representing the mcu configuration
-    :rtype: XHeep
+    :param Callable system_factory: factory that returns a System instance for a given bus type.
+    :rtype: System
     :raise RuntimeError: when and invalid configuration is passed or when the sanity checks failed
     """
     if not isinstance(f, PurePath):
@@ -527,11 +535,11 @@ def load_cfg_file(f: PurePath) -> XHeep:
 
     if f.suffix == ".hjson":
         with open(f, "r") as file:
-            return load_cfg_hjson(file.read())
+            return load_cfg_hjson(file.read(), system_factory)
 
     elif f.suffix == ".py":
         # The python script should have a function config() that takes no parameters and
-        # returns an instance of the XHeep type.
+        # returns an instance of the System type.
         spec = importlib.util.spec_from_file_location("configs._config", f)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)

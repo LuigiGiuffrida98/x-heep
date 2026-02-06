@@ -18,8 +18,9 @@ from mako.template import Template
 import system_gen.load_config
 from system_gen.load_config import load_peripherals_config
 from system_gen.pads.PadRing import PadRing
-from system_gen.system import BusType
+from system_gen.bus_type import BusType
 from system_gen.cpu.cpu import CPU
+from xheep import XHeep
 import os
 
 
@@ -79,10 +80,12 @@ def generate_xheep(args):
     # except for the peripherals. Any peripheral not configured in Python will be added from the HJSON config.
     if args.python_config != None and args.python_config != "":
         xheep = system_gen.load_config.load_cfg_file(
-            pathlib.PurePath(str(args.python_config))
+            pathlib.PurePath(str(args.python_config)), system_factory=XHeep
         )
     else:
-        xheep = system_gen.load_config.load_cfg_file(pathlib.PurePath(str(args.config)))
+        xheep = system_gen.load_config.load_cfg_file(
+            pathlib.PurePath(str(args.config)), system_factory=XHeep
+        )
 
     # We still need to load from the HJSON config the configuration options that are not yet supported in the Python model of X-HEEP
     with open(args.config, "r") as file:

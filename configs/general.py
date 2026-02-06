@@ -1,4 +1,4 @@
-from system_gen.system import XHeep
+from xheep import XHeep
 from system_gen.cpu.cpu import CPU
 from system_gen.bus_type import BusType
 from system_gen.memory_ss.memory_ss import MemorySS
