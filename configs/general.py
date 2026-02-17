@@ -1,13 +1,21 @@
-from xheep import XHeep
-from SystemGen.cpu.cpu import CPU
-from SystemGen.bus_type import BusType
-from SystemGen.memory_ss.memory_ss import MemorySS
-from SystemGen.memory_ss.linker_section import LinkerSection
-from SystemGen.peripherals.base_peripherals import (
+# Copyright 2026 EPFL
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Author(s): David Mallasen
+# Description: Generic (default) configuration for X-HEEP
+
+from x_heep_gen.xheep import XHeep
+from x_heep_gen.cpu.cv32e20 import cv32e20
+from x_heep_gen.bus_type import BusType
+from x_heep_gen.memory_ss.memory_ss import MemorySS
+from x_heep_gen.memory_ss.linker_section import LinkerSection
+from x_heep_gen.peripherals.base_peripherals import (
     SOC_ctrl,
     Bootrom,
     SPI_flash,
     SPI_memio,
+    W25Q128JW_Controller,
     DMA,
     Power_manager,
     RV_timer_ao,
@@ -17,10 +25,10 @@ from SystemGen.peripherals.base_peripherals import (
     GPIO_ao,
 )
 
-from SystemGen.peripherals.base_peripherals_domain import BasePeripheralDomain
-from SystemGen.peripherals.user_peripherals_domain import UserPeripheralDomain
+from x_heep_gen.peripherals.base_peripherals_domain import BasePeripheralDomain
+from x_heep_gen.peripherals.user_peripherals_domain import UserPeripheralDomain
 
-from SystemGen.peripherals.user_peripherals import (
+from x_heep_gen.peripherals.user_peripherals import (
     RV_plic,
     SPI_host,
     GPIO,
@@ -35,7 +43,7 @@ from SystemGen.peripherals.user_peripherals import (
 
 def config():
     system = XHeep(BusType.onetoM)
-    system.set_cpu(CPU("cv32e20"))
+    system.set_cpu(cv32e20(rv32e=False, rv32m="RV32MSlow"))
 
     memory_ss = MemorySS()
     memory_ss.add_ram_banks([32] * 2)
@@ -51,7 +59,8 @@ def config():
     base_peripheral_domain.add_peripheral(SOC_ctrl(0x00000000))
     base_peripheral_domain.add_peripheral(Bootrom(0x00010000))
     base_peripheral_domain.add_peripheral(SPI_flash(0x00020000, 0x00008000))
-    base_peripheral_domain.add_peripheral(SPI_memio(0x00028000, 0x00008000))
+    base_peripheral_domain.add_peripheral(SPI_memio(0x00028000, 0x00000008))
+    base_peripheral_domain.add_peripheral(W25Q128JW_Controller(0x00029000, 0x00007000))
     base_peripheral_domain.add_peripheral(
         DMA(
             address=0x30000,
