@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 {
   name: "XheepGen",
-  target_dir: "SystemGen",
+  target_dir: "XheepGen",
 
   upstream: {
     url: "https://github.com/x-heep/XheepGen.git",
-    rev: "x-alp-edits",
+    rev: "prepare-xalp",
   },
 
   

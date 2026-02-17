@@ -15,10 +15,10 @@ import logging
 import pickle
 from jsonref import JsonRef
 from mako.template import Template
-from SystemGen import load_cfg_file, BusType
-from SystemGen.load_config import load_peripherals_config
-from SystemGen.cpu import CPU
-from SystemGen.pads.PadRing import PadRing
+from XheepGen.bus import BusType
+from XheepGen.load_config import load_peripherals_config
+from XheepGen.cpu import CPU
+from XheepGen.pads.PadRing import PadRing
 from xheep import XHeep
 import os
 
@@ -82,9 +82,7 @@ def generate_xheep(args):
             pathlib.PurePath(str(args.python_config)), system_factory=XHeep
         )
     else:
-        xheep = load_cfg_file(
-            pathlib.PurePath(str(args.config)), system_factory=XHeep
-        )
+        xheep = load_cfg_file(pathlib.PurePath(str(args.config)), system_factory=XHeep)
 
     # We still need to load from the HJSON config the configuration options that are not yet supported in the Python model of X-HEEP
     with open(args.config, "r") as file:
