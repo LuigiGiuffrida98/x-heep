@@ -27,6 +27,7 @@ package testharness_pkg;
   localparam logic [31:0] SLOW_MEMORY0_IDX = 32'd0;
   localparam logic [31:0] SLOW_MEMORY1_IDX = 32'd1;
 
+
   localparam addr_map_rule_t [EXT_XBAR_NSLAVE-1:0] EXT_XBAR_ADDR_RULES = '{
       '{
           idx: SLOW_MEMORY0_IDX,
@@ -78,6 +79,7 @@ package testharness_pkg;
   localparam logic [31:0] DLC_SIZE = 32'h100;
   localparam logic [31:0] DLC_END_ADDRESS = DLC_START_ADDRESS + DLC_SIZE;
   localparam logic [31:0] DLC_IDX = 32'd5;
+
 
   localparam addr_map_rule_t [EXT_NPERIPHERALS-1:0] EXT_PERIPHERALS_ADDR_RULES = '{
       '{

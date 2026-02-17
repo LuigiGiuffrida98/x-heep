@@ -9,8 +9,6 @@ import UPF::*;
 
 
 module testharness #(
-    parameter bit FPU_SS_ZFINX                = 1,
-    parameter bit QUADRILATERO                = 0,
     parameter bit JTAG_DPI                    = 0,
     parameter bit USE_EXTERNAL_DEVICE_EXAMPLE = 1,
     parameter     CLK_FREQUENCY               = 'd100_000  //KHz
@@ -70,6 +68,10 @@ module testharness #(
 
   localparam EXT_DOMAINS_RND = core_v_mini_mcu_pkg::EXTERNAL_DOMAINS == 0 ? 1 : core_v_mini_mcu_pkg::EXTERNAL_DOMAINS;
   localparam NEXT_INT_RND = core_v_mini_mcu_pkg::NEXT_INT == 0 ? 1 : core_v_mini_mcu_pkg::NEXT_INT;
+
+  // CV-X-IF coprocessors configuration
+  localparam bit FPU_SS_ZFINX = 1'b0;
+  localparam bit QUADRILATERO = 1'b0;
 
   // Internal signals
   // ----------------
@@ -174,15 +176,8 @@ module testharness #(
   logic [EXT_DOMAINS_RND-1:0] external_ram_banks_set_retentive_n;
   logic [EXT_DOMAINS_RND-1:0] external_subsystem_clkgate_en_n;
 
-  // eXtension Interface
-  if_xif #(
-      .X_NUM_RS(fpu_ss_pkg::X_NUM_RS),
-      .X_ID_WIDTH(fpu_ss_pkg::X_ID_WIDTH),
-      .X_MEM_WIDTH(fpu_ss_pkg::X_MEM_WIDTH),
-      .X_RFR_WIDTH(fpu_ss_pkg::X_RFR_WIDTH),
-      .X_RFW_WIDTH(fpu_ss_pkg::X_RFW_WIDTH),
-      .X_MISA(fpu_ss_pkg::X_MISA)
-  ) ext_if ();
+  // CORE-V eXtension Interface (CV-X-IF)
+  if_xif ext_if ();  // unused
 
   // External SPC interface signals
   reg_req_t [AO_SPC_NUM_RND:0] ext_ao_peripheral_req;
@@ -669,6 +664,13 @@ module testharness #(
           .io3(spi_flash_sd_io[3])
       );
 
+      // FPU Subsystem
+      // -------------
+      // WARNING: CV32E20 currently only supports offloading two source operands to the coprocessor.
+      //          On the other hand, some instructions in the RISC-V "F" or "D" instructions use the
+      //          R4-type instruction format, with 3 source operands. One example is 'fmadd.s'. So
+      //          make sure not to use CV32E20 if you need a RV32F-compliant system. The FPU is
+      //          connected here just for testing purposes.
       if ((core_v_mini_mcu_pkg::CpuType == cv32e40x || core_v_mini_mcu_pkg::CpuType == cv32e40px || (FPU_SS_ZFINX && core_v_mini_mcu_pkg::CpuType == cv32e20)) && 0 && (QUADRILATERO == 0)) begin: gen_fpu_ss_wrapper
         fpu_ss_wrapper #(
             .PULP_ZFINX(FPU_SS_ZFINX),
@@ -691,6 +693,9 @@ module testharness #(
             .xif_result_if(ext_if)
         );
       end
+
+      // Quadrilatero
+      // ------------
       if ((core_v_mini_mcu_pkg::CpuType == cv32e40x || core_v_mini_mcu_pkg::CpuType == cv32e40px || core_v_mini_mcu_pkg::CpuType == cv32e20) && 0 && (QUADRILATERO != 0)) begin: gen_quadrilatero_wrapper
         quadrilatero_wrapper #(
             .MATRIX_FPU(0)
@@ -723,6 +728,7 @@ module testharness #(
         assign ext_master_req[testharness_pkg::EXT_MASTER7_IDX] = '0;
 
       end
+
 
     end else begin : gen_DONT_USE_EXTERNAL_DEVICE_EXAMPLE
       assign slow_ram_slave_resp[0].gnt = '0;
