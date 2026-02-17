@@ -1,10 +1,10 @@
-from x_heep_gen.xheep import XHeep
-from x_heep_gen.cpu.cv32e40px import cv32e40px
-from x_heep_gen.cv_x_if import CvXIf
-from x_heep_gen.bus_type import BusType
-from x_heep_gen.memory_ss.memory_ss import MemorySS
-from x_heep_gen.memory_ss.linker_section import LinkerSection
-from x_heep_gen.peripherals.base_peripherals import (
+from XheepGen.xheep import XHeep
+from XheepGen.cpu.cv32e40px import cv32e40px
+from XheepGen.cv_x_if import CvXIf
+from XheepGen.bus import BusType
+from XheepGen.memory_ss.memory_ss import MemorySS
+from XheepGen.memory_ss.linker_section import LinkerSection
+from XheepGen.peripherals.base_peripherals import (
     SOC_ctrl,
     Bootrom,
     SPI_flash,
@@ -18,10 +18,10 @@ from x_heep_gen.peripherals.base_peripherals import (
     GPIO_ao,
 )
 
-from x_heep_gen.peripherals.base_peripherals_domain import BasePeripheralDomain
-from x_heep_gen.peripherals.user_peripherals_domain import UserPeripheralDomain
+from XheepGen.peripherals.base_peripherals_domain import BasePeripheralDomain
+from XheepGen.peripherals.user_peripherals_domain import UserPeripheralDomain
 
-from x_heep_gen.peripherals.user_peripherals import (
+from XheepGen.peripherals.user_peripherals import (
     RV_plic,
     SPI_host,
     GPIO,
