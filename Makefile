@@ -52,9 +52,9 @@ LINKER ?= on_chip
 TARGET ?= sim
 
 # Mcu-gen configuration files
-X_HEEP_CFG  ?= configs/general.hjson
+X_HEEP_CFG  ?= 
 PADS_CFG ?= configs/pad_cfg.py
-PYTHON_X_HEEP_CFG ?=
+PYTHON_X_HEEP_CFG ?= configs/general.py
 
 # MCU-Gen template files to generate
 MCU_GEN_TEMPLATES = $(shell find . \( -path './hw/vendor' -o -path './util' -o -path './test' \) -prune -o -name '*.tpl' -print)
