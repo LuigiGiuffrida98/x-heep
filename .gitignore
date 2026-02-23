@@ -105,3 +105,4 @@ flow/OpenROAD-flow-scripts
 .continue
 private/
 .DS_Store
+tools/
