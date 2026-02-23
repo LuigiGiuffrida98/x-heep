@@ -2,12 +2,14 @@
 # author: Ludovic Blanc 
 # ludovic.blanc@epfl.ch
 # TCL EPFL 2026
-# Usage: source util/start_env_macos.zsh
+# Usage: source util/start_env.zsh
 
 # --- 1. Environment Detection ---
 # Determine the absolute path to the directory containing this script
 SCRIPT_DIR=$(cd -- "$(dirname -- "${(%):-%N}")" &> /dev/null && pwd)
 TOOLS_DIR=$(realpath "$SCRIPT_DIR/../tools")
+
+OS=$(uname -s)
 
 # --- 2. Conda Initialization ---
 if [ -z "$CONDA_EXE" ]; then
@@ -18,19 +20,23 @@ fi
 source "$CONDA_BASE/etc/profile.d/conda.sh"
 conda activate core-v-mini-mcu
 
-# --- 3. Dependency Paths (Homebrew) ---
-if command -v brew >/dev/null; then
-    LIBELF_PREFIX=$(brew --prefix libelf)
-    export C_INCLUDE_PATH="$LIBELF_PREFIX/include${C_INCLUDE_PATH:+:$C_INCLUDE_PATH}"
-    export LIBRARY_PATH="$LIBELF_PREFIX/lib${LIBRARY_PATH:+:$LIBRARY_PATH}"
+# --- 3. Dependency Paths ---
+if [[ "$OS" == "Darwin" ]]; then
+    # macOS: use Homebrew to locate libelf
+    if command -v brew >/dev/null; then
+        LIBELF_PREFIX=$(brew --prefix libelf)
+        export C_INCLUDE_PATH="$LIBELF_PREFIX/include${C_INCLUDE_PATH:+:$C_INCLUDE_PATH}"
+        export LIBRARY_PATH="$LIBELF_PREFIX/lib${LIBRARY_PATH:+:$LIBRARY_PATH}"
+    fi
 fi
+# On Linux, libelf headers/libs are in standard system paths via apt.
 
 # --- 4. Toolchain Exports ---
 export RISCV_XHEEP=$(realpath "$TOOLS_DIR/risc-v")
 
 # OSS CAD Suite Setup
 OSS_CAD_PATH="$TOOLS_DIR/oss-cad-suite"
-if [[ "$(uname)" == "Darwin" ]]; then
+if [[ "$OS" == "Darwin" ]]; then
     # Use the bundled realpath for macOS compatibility
     OSS_BIN_DIR="$("$OSS_CAD_PATH"/libexec/realpath "$OSS_CAD_PATH")/bin"
 else
@@ -44,10 +50,21 @@ VERILATOR_BIN=$(realpath "$TOOLS_DIR/verilator/bin")
 export PATH="$VERILATOR_BIN:$OSS_BIN_DIR:$PATH"
 
 # --- 5. Optional/SystemC Placeholder ---
-# Note: Ensure these variables are defined elsewhere or update the paths below
-if [ -n "$system_c_dir" ]; then
-    export SYSTEMC_INCLUDE="$system_c_dir/include"
-    export SYSTEMC_LIB="$system_c_dir/lib"
+if [[ "$OS" == "Darwin" ]]; then
+    # On macOS, SystemC is typically installed via Homebrew
+    if command -v brew >/dev/null; then
+        _sysc_prefix=$(brew --prefix systemc 2>/dev/null)
+        if [[ -n "$_sysc_prefix" && -d "$_sysc_prefix" ]]; then
+            export SYSTEMC_INCLUDE="$_sysc_prefix/include"
+            export SYSTEMC_LIB="$_sysc_prefix/lib"
+        fi
+    fi
+else
+    # On Linux, use user-provided paths if set
+    if [ -n "$system_c_dir" ]; then
+        export SYSTEMC_INCLUDE="$system_c_dir/include"
+        export SYSTEMC_LIB="$system_c_dir/lib"
+    fi
 fi
 
 if [ -n "$flex_dir" ]; then

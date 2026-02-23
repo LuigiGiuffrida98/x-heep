@@ -55,17 +55,19 @@ libfl2 libfl-dev zlibc zlib1g zlib1g-dev
 
 Links for the packages relative to each software can also be found under the corresponding section of this guide. In general, make sure to have a look at the [Check system requirements](https://opentitan.org/book/doc/getting_started/index.html) section of the OpenTitan documentation.
 
+The script `util/install_tools_and_conda_env.sh` can be used to install the required dependencies and set up the Conda environment on Linux. It uses `apt` to install the required packages and then sets up a Conda environment with the necessary Python dependencies. It also installs the CORE-V toolchain, Verilator and the oss-cad-suite. You can select the versions of the tools you want to install by changing the corresponding variables at the beginning of the script. After running the script, you can activate the environment with `source util/start_env.sh`.
+
 #### MacOS
-If you are using a MacOS with M series chip, you can use the `util/macos_install_tools_and_conda_env.zsh` script to install the required dependencies and set up the Conda environment. The script uses [Homebrew (make sure you have it installed)](https://brew.sh/) to install the required packages and then sets up a [Conda environment](https://conda-forge.org/download/) with the necessary Python dependencies. It also installs the CORE-V toolchain, Verilator and the oss-cad-suite. You can select the versions of the tools you want to install by changing the corresponding variables at the beginning of the script. After running the script, you can activate the environment with `source util/start_env_macos.zsh`.
+If you are using a MacOS with M series chip or intel chip, you can use the `util/install_tools_and_conda_env.zsh` script to install the required dependencies and set up the Conda environment. The script uses [Homebrew (make sure you have it installed)](https://brew.sh/) to install the required packages and then sets up a [Conda environment](https://conda-forge.org/download/) with the necessary Python dependencies. It also installs the CORE-V toolchain, Verilator and the oss-cad-suite. You can select the versions of the tools you want to install by changing the corresponding variables at the beginning of the script. After running the script, you can activate the environment with `source util/start_env.zsh`.
 
 ```zsh
-./util/macos_install_tools_and_conda_env.zsh
+./util/install_tools_and_conda_env.zsh
 ```
 
 then to use the environment:
 
 ```zsh
-source util/start_env_macos.zsh
+source util/start_env.zsh
 ```
 
 

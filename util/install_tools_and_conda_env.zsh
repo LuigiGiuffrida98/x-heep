@@ -218,7 +218,7 @@ if [[ "$RISCV_SKIP" == false ]]; then
     if [[ -n "$RISCV_DEST" ]]; then
         info "Downloading RISC-V toolchain to ${DIM}${RISCV_DEST}${RESET}..."
         info "This is a large download (~1.3 GB). The server can be slow."
-        mkdir -p "$(dirname "$RISCV_DEST")"
+        mkdir -p "$RISCV_DEST"
         if [[ "$RISCV_ARCHIVE_EXT" == "zip" ]]; then
             wget -q --show-progress "$RISCV_URL" -O riscv.zip
             info "Extracting (this may take a minute)..."
@@ -353,9 +353,5 @@ print -P "\n"
 print -P "${BOLD}${GREEN}╔══════════════════════════════════════════════╗${RESET}"
 print -P "${BOLD}${GREEN}║            Setup Complete!                   ║${RESET}"
 print -P "${BOLD}${GREEN}╚══════════════════════════════════════════════╝${RESET}"
-if [[ "$OS" == "Darwin" ]]; then
-    info "To activate:  ${BOLD}source util/start_env_macos.zsh${RESET}"
-else
-    info "To activate:  ${BOLD}conda activate core-v-mini-mcu${RESET}"
-fi
+info "To activate:  ${BOLD}source util/start_env.zsh${RESET}"
 echo
