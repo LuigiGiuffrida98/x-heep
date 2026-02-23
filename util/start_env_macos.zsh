@@ -26,7 +26,7 @@ if command -v brew >/dev/null; then
 fi
 
 # --- 4. Toolchain Exports ---
-export RISCV_XHEEP=$(realpath "$TOOLS_DIR/riscv-v")
+export RISCV_XHEEP=$(realpath "$TOOLS_DIR/risc-v")
 
 # OSS CAD Suite Setup
 OSS_CAD_PATH="$TOOLS_DIR/oss-cad-suite"
