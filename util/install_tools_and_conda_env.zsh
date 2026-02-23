@@ -218,14 +218,16 @@ if [[ "$RISCV_SKIP" == false ]]; then
     if [[ -n "$RISCV_DEST" ]]; then
         info "Downloading RISC-V toolchain to ${DIM}${RISCV_DEST}${RESET}..."
         info "This is a large download (~1.3 GB). The server can be slow."
-        mkdir -p "$RISCV_DEST"
+        mkdir -p "$(dirname "$RISCV_DEST")"
         if [[ "$RISCV_ARCHIVE_EXT" == "zip" ]]; then
             wget -q --show-progress "$RISCV_URL" -O riscv.zip
             info "Extracting (this may take a minute)..."
             run_quiet "RISC-V extract" unzip -q riscv.zip -d /tmp/riscv-extract
-            mv /tmp/riscv-extract/${RISCV_INNER_DIR} "$RISCV_DEST"
+            mkdir -p "$RISCV_DEST"
+            mv /tmp/riscv-extract/${RISCV_INNER_DIR}/* "$RISCV_DEST"/
             rm -rf /tmp/riscv-extract riscv.zip
         else
+            mkdir -p "$RISCV_DEST"
             wget -q --show-progress "$RISCV_URL" -O riscv.tar.gz
             run_quiet "RISC-V extract" tar -xzf riscv.tar.gz -C "$RISCV_DEST" --strip-components=1
             rm riscv.tar.gz
