@@ -100,7 +100,7 @@ if [[ "$PLATFORM" == "macos-arm64" ]]; then
 elif [[ "$PLATFORM" == "macos-x64" ]]; then
     OSS_CAD_URL="https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${OSS_CAD_DATE}/oss-cad-suite-darwin-x64-${OSS_CAD_DATE//-/}.tgz"
     VERIBLE_URL="https://github.com/chipsalliance/verible/releases/download/${VERIBLE_HASH}/verible-${VERIBLE_HASH}-macOS.tar.gz"
-    RISCV_URL="https://buildbot.embecosm.com/job/corev-gcc-macos/8/artifact/corev-openhw-gcc-macos-${RISCV_V_DATE}.zip"
+    RISCV_URL="https://buildbot.embecosm.com/job/corev-gcc-macos/48/artifact/corev-openhw-gcc-macos-${RISCV_V_DATE}.zip"
     RISCV_ARCHIVE_EXT="zip"
     RISCV_INNER_DIR="corev-openhw-gcc-macos-${RISCV_V_DATE}"
 else
