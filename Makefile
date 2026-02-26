@@ -150,7 +150,7 @@ verible: | .check-verible
 
 ## Runs black formating for python xheep generator files
 format-python:
-	$(PYTHON) -m black util/x_heep_gen
+	$(PYTHON) -m black util/xHeepGen
 	$(PYTHON) -m black util/periph_structs_gen
 	$(PYTHON) -m black util/mcu_gen.py
 	$(PYTHON) -m black util/waiver-gen.py
