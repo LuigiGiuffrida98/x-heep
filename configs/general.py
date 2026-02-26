@@ -6,6 +6,7 @@
 # Description: Generic (default) configuration for X-HEEP
 
 from XheepGen.xheep import XHeep
+from XheepGen.bus import Bus
 from XheepGen.cpu.cv32e20 import cv32e20
 from XheepGen.bus import BusType
 from XheepGen.memory_ss.memory_ss import MemorySS
@@ -41,8 +42,11 @@ from XheepGen.peripherals.user_peripherals import (
 )
 
 
+
 def config():
-    system = XHeep(BusType.onetoM)
+    bus = Bus(BusType.onetoM)
+
+    system = XHeep(bus)
     system.set_cpu(cv32e20(rv32e=False, rv32m="RV32MSlow"))
 
     memory_ss = MemorySS()

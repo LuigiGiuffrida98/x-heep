@@ -27,11 +27,10 @@ class XHeep(System):
 
     def __init__(
         self,
-        bus,
+        bus: Bus,
     ):
-        if isinstance(bus, BusType):
-            bus = Bus(bus)
-        super().__init__(bus)
+        super().__init__()
+        super().set_bus(bus)
         self._xif: Optional[CvXIf] = None
         self._memory_ss: Optional[MemorySS] = None
         self._base_peripheral_domain: Optional[BasePeripheralDomain] = None

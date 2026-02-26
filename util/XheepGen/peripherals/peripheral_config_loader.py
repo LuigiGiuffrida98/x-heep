@@ -4,9 +4,9 @@
 
 import hjson
 
-from XheepGen.peripherals.base_peripherals_domain import BasePeripheralDomain
-from XheepGen.peripherals.user_peripherals_domain import UserPeripheralDomain
-from XheepGen.peripherals.base_peripherals import (
+from ..peripherals.base_peripherals_domain import BasePeripheralDomain
+from ..peripherals.user_peripherals_domain import UserPeripheralDomain
+from ..peripherals.base_peripherals import (
     SOC_ctrl,
     Bootrom,
     SPI_flash,
