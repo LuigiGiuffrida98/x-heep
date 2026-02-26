@@ -140,7 +140,7 @@ jobs:
         with:
           options: "--check --verbose"
           src: >
-            util/x_heep_gen
+            util/XheepGen
             util/periph_structs_gen
             util/mcu_gen.py
             util/waiver-gen.py
