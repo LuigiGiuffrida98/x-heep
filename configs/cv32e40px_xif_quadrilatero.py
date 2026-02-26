@@ -2,6 +2,7 @@ from XheepGen.xheep import XHeep
 from XheepGen.cpu.cv32e40px import cv32e40px
 from XheepGen.cv_x_if import CvXIf
 from XheepGen.bus import BusType
+from XheepGen.bus import Bus
 from XheepGen.memory_ss.memory_ss import MemorySS
 from XheepGen.memory_ss.linker_section import LinkerSection
 from XheepGen.peripherals.base_peripherals import (
@@ -35,7 +36,8 @@ from XheepGen.peripherals.user_peripherals import (
 
 
 def config():
-    system = XHeep(BusType.NtoM)
+    bus = Bus(BusType.NtoM)
+    system = XHeep(bus)
     system.set_cpu(cv32e40px())
 
     system.set_xif(

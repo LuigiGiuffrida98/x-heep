@@ -29,12 +29,14 @@ from XheepGen.peripherals.user_peripherals import (
     I2S,
     UART,
 )
+from util.XheepGen.bus import Bus
 
 
 def config():
     # System without any user peripheral
 
-    system = XHeep(BusType.NtoM)
+    bus = Bus(BusType.NtoM)
+    system = XHeep(bus)
     system.set_cpu(CPU("cv32e20"))
 
     memory_ss = MemorySS()

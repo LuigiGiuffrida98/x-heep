@@ -1,6 +1,7 @@
 from XheepGen.xheep import XHeep
 from XheepGen.cpu.cpu import CPU
 from XheepGen.bus import BusType
+from XheepGen.bus import Bus
 from XheepGen.memory_ss.memory_ss import MemorySS
 from XheepGen.memory_ss.linker_section import LinkerSection
 from XheepGen.peripherals.base_peripherals_domain import BasePeripheralDomain
@@ -34,7 +35,8 @@ from XheepGen.peripherals.user_peripherals import (
 def config():
     # Usual system, with every peripheral except PDM2PCM
 
-    system = XHeep(BusType.NtoM)
+    bus = Bus(BusType.NtoM)
+    system = XHeep(bus)
     system.set_cpu(CPU("cv32e20"))
 
     memory_ss = MemorySS()
