@@ -42,7 +42,6 @@ from XheepGen.peripherals.user_peripherals import (
 )
 
 
-
 def config():
     bus = Bus(BusType.onetoM)
 
