@@ -29,7 +29,7 @@ from XheepGen.peripherals.user_peripherals import (
     I2S,
     UART,
 )
-from util.XheepGen.bus import Bus
+from XheepGen.bus import Bus
 
 
 def config():
