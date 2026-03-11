@@ -1,0 +1,18 @@
+// Copyright 2023 EPFL
+// Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+{
+  dma: {
+    upstream: {
+      url: "https://github.com/x-heep/xheep_dma.git",
+      rev: "3ef233c96bad9ed01fa90c197d6ccc8b9a822e4a",
+    },
+  },
+
+  i2s: {
+    upstream: {
+      url: "https://github.com/x-heep/xheep_i2s.git",
+      rev: "dc4bd79bd5609bbcdbab8e3809a3d3f7497582da",
+    },
+  },
+}

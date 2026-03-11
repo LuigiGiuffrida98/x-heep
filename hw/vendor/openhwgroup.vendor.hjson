@@ -1,0 +1,107 @@
+// Copyright 2020 OpenHW Group
+// Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+{
+  cv32e40p: {
+    upstream: {
+      url: "https://github.com/openhwgroup/cv32e40p.git",
+      rev: "a43277c0dc64c02be3f5d713438f315ecffde2b9",
+    },
+
+    patch_dir: "patches/openhwgroup_cv32e40p",
+
+    exclude_from_upstream: [
+      "ci",
+      ".github",
+      "example_tb",
+      "CONTRIBUTING.md",
+      "Bender.yml",
+      ".gitlab-ci.yml",
+      ".dir-locals.el",
+      "cv32e40p_manifest.flist",
+      "cv32e40p_fpu_manifest.flist",
+      "docs",
+      "rtl/vendor",
+      "scripts",
+    ]
+  },
+
+  cv32e40x: {
+    upstream: {
+      url: "https://github.com/openhwgroup/cv32e40x.git",
+      rev: "f17028f2369373d9443e4636f2826218e8d54e0f", # 0.9.0
+    },
+
+    patch_dir: "patches/openhwgroup_cv32e40x",
+
+    exclude_from_upstream: [
+      ".github",
+      "CONTRIBUTING.md",
+      ".dir-locals.el",
+      "cv32e40x_manifest.flist",
+      "docs",
+    ]
+  },
+
+  cv32e20: {
+    upstream: {
+      url: "https://github.com/openhwgroup/cve2.git",
+      rev: "b72358c73e39914c79568219c03b2d58e12119ba",
+    },
+
+    patch_dir: "patches/openhwgroup_cv32e20",
+
+    exclude_from_upstream: [
+      "ci",
+      "dv",
+      "examples",
+      "formal",
+      ".dir-locals.el",
+      "doc",
+      "shared",
+      "syn",
+      "util",
+      "scripts",
+      "vendor/eembc_coremark",
+      "vendor/eembc_coremark.lock.hjson",
+      "vendor/google_riscv-dv",
+      "vendor/google_riscv-dv.lock.hjson",
+      "vendor/google_riscv-dv.vendor.hjson",
+      "vendor/lowrisc_ip.lock.hjson",
+      "vendor/lowrisc_ip.vendor.hjson",
+      "vendor/patches",
+      "vendor/lowrisc_ip/ip",
+      "vendor/lowrisc_ip/lint",
+      "vendor/lowrisc_ip/util",
+      "vendor/lowrisc_ip/dv/tools",
+      "vendor/lowrisc_ip/dv/verilator",
+      "vendor/lowrisc_ip/dv/sv/common_ifs",
+      "vendor/lowrisc_ip/dv/sv/csr_utils",
+      "vendor/lowrisc_ip/dv/sv/dv_base_reg",
+      "vendor/lowrisc_ip/dv/sv/dv_lib",
+      "vendor/lowrisc_ip/dv/sv/mem_bkdr_util",
+      "vendor/lowrisc_ip/dv/sv/mem_model",
+      "vendor/lowrisc_ip/dv/sv/str_utils",
+      ".github",
+      "azure-pipelines.yml",
+      "check_tool_requirements.core",
+      ".clang-format",
+      "CONTRIBUTING.md",
+      "CREDITS.md",
+      ".gitignore",
+      "ibex_configs.yaml",
+      "LICENSE",
+      "Makefile",
+      "python-requirements.txt",
+      "README.md",
+      "src_files.yml",
+      ".svlint.toml",
+      "ibex_icache.core",
+      "ibex_multdiv.core",
+      "ibex_top.core",
+      "ibex_top_tracing.core",
+      "ibex_tracer.core",
+      "tool_requirements.py",
+    ]
+  },
+}

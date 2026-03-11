@@ -1,0 +1,248 @@
+// Copyright 2020 EPFL and OpenHW Group
+// Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+{
+  axi: {
+    upstream: {
+      url: "https://github.com/pulp-platform/axi.git",
+      rev: "78831b6feba265d5ee2683bbf42b4150f8a35c43",
+    },
+
+    patch_dir: "patches/pulp_platform_axi",
+
+    exclude_from_upstream: [
+      ".ci",
+      ".github",
+      ".gitlab-ci.d",
+      "scripts",
+      "test",
+    ]
+  },
+
+  axi_slice: {
+    upstream: {
+      url: "https://github.com/pulp-platform/axi_slice.git",
+      rev: "v1.1.4",
+    },
+
+    exclude_from_upstream: [
+      ".gitignore",
+      "Bender.yml",
+      "src_files.yml",
+      "CHANGELOG.md",
+    ]
+  },
+
+  cluster_interconnect: {
+    upstream: {
+      url: "https://github.com/davideschiavone/cluster_interconnect",
+      rev: "1bb8f5679d2085138b4197c03ee276d9ad6425c7",
+    },
+
+    exclude_from_upstream: [
+      "rtl/variable_latency_interconnect",
+      "rtl/peripheral_interco",
+      "rtl/core_demux",
+      "rtl/low_latency_interco",
+      "tb",
+      "Bender.yml",
+      "src_files.yml",
+      "doc",
+    ]
+  },
+
+  common_cells: {
+    upstream: {
+      url: "https://github.com/pulp-platform/common_cells.git",
+      rev: "v1.38.0",
+    },
+
+    patch_dir: "patches/pulp_platform_common_cells",
+
+    exclude_from_upstream: [
+      "test",
+      "ci",
+      "formal",
+    ]
+  },
+
+  fpnew: {
+    upstream: {
+      url: "https://github.com/pulp-platform/fpnew.git",
+      rev: "79e453139072df42c9ec8f697132ba485d74e23d",
+    },
+
+    exclude_from_upstream: [
+      ".gitignore",
+      ".gitmodules",
+      "CITATION.cff",
+      "README.md",
+      "Bender.yml",
+      "src/common_cells",
+      "src/fpu_div_sqrt_mvp",
+      "tb",
+      "ips_list.yml",
+      "src_files.yml",
+      "docs",
+      "util",
+      "vendor/opene906.lock.hjson",
+      "vendor/opene906.vendor.hjson",
+      "vendor/opene906/README.md",
+      "vendor/patches",
+    ]
+  },
+
+  fpu_ss: {
+    upstream: {
+      url: "https://github.com/pulp-platform/fpu_ss.git",
+      rev: "809e9a63e3b627f4908ba4189ed26bbf7209ba25",
+    },
+
+    patch_dir: "patches/pulp_platform_fpu_ss",
+
+    exclude_from_upstream: [
+      ".gitmodules",
+      "fpnew",
+    ]
+  },
+
+  gpio: {
+    upstream: {
+      url: "https://github.com/pulp-platform/gpio.git",
+      rev: "61b842818a2f2626032ea4b33925eef0c73d7874",
+    },
+
+    patch_dir: "patches/pulp_platform_gpio",
+  },
+
+  obi_spi_slave: {
+    upstream: {
+      url: "https://github.com/x-heep/obi_spi_slave.git",
+      rev: "f08cf8c9fe00316e58ea4674305407f41b076fd5",
+    },
+  },
+
+  pulpissimo: {
+    upstream: {
+      url: "https://github.com/pulp-platform/pulpissimo.git",
+      rev: "4c0f9e754b43cf4aaf0690b2e22c45a4904c3027",
+    },
+
+    patch_dir: "patches/pulp_platform_pulpissimo",
+
+    exclude_from_upstream: [
+      "Bender.lock",
+      "Bender.yml",
+      "boot",
+      "CHANGELOG.md",
+      "doc",
+      "env",
+      "fpga",
+      "LICENSE.md",
+      "Makefile",
+      "README.md",
+      "rtl/includes",
+      "rtl/pulpissimo",
+      "rtl/vip",
+      "rtl/tb/dpi_models",
+      "rtl/tb/jtag_pkg.sv",
+      "rtl/tb/pulpissimo_compliance_test.cfg",
+      "rtl/tb/pulpissimo_debug.cfg",
+      "rtl/tb/pulp_tap_pkg.sv",
+      "rtl/tb/README.md",
+      "rtl/tb/riscv_pkg.sv",
+      "rtl/tb/SimDTM.sv",
+      "rtl/tb/src_files.yml",
+      "rtl/tb/srec",
+      "rtl/tb/tb_clk_gen.sv",
+      "rtl/tb/tb_driver",
+      "rtl/tb/tb_pulp.sv",
+      "sdk-releases",
+      "setup",
+      "sim",
+      "spyglass",
+      "tests",
+      "update-tests",
+      "update-tests-gitlab",
+    ]
+  },
+
+  quadrilatero: {
+    upstream: {
+      url: "https://github.com/pulp-platform/quadrilatero.git",
+      rev: "ba58f85a496c0f86009331e97e90b12e7ee63f65",
+    },
+
+    patch_dir: "patches/pulp_platform_quadrilatero",
+
+    exclude_from_upstream: [
+      ".gitmodules",
+      "rtl/include/cv32e40x_pkg.sv",
+      "rtl/include/if_xif.sv",
+      "rtl/include/obi_pkg.sv",
+      "rtl/quadrilatero_mac_float.sv",
+    ]
+  },
+
+  register_interface: {
+    upstream: {
+      url: "https://github.com/pulp-platform/register_interface.git",
+      rev: "8e8c209ea559d3b54f45cf30fcce95ce70ff5e49",
+    },
+
+    exclude_from_upstream: [
+      ".github",
+      "lint",
+      "docs",
+      "vendor/lowrisc_opentitan.vendor.hjson",
+    ]
+  },
+
+  riscv_dbg: {
+    upstream: {
+      url: "https://github.com/pulp-platform/riscv-dbg.git",
+      rev: "618ee6e0e2610ef47e0dcc4df6748af3dffff731",
+    },
+
+    patch_dir: "patches/pulp_platform_riscv_dbg",
+
+    exclude_from_upstream: [
+      "ci",
+      "tb",
+      "sva",
+      "Bender.yml",
+    ]
+  },
+
+  serial_link: {
+    upstream: {
+      url: "https://github.com/pulp-platform/serial_link.git",
+      rev: "v1.1.2",
+    },
+
+    exclude_from_upstream: [
+      ".gitignore",
+      ".github",
+      "test",
+      "doc",
+      "util",
+      ".gitlab-ci.yml",
+      "Bender.yml",
+    ]
+  },
+
+  tech_cells_generic: {
+    upstream: {
+      url: "https://github.com/pulp-platform/tech_cells_generic.git",
+      rev: "fca524a1174f6363ba0e778f37b9f398257d4b8f",
+    },
+
+    patch_dir: "patches/pulp_platform_tech_cells_generic",
+
+    exclude_from_upstream: [
+      "scripts",
+      "ips_list.yml",
+      "Bender.yml",
+    ]
+  },
+}
