@@ -158,4 +158,12 @@
       rev: fca524a1174f6363ba0e778f37b9f398257d4b8f
     }
   }
+  spi:
+  {
+    upstream:
+    {
+      url: https://github.com/x-heep/xheep_spi.git
+      rev: c30eb7089e16384ca64af6e61129978c82e1bd6b
+    }
+  }
 }

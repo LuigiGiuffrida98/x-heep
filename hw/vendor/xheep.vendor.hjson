@@ -15,4 +15,11 @@
       rev: "dc4bd79bd5609bbcdbab8e3809a3d3f7497582da",
     },
   },
+
+  spi: {
+    upstream: {
+      url: "https://github.com/x-heep/xheep_spi.git",
+      rev: "main",
+    },
+  },
 }
