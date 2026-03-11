@@ -6,22 +6,6 @@
 // manually.
 
 {
-  dma:
-  {
-    upstream:
-    {
-      url: https://github.com/x-heep/xheep_dma.git
-      rev: 0211a4ab65793c130755a47f68c57f693b1e87a8
-    }
-  }
-  i2s:
-  {
-    upstream:
-    {
-      url: https://github.com/x-heep/xheep_i2s.git
-      rev: dc4bd79bd5609bbcdbab8e3809a3d3f7497582da
-    }
-  }
   cv32e40p:
   {
     upstream:
@@ -158,14 +142,6 @@
       rev: fca524a1174f6363ba0e778f37b9f398257d4b8f
     }
   }
-  spi:
-  {
-    upstream:
-    {
-      url: https://github.com/x-heep/xheep_spi.git
-      rev: 7e7705e925574092848c8bdc94ea04f6e8d96b9a
-    }
-  }
   lowrisc_opentitan:
   {
     upstream:
@@ -174,12 +150,28 @@
       rev: 47a0f4798febd9e53dd131ef8c8c2b0255d8c139
     }
   }
-  esl_epfl_cv32e40px:
+  dma:
   {
     upstream:
     {
-      url: https://github.com/x-heep/cv32e40px.git
-      rev: 1f75b23d2388c861cfc9660aee8a9961ea25134f
+      url: https://github.com/x-heep/xheep_dma.git
+      rev: 0211a4ab65793c130755a47f68c57f693b1e87a8
+    }
+  }
+  i2s:
+  {
+    upstream:
+    {
+      url: https://github.com/x-heep/xheep_i2s.git
+      rev: dc4bd79bd5609bbcdbab8e3809a3d3f7497582da
+    }
+  }
+  spi:
+  {
+    upstream:
+    {
+      url: https://github.com/x-heep/xheep_spi.git
+      rev: 7e7705e925574092848c8bdc94ea04f6e8d96b9a
     }
   }
   cv32e40px:
