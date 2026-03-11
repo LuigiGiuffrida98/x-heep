@@ -19,14 +19,14 @@ module spi_subsystem
     output obi_resp_t spimemio_resp_o,
 
     // Yosys SPI configuration
-    input  reg_req_t yo_reg_req_i,
-    output reg_rsp_t yo_reg_rsp_o,
+    input  reg_req_t  yo_reg_req_i,
+    output reg_rsp_t  yo_reg_rsp_o,
     // OpenTitan SPI configuration
-    input  reg_req_t ot_reg_req_i,
-    output reg_rsp_t ot_reg_rsp_o,
+    input  reg_req_t  ot_reg_req_i,
+    output reg_rsp_t  ot_reg_rsp_o,
     // w25q128jw flash controller configuration
-    input  reg_req_t flash_ctr_reg_req_i,
-    output reg_rsp_t flash_ctr_reg_rsp_o,
+    input  reg_req_t  flash_ctr_reg_req_i,
+    output reg_rsp_t  flash_ctr_reg_rsp_o,
 
     //dma hw controller
     output dma_reg_pkg::dma_hw2reg_t external_dma_hw2reg_o,
