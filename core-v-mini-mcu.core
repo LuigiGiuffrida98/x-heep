@@ -14,7 +14,6 @@ filesets:
     - openhwgroup.org:ip:cv32e40p
     - openhwgroup.org:ip:cv32e40x
     - openhwgroup:cve2:cve2_top
-    - esl_epfl:ip:cv32e40px
     - pulp-platform.org:ip:gpio
     - pulp-platform.org::common_cells
     - pulp-platform.org::axi:0.39.8
@@ -29,6 +28,7 @@ filesets:
     - lowrisc:ip:spi_host:1.0
     - lowrisc:ip:i2c:0.1
     - yosyshq:picorv32_spimemio:0-r1
+    - x-heep:ip:cv32e40px
     - x-heep:obi_spimemio:0.1.0
     - x-heep:ip:boot_rom
     - x-heep:ip:dma
