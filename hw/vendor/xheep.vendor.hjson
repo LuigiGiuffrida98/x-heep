@@ -19,7 +19,16 @@
   spi: {
     upstream: {
       url: "https://github.com/x-heep/xheep_spi.git",
-      rev: "main",
+      rev: "482c94423986908cfab30b90f73c848c84247d4c",
     },
+
+    exclude_from_upstream: [
+      ".gitignore",
+      "sw",
+      "util",
+      "vendor/pulp_platform",
+      "vendor/pulp_platform_register_interface.core",
+    ],
+
   },
 }
