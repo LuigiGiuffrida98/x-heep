@@ -19,7 +19,7 @@
   spi: {
     upstream: {
       url: "https://github.com/x-heep/xheep_spi.git",
-      rev: "482c94423986908cfab30b90f73c848c84247d4c",
+      rev: "7e7705e925574092848c8bdc94ea04f6e8d96b9a",
     },
 
     exclude_from_upstream: [

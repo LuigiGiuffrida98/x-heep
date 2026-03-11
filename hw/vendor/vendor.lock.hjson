@@ -163,7 +163,23 @@
     upstream:
     {
       url: https://github.com/x-heep/xheep_spi.git
-      rev: 482c94423986908cfab30b90f73c848c84247d4c
+      rev: 7e7705e925574092848c8bdc94ea04f6e8d96b9a
+    }
+  }
+  lowrisc_opentitan:
+  {
+    upstream:
+    {
+      url: https://github.com/lowRISC/opentitan.git
+      rev: 47a0f4798febd9e53dd131ef8c8c2b0255d8c139
+    }
+  }
+  esl_epfl_cv32e40px:
+  {
+    upstream:
+    {
+      url: https://github.com/x-heep/cv32e40px.git
+      rev: 1f75b23d2388c861cfc9660aee8a9961ea25134f
     }
   }
 }
