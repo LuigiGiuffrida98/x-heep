@@ -6,12 +6,9 @@
 // manually.
 
 {
-  axi:
+  upstream:
   {
-    upstream:
-    {
-      url: https://github.com/pulp-platform/axi.git
-      rev: 78831b6feba265d5ee2683bbf42b4150f8a35c43
-    }
+    url: https://github.com/pulp-platform/axi.git
+    rev: 78831b6feba265d5ee2683bbf42b4150f8a35c43
   }
 }

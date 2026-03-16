@@ -376,11 +376,20 @@ class Mapping:
 class LockDesc:
     """A class representing the contents of a lock file for a specific vendor"""
 
-    def __init__(self, handle, name):
+    def __init__(self, handle, name, use_named_entry=True):
         data = hjson.loads(handle.read(), use_decimal=True)
-        if name not in data:
-            raise KeyError(name)
-        vendor_data = data[name]
+        if use_named_entry:
+            if name not in data:
+                raise KeyError(name)
+            vendor_data = data[name]
+        else:
+            if "upstream" in data:
+                vendor_data = data
+            elif name in data:
+                vendor_data = data[name]
+            else:
+                raise KeyError(name)
+
         self.upstream = get_field(
             handle.name,
             "in vendor {!r}".format(name),
@@ -402,6 +411,11 @@ class Desc:
             return path.parent / p
 
         self.path = path
+        # Default lock-file behavior is one shared lock keyed by vendor name.
+        # parse_vendor_file() can override this for per-vendor single-entry
+        # files.
+        self.use_named_lock_entry = True
+        self._lock_file_override = None
         self.name = get_field(path, where, data, "name", expected_type=str)
         self.target_dir = get_field(
             path, where, data, "target_dir", expected_type=str, constructor=take_path
@@ -513,7 +527,14 @@ class Desc:
             # Single-entry format
             if module_filter and data.get("name") != module_filter:
                 return []
-            return [Desc(path, data, desc_overrides)]
+            desc = Desc(path, data, desc_overrides)
+            # Keep lock filename aligned with vendor filename.
+            # Example: foo.vendor.hjson -> foo.lock.hjson.
+            desc.use_named_lock_entry = False
+            vendor_suffix = ".vendor.hjson"
+            base_name = path.name[: -len(vendor_suffix)]
+            desc._lock_file_override = path.with_name(base_name + ".lock.hjson")
+            return [desc]
         else:
             # Multi-entry format: each key is a project
             vendor_name = path.name.rsplit(".", 2)[0]
@@ -530,7 +551,11 @@ class Desc:
                 project_data["name"] = project_name
                 if "target_dir" not in project_data:
                     project_data["target_dir"] = str(Path(vendor_name) / project_name)
-                descs.append(Desc(path, project_data, desc_overrides))
+                desc = Desc(path, project_data, desc_overrides)
+                # Multi-entry files share a single lock file.
+                desc.use_named_lock_entry = True
+                desc._lock_file_override = path.with_name("vendor.lock.hjson")
+                descs.append(desc)
 
             if module_filter and not descs:
                 raise JsonError(
@@ -557,8 +582,11 @@ class Desc:
             ref[split_keys[-1]] = value
 
     def lock_file_path(self):
-        desc_file_stem = self.path.name.rsplit('.', 2)[0]
-        return self.path.with_name(desc_file_stem + '.lock.hjson')
+        if self._lock_file_override is not None:
+            return self._lock_file_override
+
+        desc_file_stem = self.path.name.rsplit(".", 2)[0]
+        return self.path.with_name(desc_file_stem + ".lock.hjson")
 
     def import_from_upstream(self, upstream_path):
         log.info("Copying upstream sources to {}".format(self.target_dir))
@@ -727,7 +755,9 @@ def process_vendor(desc, args):
     # Try to load lock file
     try:
         with open(str(lock_file_path), "r") as lock_file:
-            lock = LockDesc(lock_file, desc.name)
+            lock = LockDesc(
+                lock_file, desc.name, use_named_entry=desc.use_named_lock_entry
+            )
     except (FileNotFoundError, KeyError):
         lock = None
 
@@ -815,7 +845,10 @@ def process_vendor(desc, args):
                     lock_data = hjson.loads(f.read(), use_decimal=True)
             vendor_entry = desc.upstream.as_dict()
             vendor_entry["rev"] = upstream_new_rev
-            lock_data[desc.name] = {"upstream": vendor_entry}
+            if desc.use_named_lock_entry:
+                lock_data[desc.name] = {"upstream": vendor_entry}
+            else:
+                lock_data = {"upstream": vendor_entry}
             with open(str(lock_file_path), "w", encoding="UTF-8") as f:
                 f.write(LOCK_FILE_HEADER)
                 hjson.dump(lock_data, f)

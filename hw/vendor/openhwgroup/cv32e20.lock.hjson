@@ -6,12 +6,9 @@
 // manually.
 
 {
-  cv32e20:
+  upstream:
   {
-    upstream:
-    {
-      url: https://github.com/openhwgroup/cve2.git
-      rev: b72358c73e39914c79568219c03b2d58e12119ba
-    }
+    url: https://github.com/openhwgroup/cve2.git
+    rev: b72358c73e39914c79568219c03b2d58e12119ba
   }
 }

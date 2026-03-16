@@ -6,12 +6,9 @@
 // manually.
 
 {
-  riscv_dbg:
+  upstream:
   {
-    upstream:
-    {
-      url: https://github.com/pulp-platform/riscv-dbg.git
-      rev: 618ee6e0e2610ef47e0dcc4df6748af3dffff731
-    }
+    url: https://github.com/pulp-platform/riscv-dbg.git
+    rev: 618ee6e0e2610ef47e0dcc4df6748af3dffff731
   }
 }

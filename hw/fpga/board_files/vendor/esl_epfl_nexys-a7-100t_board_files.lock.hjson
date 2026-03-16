@@ -6,12 +6,9 @@
 // manually.
 
 {
-  esl_epfl_nexys_a7_100t_board_files:
+  upstream:
   {
-    upstream:
-    {
-      url: https://github.com/esl-epfl/nexys-a7-100t_board_files.git
-      rev: 19e19ad6bd3b5a405d3e0ef98fee94e7e19e3bab
-    }
+    url: https://github.com/esl-epfl/nexys-a7-100t_board_files.git
+    rev: 19e19ad6bd3b5a405d3e0ef98fee94e7e19e3bab
   }
 }

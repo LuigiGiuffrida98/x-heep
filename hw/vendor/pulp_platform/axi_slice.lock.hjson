@@ -6,12 +6,9 @@
 // manually.
 
 {
-  axi_slice:
+  upstream:
   {
-    upstream:
-    {
-      url: https://github.com/pulp-platform/axi_slice.git
-      rev: a4f72bc21ac4d7da631e8309d9f8d0c34b735c23
-    }
+    url: https://github.com/pulp-platform/axi_slice.git
+    rev: a4f72bc21ac4d7da631e8309d9f8d0c34b735c23
   }
 }

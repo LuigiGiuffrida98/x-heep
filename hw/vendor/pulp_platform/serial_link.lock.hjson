@@ -6,12 +6,9 @@
 // manually.
 
 {
-  serial_link:
+  upstream:
   {
-    upstream:
-    {
-      url: https://github.com/pulp-platform/serial_link.git
-      rev: c55df03a1da06b00e567cf968b1b1a5f40c9f802
-    }
+    url: https://github.com/pulp-platform/serial_link.git
+    rev: c55df03a1da06b00e567cf968b1b1a5f40c9f802
   }
 }

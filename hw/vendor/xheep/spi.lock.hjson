@@ -6,12 +6,9 @@
 // manually.
 
 {
-  spi:
+  upstream:
   {
-    upstream:
-    {
-      url: https://github.com/x-heep/xheep_spi.git
-      rev: 0587eeee36834f2405d733ec51039c79d7df2081
-    }
+    url: https://github.com/x-heep/xheep_spi.git
+    rev: 0587eeee36834f2405d733ec51039c79d7df2081
   }
 }

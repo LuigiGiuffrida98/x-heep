@@ -6,12 +6,9 @@
 // manually.
 
 {
-  tech_cells_generic:
+  upstream:
   {
-    upstream:
-    {
-      url: https://github.com/pulp-platform/tech_cells_generic.git
-      rev: fca524a1174f6363ba0e778f37b9f398257d4b8f
-    }
+    url: https://github.com/pulp-platform/tech_cells_generic.git
+    rev: fca524a1174f6363ba0e778f37b9f398257d4b8f
   }
 }

@@ -6,12 +6,9 @@
 // manually.
 
 {
-  pulpissimo:
+  upstream:
   {
-    upstream:
-    {
-      url: https://github.com/pulp-platform/pulpissimo.git
-      rev: 4c0f9e754b43cf4aaf0690b2e22c45a4904c3027
-    }
+    url: https://github.com/pulp-platform/pulpissimo.git
+    rev: 4c0f9e754b43cf4aaf0690b2e22c45a4904c3027
   }
 }

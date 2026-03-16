@@ -6,12 +6,9 @@
 // manually.
 
 {
-  cv32e40p:
+  upstream:
   {
-    upstream:
-    {
-      url: https://github.com/openhwgroup/cv32e40p.git
-      rev: a43277c0dc64c02be3f5d713438f315ecffde2b9
-    }
+    url: https://github.com/openhwgroup/cv32e40p.git
+    rev: a43277c0dc64c02be3f5d713438f315ecffde2b9
   }
 }

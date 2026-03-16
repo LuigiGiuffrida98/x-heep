@@ -6,12 +6,9 @@
 // manually.
 
 {
-  quadrilatero:
+  upstream:
   {
-    upstream:
-    {
-      url: https://github.com/pulp-platform/quadrilatero.git
-      rev: ba58f85a496c0f86009331e97e90b12e7ee63f65
-    }
+    url: https://github.com/pulp-platform/quadrilatero.git
+    rev: ba58f85a496c0f86009331e97e90b12e7ee63f65
   }
 }

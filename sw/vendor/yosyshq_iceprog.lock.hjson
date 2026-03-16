@@ -6,12 +6,9 @@
 // manually.
 
 {
-  yosyshq_icetorm:
+  upstream:
   {
-    upstream:
-    {
-      url: https://github.com/YosysHQ/icestorm.git
-      rev: 2bc541743ada3542c6da36a50e66303b9cbd2059
-    }
+    url: https://github.com/YosysHQ/icestorm.git
+    rev: 2bc541743ada3542c6da36a50e66303b9cbd2059
   }
 }

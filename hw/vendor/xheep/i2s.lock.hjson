@@ -6,12 +6,9 @@
 // manually.
 
 {
-  i2s:
+  upstream:
   {
-    upstream:
-    {
-      url: https://github.com/x-heep/xheep_i2s.git
-      rev: dc4bd79bd5609bbcdbab8e3809a3d3f7497582da
-    }
+    url: https://github.com/x-heep/xheep_i2s.git
+    rev: dc4bd79bd5609bbcdbab8e3809a3d3f7497582da
   }
 }

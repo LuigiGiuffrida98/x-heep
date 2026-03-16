@@ -6,12 +6,9 @@
 // manually.
 
 {
-  fpu_ss:
+  upstream:
   {
-    upstream:
-    {
-      url: https://github.com/pulp-platform/fpu_ss.git
-      rev: 809e9a63e3b627f4908ba4189ed26bbf7209ba25
-    }
+    url: https://github.com/pulp-platform/fpu_ss.git
+    rev: 809e9a63e3b627f4908ba4189ed26bbf7209ba25
   }
 }
