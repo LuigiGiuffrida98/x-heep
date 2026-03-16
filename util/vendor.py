@@ -557,7 +557,8 @@ class Desc:
             ref[split_keys[-1]] = value
 
     def lock_file_path(self):
-        return self.path.with_name("vendor.lock.hjson")
+        desc_file_stem = self.path.name.rsplit('.', 2)[0]
+        return self.path.with_name(desc_file_stem + '.lock.hjson')
 
     def import_from_upstream(self, upstream_path):
         log.info("Copying upstream sources to {}".format(self.target_dir))
