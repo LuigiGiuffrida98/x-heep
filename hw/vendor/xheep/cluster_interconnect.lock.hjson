@@ -11,7 +11,7 @@
     upstream:
     {
       url: https://github.com/x-heep/cluster_interconnect.git
-      rev: 7d0a4f8acae71a583a6713cab5554e60b9bb8d27
+      rev: 1bb8f5679d2085138b4197c03ee276d9ad6425c7
     }
   }
 }

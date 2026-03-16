@@ -17,7 +17,6 @@ filesets:
     - pulp-platform.org:ip:gpio
     - pulp-platform.org::common_cells
     - pulp-platform.org::axi:0.39.8
-    - pulp-platform.org::cluster_interconnect
     - pulp-platform.org::riscv_dbg
     - pulp-platform.org::register_interface
     - pulp-platform.org::serial_link
@@ -35,6 +34,7 @@ filesets:
     - x-heep:ip:dma_subsystem
     - x-heep:ip:i2s
     - x-heep:ip:spi
+    - x-heep:ip:cluster_interconnect
     - x-heep:ip:power_manager
     - x-heep:ip:fast_intr_ctrl
     - x-heep:ip:obi_fifo
