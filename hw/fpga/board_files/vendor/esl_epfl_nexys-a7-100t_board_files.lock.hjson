@@ -14,20 +14,4 @@
       rev: 19e19ad6bd3b5a405d3e0ef98fee94e7e19e3bab
     }
   }
-  esl_epfl_pynq_z2_board_files:
-  {
-    upstream:
-    {
-      url: https://github.com/esl-epfl/pynq-z2_board_files.git
-      rev: ba76fe872870c815a5a8c9252dae2208c242847f
-    }
-  }
-  esl_epfl_zcu104_board_files:
-  {
-    upstream:
-    {
-      url: https://github.com/esl-epfl/zcu104_board_files.git
-      rev: 53e4affbaeec73809304940be8f5351ae147227a
-    }
-  }
 }
