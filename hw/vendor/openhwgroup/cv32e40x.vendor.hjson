@@ -6,18 +6,18 @@
   target_dir: "cv32e40x",
 
   upstream: {
-      url: "https://github.com/openhwgroup/cv32e40x.git",
-      rev: "f17028f2369373d9443e4636f2826218e8d54e0f", # 0.9.0
-    },
+    url: "https://github.com/openhwgroup/cv32e40x.git",
+    rev: "f17028f2369373d9443e4636f2826218e8d54e0f", # 0.9.0
+  },
 
-    patch_dir: "../patches/openhwgroup_cv32e40x",
+  patch_dir: "../patches/openhwgroup_cv32e40x",
 
-    exclude_from_upstream: [
-      ".github",
-      "CONTRIBUTING.md",
-      ".dir-locals.el",
-      "cv32e40x_manifest.flist",
-      "docs",
-    ]
+  exclude_from_upstream: [
+    ".github",
+    "CONTRIBUTING.md",
+    ".dir-locals.el",
+    "cv32e40x_manifest.flist",
+    "docs",
+  ]
 
 }
