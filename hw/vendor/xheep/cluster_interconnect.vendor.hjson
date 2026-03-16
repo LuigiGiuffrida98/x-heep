@@ -1,0 +1,24 @@
+// Copyright 2020 ETH Zurich and University of Bologna.
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+{
+  name: "cluster_interconnect",
+  target_dir: "cluster_interconnect",
+
+  upstream: {
+    url: "https://github.com/x-heep/cluster_interconnect.git",
+    rev: "7d0a4f8acae71a583a6713cab5554e60b9bb8d27",
+  },
+
+  exclude_from_upstream: [
+    "rtl/variable_latency_interconnect",
+    "rtl/peripheral_interco",
+    "rtl/core_demux",
+    "rtl/low_latency_interco",
+    "tb",
+    "Bender.yml",
+    "src_files.yml",
+    "doc",
+  ]
+
+}
