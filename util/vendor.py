@@ -324,10 +324,10 @@ class Mapping1:
         # shutil.copytree. This doesn't support files, though, so we have to
         # check for them first.
         if from_path.is_file():
-            shutil.copy(str(from_path), str(to_path))
+            shutil.copy(str(from_path), str(to_path), follow_symlinks=False)
         else:
             ignore = ignore_patterns(str(upstream_path), *exclude_files)
-            shutil.copytree(str(from_path), str(to_path), ignore=ignore)
+            shutil.copytree(str(from_path), str(to_path), ignore=ignore, symlinks=True)
 
         # Apply any patches to the copied files. If self.patch_dir is None,
         # there are none to apply. Otherwise, resolve it relative to patch_dir.
@@ -623,7 +623,7 @@ def refresh_patches(desc):
 
 def _export_patches(patchrepo_clone_url, target_patch_dir, upstream_rev, patched_rev):
     with tempfile.TemporaryDirectory() as clone_dir:
-        clone_git_repo(patchrepo_clone_url, clone_dir, patched_rev)
+        clone_git_repo(patchrepo_clone_url, clone_dir, patched_rev, recursive=False)
         rev_range = "origin/" + upstream_rev + ".." + "origin/" + patched_rev
         cmd = [
             "git",
@@ -657,32 +657,41 @@ def ignore_patterns(base_dir, *patterns):
     return _ignore_patterns
 
 
-def clone_git_repo(repo_url, clone_dir, rev="master"):
-    log.info("Cloning upstream repository %s @ %s", repo_url, rev)
+def clone_git_repo(repo_url, clone_dir, rev='master', recursive=False):
+    log.info('Cloning upstream repository %s @ %s', repo_url, rev)
 
     # Clone the whole repository
-    cmd = ["git", "clone", "--no-single-branch"]
+    cmd = ['git', 'clone', '--no-single-branch']
+
+    if recursive:
+        cmd.append('--recursive')
+
     if not verbose:
-        cmd += ["-q"]
+        cmd += ['-q']
     cmd += [repo_url, str(clone_dir)]
     subprocess.run(cmd, check=True)
 
     # Check out exactly the revision requested
-    cmd = ["git", "-C", str(clone_dir), "checkout", "--force", rev]
+    cmd = ['git', '-C', str(clone_dir), 'checkout', '--force', '--recurse-submodules', rev]
     if not verbose:
-        cmd += ["-q"]
+        cmd += ['-q']
     subprocess.run(cmd, check=True)
 
+    if recursive:
+        # Explicit update to ensure nested submodules are grabbed
+        cmd = ['git', '-C', str(clone_dir), 'submodule', 'update', '--init', '--recursive']
+        if not verbose:
+            cmd += ['-q']
+        subprocess.run(cmd, check=True)
+
     # Get revision information
-    cmd = ["git", "-C", str(clone_dir), "rev-parse", "HEAD"]
-    rev = subprocess.run(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        check=True,
-        universal_newlines=True,
-    ).stdout.strip()
-    log.info("Cloned at revision %s", rev)
+    cmd = ['git', '-C', str(clone_dir), 'rev-parse', 'HEAD']
+    rev = subprocess.run(cmd,
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE,
+                         check=True,
+                         universal_newlines=True).stdout.strip()
+    log.info('Cloned at revision %s', rev)
     return rev
 
 
@@ -773,7 +782,7 @@ def process_vendor(desc, args):
     with tempfile.TemporaryDirectory() as clone_dir:
         # clone upstream repository
         upstream_new_rev = clone_git_repo(
-            desc.upstream.url, clone_dir, rev=desc.upstream.rev
+            desc.upstream.url, clone_dir, rev=desc.upstream.rev, recursive=True
         )
 
         if not update:
