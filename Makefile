@@ -114,6 +114,10 @@ AREA_PLOT_RPT    ?= $(word 1, $(shell [ -d $(BUILD_DIR) ] && find $(BUILD_DIR) -
 AREA_PLOT_OUTDIR ?= $(BUILD_DIR)/area-plot/ # output directory for the area plot
 AREA_PLOT_TOP    ?=# top level module to consider for the area plot (automatically infer)
 
+# Vendored IPs
+VENDOR_FILES	:= $(shell find hw/vendor sw/vendor -maxdepth 2 -type f -name "*.vendor.hjson" -print)
+VENDOR_LOCKS	:= $(subst .vendor.hjson,.lock.hjson,$(VENDOR_FILES))
+
 # Export variables to sub-makefiles
 export
 
@@ -374,6 +378,16 @@ profile:
 .PHONY: area-plot
 area-plot:
 	$(AREA_PLOT) --filename $(AREA_PLOT_RPT) --out-dir $(AREA_PLOT_OUTDIR) --top-module $(AREA_PLOT_TOP)
+
+## @section Vendored IPs
+## Update the vendored IPs based on the .vendor.hjson description files
+.PHONY: vendor-update
+vendor-update: $(VENDOR_LOCKS)
+	python3 util/check-vendor.py
+
+$(VENDOR_LOCKS): %.lock.hjson: %.vendor.hjson util/vendor.py
+	@echo "### Updating vendored IP '$(notdir $*)'..."
+	python3 util/vendor.py -vU $<
 
 ## @section Cleaning commands
 
