@@ -134,7 +134,7 @@
     "hw/ip/prim_generic/prim_generic_pad_wrapper.core",
     "hw/ip/prim_generic/rtl/prim_generic_pad_attr.sv",
     "hw/ip/prim_generic/rtl/prim_generic_pad_wrapper.sv",
+    "util/lowrisc_misc-linters.vendor.hjson",
+    "util/lowrisc_misc-linters",
   ]
-
-
 }
