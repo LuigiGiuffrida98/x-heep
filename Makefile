@@ -34,6 +34,11 @@ RV_PROFILE  := $(shell which rv_profile)
 AREA_PLOT   := $(shell which area-plot)
 endif
 
+# RegTool and StructGen path
+REGTOOL 			?= $(PWD)/hw/vendor/pulp_platform/register_interface/vendor/lowrisc_opentitan/util/regtool.py
+PERIPH_STRUCTS_GEN 	?= $(PWD)/util/periph_structs_gen/periph_structs_gen.py
+TEMPLATE_FILE 		?= $(PWD)/util/periph_structs_gen/periph_structs.tpl
+
 # Build directories
 BUILD_DIR         = build
 FUSESOC_BUILD_DIR = $(shell find $(BUILD_DIR) -maxdepth 1 -type d -name 'openhwgroup.org_systems_core-v-mini-mcu_*' 2>/dev/null | sort -V | head -n 1)
@@ -141,8 +146,8 @@ mcu-gen:
 	bash -c "cd hw/ip/pdm2pcm; source pdm2pcm_gen.sh; cd ../../../"
 	bash -c "cd hw/system/pad_control; source pad_control_gen.sh; cd ../../../"
 	bash -c "cd hw/vendor/xheep/dma; source dma_gen.sh; cd ../../../"
-	bash -c "cd hw/ip/w25q128jw_controller; source w25q128jw_controller.sh; cd ../../../"
 	bash -c "cd hw/ip/boot_rom; make clean; make all; cd ../../../"
+	$(MAKE) -C hw/vendor/xheep/spi reg SW_DIR=$(PWD)/sw/device/lib/drivers/
 	$(MAKE) verible
 
 ## Display mcu_gen.py help
