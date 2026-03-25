@@ -158,15 +158,15 @@ mcu-gen-help:
 verible: | .check-verible
 	util/format-verible;
 
-## Runs black formating for python xheep generator files
+## Runs black formating for python files
 format-python:
 	$(PYTHON) -m black util/x_heep_gen
 	$(PYTHON) -m black util/periph_structs_gen
 	$(PYTHON) -m black util/mcu_gen.py
 	$(PYTHON) -m black util/waiver-gen.py
 	$(PYTHON) -m black util/c_gen.py
-	$(PYTHON) -m black configs
 	$(PYTHON) -m black test/test_x_heep_gen
+	$(PYTHON) -m black test/test_apps
 	$(PYTHON) -m black configs
 
 ## @section APP FW Build
