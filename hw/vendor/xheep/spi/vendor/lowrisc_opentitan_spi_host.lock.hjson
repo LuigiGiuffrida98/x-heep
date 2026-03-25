@@ -8,7 +8,7 @@
 {
   upstream:
   {
-    url: https://github.com/x-heep/xheep_spi.git
-    rev: 77bd2a05c40eaeb98db02414b67f17193b3684e9
+    url: https://github.com/x-heep/xheep_opentitan_spi_host.git
+    rev: 91acf0f3bf8d035a991360328b666081f4405780
   }
 }

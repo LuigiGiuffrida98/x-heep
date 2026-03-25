@@ -8,7 +8,7 @@
 {
   upstream:
   {
-    url: https://github.com/x-heep/xheep_spi.git
-    rev: 77bd2a05c40eaeb98db02414b67f17193b3684e9
+    url: https://github.com/YosysHQ/picorv32.git
+    rev: f00a88c36eaab478b64ee27d8162e421049bcc66
   }
 }
