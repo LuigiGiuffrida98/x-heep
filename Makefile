@@ -304,10 +304,10 @@ asic:
 	$(FUSESOC) --cores-root . run --no-export --target=asic_synthesis $(FUSESOC_FLAGS) --setup openhwgroup.org:systems:core-v-mini-mcu $(FUSESOC_PARAM) 2>&1 | tee builddesigncompiler.log
 
 openroad-sky130:
-	git checkout hw/vendor/pulp_platform_common_cells/*
-	sed -i 's/(\*[^\n]*\*)//g' hw/vendor/pulp_platform_common_cells/src/*.sv
+	git checkout hw/vendor/pulp_platform/common_cells/*
+	sed -i 's/(\*[^\n]*\*)//g' hw/vendor/pulp_platform/common_cells/src/*.sv
 	$(FUSESOC) --verbose --cores-root . run --target=asic_yosys_synthesis --flag=use_sky130 openhwgroup.org:systems:core-v-mini-mcu $(FUSESOC_PARAM) 2>&1 | tee buildopenroad.log
-	git checkout hw/vendor/pulp_platform_common_cells/*
+	git checkout hw/vendor/pulp_platform/common_cells/*
 
 ## @section Program, Execute, and Debug w/ EPFL_Programmer
 

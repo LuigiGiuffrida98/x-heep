@@ -116,11 +116,11 @@ filesets:
   rtl-sky130:
     files:
     - hw/asic/sky130/sram_wrapper.sv
-    - hw/vendor/openhwgroup_cv32e20/bhv/cve2_sim_clock_gate.sv #as for now use the simulation clk gating
-    - hw/vendor/openhwgroup_cv32e40p/bhv/cv32e40p_sim_clock_gate.sv
-    - hw/vendor/pulp_platform_tech_cells_generic/src/deprecated/pulp_clk_cells.sv #as for now use the simulation clk cells
-    - hw/vendor/pulp_platform_tech_cells_generic/src/deprecated/cluster_clk_cells.sv #as for now use the simulation clk cells
-    - hw/vendor/pulp_platform_tech_cells_generic/src/rtl/tc_clk.sv #as for now use the simulation clk cells
+    - hw/vendor/openhwgroup/cv32e20/bhv/cve2_sim_clock_gate.sv #as for now use the simulation clk gating
+    - hw/vendor/openhwgroup/cv32e40p/bhv/cv32e40p_sim_clock_gate.sv
+    - hw/vendor/pulp_platform/tech_cells_generic/src/deprecated/pulp_clk_cells.sv #as for now use the simulation clk cells
+    - hw/vendor/pulp_platform/tech_cells_generic/src/deprecated/cluster_clk_cells.sv #as for now use the simulation clk cells
+    - hw/vendor/pulp_platform/tech_cells_generic/src/rtl/tc_clk.sv #as for now use the simulation clk cells
     file_type: systemVerilogSource
 
   lib-sky130:
@@ -357,7 +357,7 @@ targets:
         - -define MODELSIM
         vsim_options:
         - -sv_lib ../../../hw/vendor/lowrisc_opentitan/hw/dv/dpi/uartdpi/uartdpi
-        - -sv_lib ../../../hw/vendor/pulp_platform_pulpissimo/rtl/tb/remote_bitbang/librbs
+        - -sv_lib ../../../hw/vendor/pulp_platform/pulpissimo/rtl/tb/remote_bitbang/librbs
         - -voptargs=+acc=npr
       vcs:
         vcs_options:
@@ -380,7 +380,7 @@ targets:
         xrun_options:
         - -vtimescale 1ns/10ps
         - -sv_lib ../../../hw/vendor/lowrisc_opentitan/hw/dv/dpi/uartdpi/uartdpi.so
-        - -sv_lib ../../../hw/vendor/pulp_platform_pulpissimo/rtl/tb/remote_bitbang/librbs.so
+        - -sv_lib ../../../hw/vendor/pulp_platform/pulpissimo/rtl/tb/remote_bitbang/librbs.so
         - -define XCELIUM
       verilator:
         mode: cc
