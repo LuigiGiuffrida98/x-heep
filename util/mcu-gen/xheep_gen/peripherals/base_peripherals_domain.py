@@ -39,8 +39,6 @@ class BasePeripheralDomain(PeripheralDomain):
         RV_timer_ao(),
         Fast_intr_ctrl(),
         Ext_peripheral(),
-        Pad_control(),
-        GPIO_ao(),
     ]
 
     def __init__(self, start_address: int = 0x20000000, length: int = 0x00100000):
@@ -120,6 +118,19 @@ class BasePeripheralDomain(PeripheralDomain):
         :rtype: DMA
         """
         return self.get_all_dmas()[0]
+
+    def get_power_manager(self):
+        """
+        Get the Power_manager peripheral.
+
+        :return: The Power_manager peripheral.
+        :rtype: Power_manager
+        """
+        for p in self._peripherals:
+            if isinstance(p, Power_manager):
+                return p
+
+        raise ValueError("No Power_manager peripheral found")
 
     def validate(self):
         """
