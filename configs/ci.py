@@ -5,13 +5,13 @@
 # Author(s): David Mallasen
 # Description: Configuration for X-HEEP for the CI tests.
 
-from x_heep_gen.xheep import XHeep
-from x_heep_gen.cpu.cpu import CPU
-from x_heep_gen.bus_type import BusType
-from x_heep_gen.memory_ss.memory_ss import MemorySS
-from x_heep_gen.memory_ss.linker_section import LinkerSection
-from x_heep_gen.memory_ss.linker_subsection import LinkerSubsection
-from x_heep_gen.peripherals.base_peripherals import (
+from xheep_gen.xheep import XHeep
+from xheep_gen.cpu.cpu import CPU
+from xheep_gen.bus_type import BusType
+from xheep_gen.memory_ss.memory_ss import MemorySS
+from xheep_gen.memory_ss.linker_section import LinkerSection
+from xheep_gen.memory_ss.linker_subsection import LinkerSubsection
+from xheep_gen.peripherals.base_peripherals import (
     SOC_ctrl,
     Bootrom,
     SPI_flash,
