@@ -64,10 +64,10 @@ PYTHON_X_HEEP_CFG ?=
 # MCU-Gen template files to generate
 MCU_GEN_TEMPLATES = $(shell find . \
   \( -path './hw/vendor/*' ! -path './hw/vendor/xheep' ! -path './hw/vendor/xheep/*' -o \
-     -path './util/*' -o \
+     -path './util/*' ! -path './util/profile' ! -path './util/profile/*' -o \
      -path './test/*' \) -prune -o \
   -name '*.tpl' -print)
-  
+
 # Optionally, additional external template files can be provided to mcu-gen
 EXTERNAL_MCU_GEN_TEMPLATES ?= 
 
