@@ -170,7 +170,6 @@ jobs:
           src: >
             util/mcu-gen
             util/periph_structs_gen
-            util/mcu_gen.py
             util/waiver-gen.py
             util/c_gen.py
             test/test_x_heep_gen
