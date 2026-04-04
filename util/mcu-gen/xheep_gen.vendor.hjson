@@ -10,4 +10,7 @@
     rev: "main",
   },
 
+  exclude_from_upstream: [
+    ".gitignore"
+  ],
 }
