@@ -5,9 +5,9 @@
 # Author(s): Juan Sapriza, David Mallasen
 # Description: Pad configuration for X-HEEP
 
-from x_heep_gen.pads.pad_ring import PadRing
-from x_heep_gen.pads.floorplan import Side
-from x_heep_gen.pads.pin import Input, Output, Inout
+from xheep_gen.pads.pad_ring import PadRing
+from xheep_gen.pads.floorplan import Side
+from xheep_gen.pads.pin import Input, Output, Inout
 
 
 def config() -> PadRing:

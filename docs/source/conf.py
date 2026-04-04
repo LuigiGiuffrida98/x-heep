@@ -42,8 +42,8 @@ html_logo = "images/x-heep-outline.png"
 
 epub_show_urls = "footnote"
 
-apidoc_module_dir = os.path.abspath("../../util/x_heep_gen")
-apidoc_output_dir = "Configuration/x_heep_gen"
+apidoc_module_dir = os.path.abspath("../../util/mcu-gen/xheep_gen")
+apidoc_output_dir = "Configuration/xheep_gen"
 apidoc_separate_modules = True
 apidoc_toc_file = "index"
 
