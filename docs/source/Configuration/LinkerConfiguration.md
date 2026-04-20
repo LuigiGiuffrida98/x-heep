@@ -133,8 +133,6 @@ input section `.foo`.
 
 There are are two functions to add linker sections:
 
-#### add_linker_section():
-
 ```{code} python
 memory_ss.add_linker_section(LinkerSection("data", 0x0000E800, None))
 memory_ss.add_linker_section(LinkerSection.by_size("code", 0x00000000, 0x0000E800))
@@ -145,7 +143,6 @@ The linker section fed to this function can be generated in two ways:
 - `LinkerSection.by_size()`: needs `name`, `start` and `size`
 
 Background checks make sure that there isn't any overlap between sections.
-
 
 ### Grouping multiple input sections inside one linker section
 
