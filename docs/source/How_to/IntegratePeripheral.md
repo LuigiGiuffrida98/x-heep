@@ -119,7 +119,7 @@ As said at the beginning of this guide, these steps are the same for any domain 
        // existing peripherals…
    }
    ```
-2. For Python configs, import a new class in `util/x_heep_gen/peripherals/user_peripherals.py` (or `base_peripherals.py` if mandatory):
+2. For Python configs, import a new class in `util/mcu-gen/xheep_gen/peripherals/user_peripherals.py` (or `base_peripherals.py` if mandatory):
    ```python
    class <peripheral>(UserPeripheral):
        _name = "<peripheral>"
