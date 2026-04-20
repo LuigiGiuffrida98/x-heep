@@ -181,7 +181,8 @@ This generates:
 ![Pad Dimensions](../images/padring_definitions.png)
 _The base of the image above is an example of the diagram generated. References to the dimensions were added on top._
 
-<a id="x-pert-zone"></a>
+<!-- MyST's cross-reference for the docs -->
+(x-pert-zone)=
 ## 😎 X-pert Zone (mostly for ASIC implementation)
 
 ### Custom Pad Attributes

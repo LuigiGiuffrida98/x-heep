@@ -239,7 +239,7 @@ extern uint8_t __coprocessor_end[];
 
 The generated linker section will look like this:
 
-```{code} ld
+```{code} text
   .data_interleaved :
   {
     . = ALIGN(4);

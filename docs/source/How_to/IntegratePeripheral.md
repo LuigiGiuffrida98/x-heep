@@ -1,6 +1,6 @@
 # Integrate a Peripheral IP
 
-This guide walks through the end-to-end flow to add a new memory-mapped peripheral to X-HEEP. We use the existing [`dlc`](../../../hw/ip_examples/dlc) IP as the blueprint because it exercises the full hardware, software, and tooling stack.
+This guide walks through the end-to-end flow to add a new memory-mapped peripheral to X-HEEP. We use the existing [`dlc`](https://github.com/x-heep/x-heep/tree/main/hw/ip_examples/dlc) IP as the blueprint because it exercises the full hardware, software, and tooling stack.
 
 Set up the X-HEEP environment by following the [Getting Started guide](../GettingStarted/Setup.md).
 
@@ -106,7 +106,7 @@ This is another crucial step in the integration of the peripheral. Please be awa
 As said at the beginning of this guide, these steps are the same for any domain you want to integrate the perihperal in, both `user peripherals` and `base peripherals`.
 
 1. Extend the configuration you built (HJSON or Python) with a new entry in the preferred domain. Example (`configs/general.hjson`):
-   ```hjson
+   ```js
    peripherals: {
        address: 0x30000000
        length:  0x00100000
@@ -121,8 +121,8 @@ As said at the beginning of this guide, these steps are the same for any domain 
    ```
 2. For Python configs, import a new class in `util/mcu-gen/xheep_gen/peripherals/user_peripherals.py` (or `base_peripherals.py` if mandatory):
    ```python
-   class <peripheral>(UserPeripheral):
-       _name = "<peripheral>"
+   class MyPeripheral(UserPeripheral):
+       _name = "my_peripheral"
    ```
    Instantiate the class in your config script and add it to the user domain before calling `build()`.
 3. If your IP generates an interrupt signal, extend the _interrupt list_ with it.
@@ -131,7 +131,7 @@ As said at the beginning of this guide, these steps are the same for any domain 
 This step is necessary only for `peripheral` domain IPs.
 ```
 
-```hjson
+```js
 interrupts: {
       number: 64 // Do not change this number!
       list: {
@@ -242,7 +242,7 @@ After updating all these templates, run `make mcu-gen` to regenerate them!
 3. Re-run `make mcu-gen` to propagate template changes before rebuilding bitstreams.
 
 ## 7. Provide Software Accessors
-In order to simplify the user experience, create a driver in `sw/device/lib/drivers/<peripheral>/`. We suggest taking as a reference the structure of [`sw/device/lib/drivers/dlc`](../../../sw/device/lib/drivers/dlc), but feel free to be inspired by any X-HEEP driver module. Typical contents:
+In order to simplify the user experience, create a driver in `sw/device/lib/drivers/<peripheral>/`. We suggest taking as a reference the structure of `sw/device/lib/drivers/dlc`, but feel free to be inspired by any X-HEEP driver module. Typical contents:
    - `<peripheral>.c` / `<peripheral>.h` – MMIO helper functions.
    - `<peripheral>.h` (generated earlier via `regtool`).
    - `<peripheral>_structs.h` – emitted by `util/structs_periph_gen.py` if needed.
