@@ -124,8 +124,8 @@ section names at once, use the Python configuration API described below.
 The Python API gives full control over linker sections through `LinkerSection`.
 
 ```{code} python
-from xheep_gen.memory_ss.linker_section import LinkerSection
-from xheep_gen.memory_ss.linker_subsection import LinkerSubsection
+from memory_ss.linker_section import LinkerSection
+from memory_ss.linker_subsection import LinkerSubsection
 ```
 
 Without extra arguments, a Python `LinkerSection("foo", ...)` behaves like the HJSON flow and collects the
@@ -200,9 +200,9 @@ The groups are emitted in the order in which they are listed.
 In this example, we need to have 2 sub-sections in an interleaved memory region, one for our coprocessor code, the other for its data.
 
 ```{code} python
-from xheep_gen.memory_ss.memory_ss import MemorySS
-from xheep_gen.memory_ss.linker_section import LinkerSection
-from xheep_gen.memory_ss.linker_subsection import LinkerSubsection
+from memory_ss.memory_ss import MemorySS
+from memory_ss.linker_section import LinkerSection
+from memory_ss.linker_subsection import LinkerSubsection
 
 memory_ss = MemorySS()
 

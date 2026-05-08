@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 <%!
-    from xheep_gen.pads.pin import PinDigital
+    from pads.pin import PinDigital
 %>
 
 <%
