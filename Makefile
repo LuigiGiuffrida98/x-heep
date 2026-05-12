@@ -120,7 +120,7 @@ AREA_PLOT_OUTDIR ?= $(BUILD_DIR)/area-plot/ # output directory for the area plot
 AREA_PLOT_TOP    ?=# top level module to consider for the area plot (automatically infer)
 
 # Vendored IPs
-VENDOR_FILES	:= $(shell find hw/vendor sw/vendor -maxdepth 2 -type f -name "*.vendor.hjson" -print)
+VENDOR_FILES	:= $(shell find hw/vendor sw/vendor util -maxdepth 2 -type f -name "*.vendor.hjson" -print)
 VENDOR_LOCKS	:= $(subst .vendor.hjson,.lock.hjson,$(VENDOR_FILES))
 
 # Export variables to sub-makefiles
