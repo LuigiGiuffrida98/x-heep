@@ -67,9 +67,7 @@ def generate_xheep(args):
     # If using the Python config file, the HJSON parameters that are supported by Python will be ignored
     # except for the peripherals. Any peripheral not configured in Python will be added from the HJSON config.
     if args.python_config != None and args.python_config != "":
-        xheep = load_config.load_cfg_file(
-            pathlib.PurePath(str(args.python_config))
-        )
+        xheep = load_config.load_cfg_file(pathlib.PurePath(str(args.python_config)))
     else:
         xheep = load_config.load_cfg_file(pathlib.PurePath(str(args.config)))
 
