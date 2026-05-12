@@ -168,7 +168,7 @@ jobs:
         with:
           options: "--check --verbose"
           src: >
-            util/mcu-gen
+            util/xheep_gen
             util/periph_structs_gen
             util/waiver-gen.py
             util/c_gen.py
