@@ -3,7 +3,7 @@ import pathlib
 
 # Mix of stack overflow comments, it adds "x-heep/util" to the python path (to import mcu_gen, and also xheep_gen (needed by mcu_gen))
 directory = pathlib.Path(__file__).resolve().parent.parent.parent
-sys.path.append(str(directory.joinpath("util/mcu-gen")))
+sys.path.append(str(directory.joinpath("util/xheep_gen")))
 
 import mcu_gen
 import os

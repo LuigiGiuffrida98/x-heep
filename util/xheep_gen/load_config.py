@@ -12,7 +12,7 @@ from memory_ss.memory_ss import MemorySS
 from memory_ss.linker_section import LinkerSection
 from memory_ss.linker_subsection import LinkerSubsection
 from peripherals.peripheral_config_loader import load_peripherals_config
-from xheep import BusType, XHeep, CvXIf
+from xheep import BusType, XHeep, CvXIf, PadRing
 
 
 def to_int(input) -> Union[int, None]:
