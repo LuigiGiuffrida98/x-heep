@@ -14,24 +14,22 @@ export FILE_FOR_HELP=$(mkfile_path)/Makefile
 help:
 	${mkfile_path}/util/MakefileHelp
 
-# Setup to autogenerate python virtual environment
-VENVDIR?=$(WORKDIR)/.venv
-REQUIREMENTS_TXT ?= util/python-requirements.txt docs/python-requirements.txt
-include Makefile.venv
+# Conda environment name
+CONDA_ENV ?= core-v-mini-mcu
 
-# FUSESOC and Python values (default)
-ifndef CONDA_DEFAULT_ENV
-$(info USING VENV)
-FUSESOC 	= $(PWD)/$(VENV)/fusesoc
-PYTHON  	= $(PWD)/$(VENV)/python
-RV_PROFILE 	= $(PWD)/$(VENV)/rv_profile
-AREA_PLOT  	= $(PWD)/$(VENV)/area-plot
-else
+# FUSESOC and Python values
+ifdef CONDA_DEFAULT_ENV
 $(info USING MINICONDA $(CONDA_DEFAULT_ENV))
-FUSESOC 	:= $(shell which fusesoc)
-PYTHON  	:= $(shell which python)
-RV_PROFILE  := $(shell which rv_profile)
-AREA_PLOT   := $(shell which area-plot)
+FUSESOC    := $(shell which fusesoc)
+PYTHON     := $(shell which python)
+RV_PROFILE := $(shell which rv_profile)
+AREA_PLOT  := $(shell which area-plot)
+else
+$(info USING MINICONDA $(CONDA_ENV) via conda run)
+FUSESOC    := conda run --no-capture-output -n $(CONDA_ENV) fusesoc
+PYTHON     := conda run --no-capture-output -n $(CONDA_ENV) python
+RV_PROFILE := conda run --no-capture-output -n $(CONDA_ENV) rv_profile
+AREA_PLOT  := conda run --no-capture-output -n $(CONDA_ENV) area-plot
 endif
 
 # RegTool and StructGen path
@@ -69,7 +67,11 @@ MCU_GEN_TEMPLATES = $(shell find . \
   -name '*.tpl' -print)
 
 # Optionally, additional external template files can be provided to mcu-gen
-EXTERNAL_MCU_GEN_TEMPLATES ?= 
+EXTERNAL_MCU_GEN_TEMPLATES ?=
+
+# Sources that trigger MCU regeneration
+MCU_GEN_SOURCES = $(MCU_GEN_TEMPLATES) $(shell find configs -type f -not -path '*/__pycache__/*')
+MCU_GEN_STAMP   := build/.mcu-gen-stamp
 
 # Compiler options are 'gcc' (default) and 'clang'
 COMPILER 		?= gcc
@@ -138,6 +140,64 @@ conda:
 
 ## @section Installation
 
+# ============================================================================
+# IP Gen Stamps (incremental: each script reruns only when its .hjson changes)
+# ============================================================================
+
+# Macro for IP scripts under hw/ip/<name>/<name>_gen.sh, keyed on data/*.hjson
+define IP_GEN_SCRIPT
+build/.gen-$(1)-stamp: hw/ip/$(1)/data/$(1).hjson $(MCU_GEN_STAMP)
+	@mkdir -p $$(dir $$@)
+	bash -c "cd hw/ip/$(1); source $(1)_gen.sh"
+	@touch $$@
+
+IP_GEN_STAMPS += build/.gen-$(1)-stamp
+endef
+
+IP_GEN_STAMPS :=
+$(foreach p,soc_ctrl power_manager pdm2pcm,$(eval $(call IP_GEN_SCRIPT,$(p))))
+
+build/.gen-pad_control-stamp: hw/system/pad_control/data/pad_control.hjson $(MCU_GEN_STAMP)
+	@mkdir -p $(dir $@)
+	bash -c "cd hw/system/pad_control; source pad_control_gen.sh"
+	@touch $@
+
+build/.gen-dma-stamp: hw/vendor/xheep/dma/data/dma.hjson $(MCU_GEN_STAMP)
+	@mkdir -p $(dir $@)
+	bash -c "cd hw/vendor/xheep/dma; source dma_gen.sh"
+	@touch $@
+
+BOOT_ROM_SOURCES := $(wildcard hw/ip/boot_rom/*.S hw/ip/boot_rom/*.c hw/ip/boot_rom/gen_rom.py hw/ip/boot_rom/link.ld)
+build/.gen-boot_rom-stamp: $(BOOT_ROM_SOURCES)
+	@mkdir -p $(dir $@)
+	$(MAKE) -C hw/ip/boot_rom clean all
+	@touch $@
+
+build/.gen-spi-stamp: hw/vendor/xheep/spi/rtl/w25q128jw_controller/data/w25q128jw_controller.hjson
+	@mkdir -p $(dir $@)
+	$(MAKE) -C hw/vendor/xheep/spi reg SW_DIR=$(mkfile_path)/sw/device/lib/drivers/
+	@touch $@
+
+ALL_GEN_STAMPS := $(IP_GEN_STAMPS) \
+                  build/.gen-pad_control-stamp \
+                  build/.gen-dma-stamp \
+                  build/.gen-boot_rom-stamp \
+                  build/.gen-spi-stamp
+
+## Regenerate all IP gen scripts (incremental: only stale .hjson)
+.PHONY: gen-ip
+gen-ip: $(ALL_GEN_STAMPS)
+
+## @section MCU Code Generation
+
+# Stamp-based target: regenerates only when tpl or configs files change
+$(MCU_GEN_STAMP): $(MCU_GEN_SOURCES)
+	@mkdir -p $(dir $@)
+	$(PYTHON) util/xheep_gen/mcu_gen.py --config $(X_HEEP_CFG) --python_config $(PYTHON_X_HEEP_CFG) --pads_cfg $(PADS_CFG) --outtpl "$(MCU_GEN_TEMPLATES)" --externaltpl "$(EXTERNAL_MCU_GEN_TEMPLATES)" --cpu $(CPU) --bus $(BUS) --memorybanks $(MEMORY_BANKS) --memorybanks_il $(MEMORY_BANKS_IL)
+	$(MAKE) verible
+	$(MAKE) format-python
+	@touch $@
+
 ## Generates mcu files core-v-mini-mcu files and build the design with fusesoc
 ## @param CPU=[cv32e20(default),cv32e40p,cv32e40x,cv32e40px]
 ## @param BUS=[onetoM(default),NtoM]
@@ -145,17 +205,11 @@ conda:
 ## @param MEMORY_BANKS_IL=[0(default),2,4,8]
 ## @param X_HEEP_CFG=[configs/general.hjson(default),<path-to-config-file>]
 ## @param PYTHON_X_HEEP_CFG=[configs/general.py(default),<path-to-config-file>]
+.PHONY: mcu-gen
 mcu-gen:
-	$(PYTHON) util/xheep_gen/mcu_gen.py --config $(X_HEEP_CFG) --python_config $(PYTHON_X_HEEP_CFG) --pads_cfg $(PADS_CFG) --outtpl "$(MCU_GEN_TEMPLATES)" --externaltpl "$(EXTERNAL_MCU_GEN_TEMPLATES)" --cpu $(CPU) --bus $(BUS) --memorybanks $(MEMORY_BANKS) --memorybanks_il $(MEMORY_BANKS_IL)
-	bash -c "cd hw/ip/soc_ctrl; source soc_ctrl_gen.sh; cd ../../../"
-	bash -c "cd hw/ip/power_manager; source power_manager_gen.sh; cd ../../../"
-	bash -c "cd hw/ip/pdm2pcm; source pdm2pcm_gen.sh; cd ../../../"
-	bash -c "cd hw/system/pad_control; source pad_control_gen.sh; cd ../../../"
-	bash -c "cd hw/vendor/xheep/dma; source dma_gen.sh; cd ../../../"
-	bash -c "cd hw/ip/boot_rom; make clean; make all; cd ../../../"
-	$(MAKE) -C hw/vendor/xheep/spi reg SW_DIR=$(mkfile_path)/sw/device/lib/drivers/
-	$(MAKE) verible
-	$(MAKE) format-python
+	@rm -f $(MCU_GEN_STAMP)
+	@$(MAKE) $(MCU_GEN_STAMP)
+	@$(MAKE) gen-ip
 
 ## Display mcu_gen.py help
 mcu-gen-help:
@@ -208,15 +262,15 @@ app-list:
 ## @section Simulation
 
 ## Verilator simulation with C++
-verilator-build: | .check-verilator
+verilator-build: $(MCU_GEN_STAMP) $(ALL_GEN_STAMPS) | .check-verilator
 	$(FUSESOC) --cores-root . run --no-export --target=sim --tool=verilator $(FUSESOC_FLAGS) --build openhwgroup.org:systems:core-v-mini-mcu $(FUSESOC_PARAM) 2>&1 | tee buildsim.log
 
 ## Verilator simulation with SystemC
-verilator-build-sc: | .check-verilator
+verilator-build-sc: $(MCU_GEN_STAMP) $(ALL_GEN_STAMPS) | .check-verilator
 	$(FUSESOC) --cores-root . run --no-export --target=sim_sc --tool=verilator $(FUSESOC_FLAGS) --build openhwgroup.org:systems:core-v-mini-mcu $(FUSESOC_PARAM) 2>&1 | tee buildsim.log
 
 ## Questasim simulation
-questasim-build:
+questasim-build: $(MCU_GEN_STAMP) $(ALL_GEN_STAMPS)
 	$(FUSESOC) --cores-root . run --no-export --target=sim --tool=modelsim $(FUSESOC_FLAGS) --build openhwgroup.org:systems:core-v-mini-mcu $(FUSESOC_PARAM) 2>&1 | tee buildsim.log
 
 ## Questasim simulation with HDL optimized compilation
@@ -231,20 +285,20 @@ questasim-build-opt-upf: questasim-build
 ## VCS simulation
 ## @param CPU=cv32e20(default),cv32e40p,cv32e40x,cv32e40px
 ## @param BUS=onetoM(default),NtoM
-vcs-build:
+vcs-build: $(MCU_GEN_STAMP) $(ALL_GEN_STAMPS)
 	$(FUSESOC) --cores-root . run --no-export --target=sim --tool=vcs $(FUSESOC_FLAGS) --build openhwgroup.org:systems:core-v-mini-mcu $(FUSESOC_PARAM) 2>&1 | tee buildsim.log
 
 ## VCS-AMS simulation:
-vcs-ams-build:
+vcs-ams-build: $(MCU_GEN_STAMP) $(ALL_GEN_STAMPS)
 	$(FUSESOC) --cores-root . run --no-export --target=sim --flag "ams_sim" --tool=vcs $(FUSESOC_FLAGS) --build openhwgroup.org:systems:core-v-mini-mcu $(FUSESOC_PARAM) 2>&1 | tee buildsim.log
 
 ## xcelium simulation
-xcelium-build:
+xcelium-build: $(MCU_GEN_STAMP) $(ALL_GEN_STAMPS)
 	$(FUSESOC) --cores-root . run --no-export --target=sim --tool=xcelium $(FUSESOC_FLAGS) --build openhwgroup.org:systems:core-v-mini-mcu $(FUSESOC_PARAM) 2>&1 | tee buildsim.log
 
 ## Generates the build output for helloworld application
 ## Uses verilator to simulate the HW model and run the FW
-verilator-run-helloworld: mcu-gen verilator-build
+verilator-run-helloworld: $(MCU_GEN_STAMP) verilator-build
 	$(MAKE) -C sw PROJECT=hello_world TARGET=$(TARGET) LINKER=$(LINKER) COMPILER=$(COMPILER) COMPILER_PREFIX=$(COMPILER_PREFIX) ARCH=$(ARCH);
 	$(FUSESOC) --cores-root . run --no-export --target=sim --tool=verilator $(FUSESOC_FLAGS) --run openhwgroup.org:systems:core-v-mini-mcu $(FUSESOC_PARAM) \
 		--run_options="+firmware=../../../sw/build/main.hex $(SIM_ARGS)"
