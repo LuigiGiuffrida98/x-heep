@@ -7,11 +7,13 @@
 %>
 
 module spi_subsystem #(
+    // DMA number of channels
+    parameter int unsigned DMA_CH_NUM = 'd1,
     // OBI and Register Interface data types
-    parameter type obi_req_t = xheep_obi_pkg::xheep_obi_req_t,
-    parameter type obi_rsp_t = xheep_obi_pkg::xheep_obi_rsp_t,
-    parameter type reg_req_t = xheep_reg_pkg::xheep_reg_req_t,
-    parameter type reg_rsp_t = xheep_reg_pkg::xheep_reg_rsp_t
+    parameter type obi_req_t = logic,
+    parameter type obi_rsp_t = logic,
+    parameter type reg_req_t = logic,
+    parameter type reg_rsp_t = logic
 ) (
     input logic clk_i,
     input logic rst_ni,
@@ -20,7 +22,7 @@ module spi_subsystem #(
 
     // Memory mapped SPI
     input  obi_req_t  spimemio_req_i,
-    output obi_rsp_t  spimemio_resp_o,
+    output obi_resp_t spimemio_resp_o,
 
     // Yosys SPI configuration
     input  reg_req_t  yo_reg_req_i,
@@ -37,8 +39,8 @@ module spi_subsystem #(
     // flash controller interrupt
     output logic w25q128jw_controller_intr_o,
 
-    input logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] dma_ready_i,
-    input logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] dma_done_i,
+    input logic [DMA_CH_NUM-1:0] dma_ready_i,
+    input logic [DMA_CH_NUM-1:0] dma_done_i,
 
     // SPI Interface
     output logic                               spi_flash_sck_o,
@@ -57,8 +59,6 @@ module spi_subsystem #(
     output logic spi_flash_rx_valid_o,
     output logic spi_flash_tx_ready_o
 );
-  import core_v_mini_mcu_pkg::*;
-
   // OpenTitan SPI Interface
   logic                               ot_spi_sck;
   logic                               ot_spi_sck_en;
@@ -120,12 +120,7 @@ module spi_subsystem #(
   assign yo_spi_csb_en = 2'b01;
   assign yo_spi_csb[1] = 1'b1;
 
-  obi_spimemio #(
-    .obi_req_t(obi_req_t),
-    .obi_rsp_t(obi_rsp_t),
-    .reg_req_t(reg_req_t),
-    .reg_rsp_t(reg_rsp_t)
-  ) obi_spimemio_i (
+  obi_spimemio obi_spimemio_i (
       .clk_i,
       .rst_ni,
       .flash_csb_o(yo_spi_csb[0]),
@@ -180,6 +175,7 @@ module spi_subsystem #(
   );
 
   w25q128jw_controller #(
+      .DMA_CH_NUM(DMA_CH_NUM),
       .reg_req_t(reg_req_t),
       .reg_rsp_t(reg_rsp_t)
   ) w25q128jw_controller_i (
@@ -210,7 +206,7 @@ module spi_subsystem #(
   assign w25q128jw_controller_intr_o = '0;
   assign flash_ctr_reg_rsp_o = '0;
   assign external_dma_hw2reg_o = '0;
-  logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] dma_ready_unused = dma_ready_i;
+  logic [DMA_CH_NUM-1:0] dma_ready_unused = dma_ready_i;
   spi_host_reg_pkg::spi_host_hw2reg_status_reg_t external_spi_host_hw2reg_status_unused = external_spi_host_hw2reg_status;
 % endif
 
