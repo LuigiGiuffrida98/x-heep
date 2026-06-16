@@ -341,13 +341,13 @@ module ao_peripheral_subsystem
 
 % if base_peripheral_domain.contains_peripheral('spi_flash'):
   /* SPI subsystem */
-  spi_subsystem spi_subsystem_i #(
-    .DMA_CH_NUM(core_v_mini_mcu::DMA_CH_NUM),
+  spi_subsystem #(
+    .DMA_CH_NUM(core_v_mini_mcu_pkg::DMA_CH_NUM),
     .obi_req_t(obi_req_t),
     .obi_rsp_t(obi_rsp_t),
     .reg_req_t(reg_req_t),
     .reg_rsp_t(reg_rsp_t)
-  ) (
+  ) spi_subsystem_i (
       .clk_i,
       .rst_ni,
       .use_spimemio_i(use_spimemio),

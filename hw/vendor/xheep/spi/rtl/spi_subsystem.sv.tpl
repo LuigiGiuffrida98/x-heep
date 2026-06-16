@@ -7,7 +7,9 @@
 %>
 
 module spi_subsystem #(
-    // DMA number of channels
+    // SPI host memory address
+    parameter logic [31:0] SPI_FLASH_START_ADDRESS = 'h0,
+    // External DMA number of channels
     parameter int unsigned DMA_CH_NUM = 'd1,
     // OBI and Register Interface data types
     parameter type obi_req_t = logic,
@@ -22,7 +24,7 @@ module spi_subsystem #(
 
     // Memory mapped SPI
     input  obi_req_t  spimemio_req_i,
-    output obi_resp_t spimemio_resp_o,
+    output obi_rsp_t  spimemio_resp_o,
 
     // Yosys SPI configuration
     input  reg_req_t  yo_reg_req_i,
@@ -120,7 +122,12 @@ module spi_subsystem #(
   assign yo_spi_csb_en = 2'b01;
   assign yo_spi_csb[1] = 1'b1;
 
-  obi_spimemio obi_spimemio_i (
+  obi_spimemio #(
+    .obi_req_t(obi_req_t),
+    .obi_rsp_t(obi_rsp_t),
+    .reg_req_t(reg_req_t),
+    .reg_rsp_t(reg_rsp_t)
+  ) obi_spimemio_i (
       .clk_i,
       .rst_ni,
       .flash_csb_o(yo_spi_csb[0]),
@@ -175,6 +182,7 @@ module spi_subsystem #(
   );
 
   w25q128jw_controller #(
+      .SPI_FLASH_START_ADDRESS(SPI_FLASH_START_ADDRESS),
       .DMA_CH_NUM(DMA_CH_NUM),
       .reg_req_t(reg_req_t),
       .reg_rsp_t(reg_rsp_t)
