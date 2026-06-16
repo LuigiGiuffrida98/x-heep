@@ -6,11 +6,13 @@
   base_peripheral_domain = xheep.get_base_peripheral_domain()
 %>
 
-module spi_subsystem
-  import obi_pkg::*;
-  import reg_pkg::*;
-  import core_v_mini_mcu_pkg::*;
-(
+module spi_subsystem #(
+    // OBI and Register Interface data types
+    parameter type obi_req_t = xheep_obi_pkg::xheep_obi_req_t,
+    parameter type obi_rsp_t = xheep_obi_pkg::xheep_obi_rsp_t,
+    parameter type reg_req_t = xheep_reg_pkg::xheep_reg_req_t,
+    parameter type reg_rsp_t = xheep_reg_pkg::xheep_reg_rsp_t
+) (
     input logic clk_i,
     input logic rst_ni,
 
@@ -18,7 +20,7 @@ module spi_subsystem
 
     // Memory mapped SPI
     input  obi_req_t  spimemio_req_i,
-    output obi_resp_t spimemio_resp_o,
+    output obi_rsp_t  spimemio_resp_o,
 
     // Yosys SPI configuration
     input  reg_req_t  yo_reg_req_i,
@@ -55,6 +57,7 @@ module spi_subsystem
     output logic spi_flash_rx_valid_o,
     output logic spi_flash_tx_ready_o
 );
+  import core_v_mini_mcu_pkg::*;
 
   // OpenTitan SPI Interface
   logic                               ot_spi_sck;
@@ -117,7 +120,12 @@ module spi_subsystem
   assign yo_spi_csb_en = 2'b01;
   assign yo_spi_csb[1] = 1'b1;
 
-  obi_spimemio obi_spimemio_i (
+  obi_spimemio #(
+    .obi_req_t(obi_req_t),
+    .obi_rsp_t(obi_rsp_t),
+    .reg_req_t(reg_req_t),
+    .reg_rsp_t(reg_rsp_t)
+  ) obi_spimemio_i (
       .clk_i,
       .rst_ni,
       .flash_csb_o(yo_spi_csb[0]),
@@ -158,8 +166,8 @@ module spi_subsystem
 
   reg_mux #(
       .NoPorts(2),
-      .req_t  (reg_pkg::reg_req_t),
-      .rsp_t  (reg_pkg::reg_rsp_t),
+      .req_t  (reg_req_t),
+      .rsp_t  (reg_rsp_t),
       .AW     (32),
       .DW     (32)
   ) reg_mux_i (
@@ -172,8 +180,8 @@ module spi_subsystem
   );
 
   w25q128jw_controller #(
-      .reg_req_t(reg_pkg::reg_req_t),
-      .reg_rsp_t(reg_pkg::reg_rsp_t)
+      .reg_req_t(reg_req_t),
+      .reg_rsp_t(reg_rsp_t)
   ) w25q128jw_controller_i (
       .clk_i,
       .rst_ni,
@@ -210,8 +218,8 @@ module spi_subsystem
 
   // OpenTitan SPI Snitch Version used for booting
   spi_host #(
-      .reg_req_t(reg_pkg::reg_req_t),
-      .reg_rsp_t(reg_pkg::reg_rsp_t)
+      .reg_req_t(reg_req_t),
+      .reg_rsp_t(reg_rsp_t)
   ) ot_spi_i (
       .clk_i,
       .rst_ni,

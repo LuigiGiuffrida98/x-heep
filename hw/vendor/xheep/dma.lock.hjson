@@ -9,6 +9,6 @@
   upstream:
   {
     url: https://github.com/x-heep/xheep_dma.git
-    rev: 1e7f540b9e538b7098fa402f7645e79afb438503
+    rev: 3408fa3465cf6cfb3b321477f7248bd51f791931
   }
 }
