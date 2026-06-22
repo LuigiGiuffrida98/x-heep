@@ -16,6 +16,7 @@ filesets:
     - openhwgroup:cve2:cve2_top
     - pulp-platform.org:ip:gpio
     - pulp-platform.org::common_cells
+    - pulp-platform.org::reliability
     - pulp-platform.org::axi:0.39.8
     - pulp-platform.org::riscv_dbg
     - pulp-platform.org::register_interface
@@ -51,6 +52,7 @@ filesets:
     - hw/core-v-mini-mcu/xbar_varlat_one_to_n.sv
     - hw/core-v-mini-mcu/xbar_varlat_n_to_one.sv
     - hw/core-v-mini-mcu/system_bus.sv
+    - hw/core-v-mini-mcu/rel_system_bus.sv
     - hw/core-v-mini-mcu/system_xbar.sv
     - hw/core-v-mini-mcu/debug_subsystem.sv
     - hw/core-v-mini-mcu/peripheral_subsystem.sv

@@ -1,0 +1,11 @@
+// Copyright 2022 OpenHW Group
+// Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+`verilator_config
+
+lint_off -rule VARHIDDEN -file "*/*hsiao_ecc_pkg.sv"
+lint_off -rule ASCRANGE
+lint_off -rule DECLFILENAME
+lint_off -rule WIDTHTRUNC
+lint_off -rule WIDTHEXPAND

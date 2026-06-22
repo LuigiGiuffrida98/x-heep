@@ -349,12 +349,22 @@ module core_v_mini_mcu
       .debug_master_resp_i(debug_master_resp)
   );
 
-  system_bus #(
+  rel_system_bus #(
+      .obi_req_t(obi_pkg::rel_obi_req_t),
+      .obi_resp_t(obi_pkg::rel_obi_rsp_t),
+      .ObiCfg(obi_pkg::ObiDefaultConfig),
+      .obi_a_chan_t(obi_pkg::rel_obi_a_chan_t),
+      .obi_r_chan_t(obi_pkg::rel_obi_r_chan_t),
+      .a_optional_t(obi_pkg::rel_obi_a_chan_t),
+      .r_optional_t(obi_pkg::rel_obi_r_chan_t),
+      .addr_map_rule_t(core_v_mini_mcu_pkg::addr_map_rule_t),
       .NUM_BANKS(core_v_mini_mcu_pkg::NUM_BANKS),
       .EXT_XBAR_NMASTER(EXT_XBAR_NMASTER)
   ) system_bus_i (
       .clk_i,
       .rst_ni(rst_ni && debug_reset_n),
+      .testmode_i('0),
+      .fault_o(),
       .core_instr_req_i(core_instr_req),
       .core_instr_resp_o(core_instr_resp),
       .core_data_req_i(core_data_req),
