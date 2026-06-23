@@ -16,11 +16,12 @@ filesets:
     - openhwgroup:cve2:cve2_top
     - pulp-platform.org:ip:gpio
     - pulp-platform.org::common_cells
-    - pulp-platform.org::reliability
     - pulp-platform.org::axi:0.39.8
     - pulp-platform.org::riscv_dbg
     - pulp-platform.org::register_interface
     - pulp-platform.org::serial_link
+    - pulp-platform.org::reliability
+    - pulp-platform.org::redundancy_cells
     - openhwgroup.org:ip:soc_ctrl
     - lowrisc:ip:uart:0.1
     - lowrisc:ip:rv_plic_example:0.1
@@ -46,6 +47,7 @@ filesets:
     files:
     - hw/core-v-mini-mcu/core_v_mini_mcu.sv
     - hw/core-v-mini-mcu/cpu_subsystem.sv
+    - hw/core-v-mini-mcu/rel_cpu_subsystem.sv
     - hw/core-v-mini-mcu/cve2_xif_wrapper.sv
     - hw/core-v-mini-mcu/cv32e40px_xif_wrapper.sv
     - hw/core-v-mini-mcu/memory_subsystem.sv
@@ -58,7 +60,7 @@ filesets:
     - hw/core-v-mini-mcu/peripheral_subsystem.sv
     - hw/core-v-mini-mcu/ao_peripheral_subsystem.sv
     file_type: systemVerilogSource
-
+    
   rtl-simulation:
     depend:
     - pulp-platform.org::tech_cells_generic
@@ -194,7 +196,7 @@ parameters:
     paramtype: vlogparam
     description: |
       Enables testbench modules compilation. Admitted values: 1|0.
-    default: 1
+    default: 0
   USE_UPF:
     datatype: bool
     paramtype: vlogdefine
@@ -293,7 +295,6 @@ scripts:
 targets:
   default: &default_target
     filesets:
-    - files_rtl_generic
     - target_sim ? (tool_verilator? (files_verilator_waiver))
     - target_sim_sc ? (tool_verilator? (files_verilator_waiver))
     toplevel: [core_v_mini_mcu]
@@ -304,6 +305,7 @@ targets:
     filesets_append:
     - tb-utils
     - rtl-simulation
+    - files_rtl_generic
     - tool_modelsim? (pre_build_remote_bitbang)
     - tool_modelsim? (pre_build_uartdpi)
     - tool_modelsim? (pre_patch_modelsim_Makefile)
