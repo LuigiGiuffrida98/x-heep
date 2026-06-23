@@ -207,7 +207,10 @@ module ao_peripheral_subsystem
   /* Module instantiation */
 
   /* System bus to AO OBI FIFO */
-  obi_fifo obi_fifo_i (
+  obi_fifo #(
+      .obi_req_t(obi_pkg::obi_req_t),
+      .obi_resp_t(obi_pkg::obi_resp_t)
+  ) obi_fifo_i (
       .clk_i,
       .rst_ni,
       .producer_req_i (slave_req_i),
@@ -331,7 +334,10 @@ module ao_peripheral_subsystem
 
 % if base_peripheral_domain.contains_peripheral('spi_flash'):
   /* SPI subsystem */
-  spi_subsystem spi_subsystem_i (
+  spi_subsystem #(
+      .obi_req_t(obi_req_t),
+      .obi_resp_t(obi_resp_t)
+  ) spi_subsystem_i (
       .clk_i,
       .rst_ni,
       .use_spimemio_i(use_spimemio),

@@ -230,7 +230,10 @@ module peripheral_subsystem
   obi_pkg::obi_req_t slave_fifoout_req;
   obi_pkg::obi_resp_t slave_fifoout_resp;
 
-  obi_fifo obi_fifo_i (
+  obi_fifo #(
+    .obi_req_t(obi_pkg::obi_req_t),
+    .obi_resp_t(obi_pkg::obi_rsp_t)
+  ) obi_fifo_i (
       .clk_i(clk_cg),
       .rst_ni,
       .producer_req_i (slave_fifoin_req),
@@ -647,6 +650,8 @@ module peripheral_subsystem
   assign {ddr_snd_3_o, ddr_snd_2_o, ddr_snd_1_o, ddr_snd_0_o} = ddr_o;
 
   serial_link_xheep_wrapper #(
+    .obi_req_t(obi_pkg::obi_req_t),
+    .obi_resp_t(obi_pkg::obi_resp_t),
     .MaxClkDiv(32),
     .DataWidth(32)
   ) serial_link_xheep_wrapper_i (

@@ -57,7 +57,7 @@ module xbar_varlat_n_to_one #(
     for (genvar i = 0; unsigned'(i) < XBAR_NMASTER; i++) begin : gen_master_unroll
       assign master_xbar_req_req[i] = master_req_i[i].req;
       assign master_xbar_req_data[i] = {
-        master_req_i[i].we, master_req_i[i].be, master_req_i[i].addr, master_req_i[i].wdata
+        master_req_i[i].a.we, master_req_i[i].a.be, master_req_i[i].a.addr, master_req_i[i].a.wdata
       };
       assign master_resp_o[i] = '{
               gnt: xbar_master_rsp_gnt[i],
@@ -70,10 +70,10 @@ module xbar_varlat_n_to_one #(
   // Unroll OBI slave signals
   assign slave_req_o.req = xbar_slave_req_req_outstanding;
   assign {
-    slave_req_o.we,
-    slave_req_o.be,
-    slave_req_o.addr,
-    slave_req_o.wdata
+    slave_req_o..we,
+    slave_req_o.a.be,
+    slave_req_o.a.addr,
+    slave_req_o.a.wdata
   } = xbar_slave_req_data[0];
   assign {slave_xbar_rsp_gnt[0], slave_xbar_rsp_rvalid[0], slave_xbar_rsp_data[0]} = slave_resp_i;
 

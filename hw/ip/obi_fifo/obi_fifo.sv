@@ -5,9 +5,10 @@
 //This module relies on the fact that the variable latency XBAR does not rise a new REQ if the previous one has not been granted
 
 
-module obi_fifo
-  import obi_pkg::*;
-(
+module obi_fifo #(
+    parameter type obi_req_t  = logic,
+    parameter type obi_resp_t = logic
+) (
     input logic clk_i,
     input logic rst_ni,
 

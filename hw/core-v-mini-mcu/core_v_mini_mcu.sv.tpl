@@ -69,7 +69,7 @@ module core_v_mini_mcu
 
     output reg_req_t pad_req_o,
     input  reg_rsp_t pad_resp_i,
-
+% if not xheep.reliability:
     input  obi_req_t  [EXT_XBAR_NMASTER_RND-1:0] ext_xbar_master_req_i,
     output obi_resp_t [EXT_XBAR_NMASTER_RND-1:0] ext_xbar_master_resp_o,
 
@@ -101,7 +101,7 @@ module core_v_mini_mcu
 
     output logic  [EXT_HARTS_RND-1:0] ext_debug_req_o,
     output logic  ext_debug_reset_no,
-
+%endif
     // PLIC external interrupts
     input logic [NEXT_INT_RND-1:0] intr_vector_ext_i,
     // FIC external interrupt
@@ -121,12 +121,15 @@ module core_v_mini_mcu
     output logic [EXT_DOMAINS_RND-1:0] external_ram_banks_set_retentive_no,
     output logic [EXT_DOMAINS_RND-1:0] external_subsystem_clkgate_en_no,
 
-    output logic [31:0] exit_value_o,
-
+% if not xheep.reliability :
     // External SPC interface
     input logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] ext_dma_slot_tx_i,
     input logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] ext_dma_slot_rx_i,
-    output logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] dma_done_o
+    output logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] dma_done_o,
+% endif
+
+  output logic [31:0] exit_value_o
+
 );
 
   import core_v_mini_mcu_pkg::*;
@@ -148,10 +151,6 @@ module core_v_mini_mcu
 `endif
 
   // masters signals
-  obi_req_t core_instr_req;
-  obi_resp_t core_instr_resp;
-  obi_req_t core_data_req;
-  obi_resp_t core_data_resp;
   obi_req_t debug_master_req;
   obi_resp_t debug_master_resp;
   obi_req_t [${dma_obi_msb}:0]dma_read_req;
@@ -164,7 +163,7 @@ module core_v_mini_mcu
   // ram signals
   obi_req_t [core_v_mini_mcu_pkg::NUM_BANKS-1:0] ram_slave_req;
   obi_resp_t [core_v_mini_mcu_pkg::NUM_BANKS-1:0] ram_slave_resp;
-
+  
   // w25q128jw controller signals
   logic w25q128jw_controller_intr;
 
@@ -178,10 +177,45 @@ module core_v_mini_mcu
   obi_req_t peripheral_slave_req;
   obi_resp_t peripheral_slave_resp;
 
+% if xheep.reliability:
+  // REL master signals
+  rel_obi_req_t rel_core_instr_req;
+  rel_obi_resp_t rel_core_instr_resp;
+  rel_obi_req_t rel_core_data_req;
+  rel_obi_resp_t rel_core_data_resp;
+  rel_obi_req_t rel_debug_master_req;
+  rel_obi_resp_t rel_debug_master_resp;
+  rel_obi_req_t [${dma_obi_msb}:0]rel_dma_read_req;
+  rel_obi_resp_t [${dma_obi_msb}:0]rel_dma_read_resp;
+  rel_obi_req_t [${dma_obi_msb}:0]rel_dma_write_req;
+  rel_obi_resp_t [${dma_obi_msb}:0]rel_dma_write_resp;
+  rel_obi_req_t [${dma_obi_msb}:0]rel_dma_addr_req;
+  rel_obi_resp_t [${dma_obi_msb}:0]rel_dma_addr_resp;
+
+  // REL ram signals
+  rel_obi_req_t [core_v_mini_mcu_pkg::NUM_BANKS-1:0] rel_ram_slave_req;
+  rel_obi_resp_t [core_v_mini_mcu_pkg::NUM_BANKS-1:0] rel_ram_slave_resp;
+
+  // REL peripherals signals
+  rel_obi_req_t rel_ao_peripheral_slave_req;
+  rel_obi_resp_t rel_ao_peripheral_slave_resp;
+  rel_obi_req_t rel_peripheral_slave_req;
+  rel_obi_resp_t rel_peripheral_slave_resp;
+
+  // REL debug signals
+  rel_obi_req_t rel_debug_slave_req;
+  rel_obi_resp_t rel_debug_slave_resp;
+
+  // REL Memory Map SPI Region
+  rel_obi_req_t rel_flash_mem_slave_req;
+  rel_obi_resp_t rel_flash_mem_slave_resp;
+% endif
+
   // signals to debug unit
   logic debug_core_req;
   logic debug_reset_n;
   logic [NRHARTS-1:0] debug_req;
+
   // core
   logic core_sleep;
 
@@ -251,6 +285,7 @@ module core_v_mini_mcu
     assign memory_subsystem_clkgate_en_n[${bank.name()}] = memory_subsystem_pwr_ctrl_out[${bank.name()}].clkgate_en_n;
   % endfor
 
+% if not xheep.reliability:
   for (genvar i = 0; i < EXT_DOMAINS_RND; i = i + 1) begin : gen_external_subsystem_pwr_gating
     assign external_subsystem_powergate_switch_no[i]        = external_subsystem_pwr_ctrl_out[i].pwrgate_en_n;
     assign external_subsystem_powergate_iso_no[i] = external_subsystem_pwr_ctrl_out[i].isogate_en_n;
@@ -259,7 +294,8 @@ module core_v_mini_mcu
     assign external_subsystem_clkgate_en_no[i] = external_subsystem_pwr_ctrl_out[i].clkgate_en_n;
     assign external_subsystem_pwr_ctrl_in[i].pwrgate_ack_n = external_subsystem_powergate_switch_ack_ni[i];
   end
-
+% endif
+  
   // DMA
   logic dma_done_intr;
   logic dma_window_intr;
@@ -299,6 +335,37 @@ module core_v_mini_mcu
     rv_timer_intr[1]
   };
 
+% if xheep.reliability:
+  rel_cpu_subsystem #(
+      .rel_obi_req_t(obi_pkg::rel_obi_req_t),
+      .rel_obi_rsp_t(obi_pkg::rel_obi_rsp_t),
+      .obiCfg(obi_pkg::ObiDefaultConfig),
+      .obi_req_t(obi_pkg::obi_req_t),
+      .obi_rsp_t(obi_pkg::obi_rsp_t),
+      .BOOT_ADDR(BOOT_ADDR),
+      .DM_HALTADDRESS(DM_HALTADDRESS)
+  ) cpu_subsystem_i (
+      // Clock and Reset
+      .clk_i,
+      .rst_ni(cpu_subsystem_rst_n && debug_reset_n),
+      .hart_id_i,
+      .core_instr_req_o(rel_core_instr_req),
+      .core_instr_resp_i(rel_core_instr_resp),
+      .core_data_req_o(rel_core_data_req),
+      .core_data_resp_i(rel_core_data_resp),
+      .xif_compressed_if,
+      .xif_issue_if,
+      .xif_commit_if,
+      .xif_mem_if,
+      .xif_mem_result_if,
+      .xif_result_if,
+      .irq_i(intr),
+      .irq_ack_o(irq_ack),
+      .irq_id_o(irq_id_out),
+      .debug_req_i(debug_core_req),
+      .core_sleep_o(core_sleep)
+  );
+% else: 
   cpu_subsystem #(
       .BOOT_ADDR(BOOT_ADDR),
       .DM_HALTADDRESS(DM_HALTADDRESS)
@@ -323,7 +390,9 @@ module core_v_mini_mcu
       .debug_req_i(debug_core_req),
       .core_sleep_o(core_sleep)
   );
+% endif
 
+% if xheep.reliability:
   debug_subsystem #(
       .NRHARTS    (NRHARTS),
       .JTAG_IDCODE(JTAG_IDCODE),
@@ -348,7 +417,41 @@ module core_v_mini_mcu
       .debug_master_req_o(debug_master_req),
       .debug_master_resp_i(debug_master_resp)
   );
+  
+  relobi_encoder #(
+    .Cfg (ObiCfg),
+    .relobi_req_t (rel_obi_req_t),
+    .relobi_rsp_t (rel_obi_rsp_t),
+    .obi_req_t (obi_req_t),
+    .obi_rsp_t (obi_rsp_t),
+    .a_optional_t (logic),
+    .r_optional_t (logic)
+  ) i_debug_master_encoder (
+    .req_i (debug_master_req),
+    .rsp_o (debug_master_resp),
+    .rel_req_o (rel_debug_master_req),
+    .rel_rsp_i (rel_debug_master_resp),
+    .fault_o ()
+  );
+  
+  relobi_decoder #(
+    .Cfg (ObiCfg),
+    .relobi_req_t (rel_obi_req_t),
+    .relobi_rsp_t (rel_obi_rsp_t),
+    .obi_req_t (obi_req_t),
+    .obi_rsp_t (obi_rsp_t),
+    .a_optional_t (logic),
+    .r_optional_t (logic)
+  ) i_debug_slave_decoder (
+    .rel_req_i (rel_debug_slave_req),
+    .rel_rsp_o (rel_debug_slave_resp),
+    .req_o (debug_slave_req),
+    .rsp_i (debug_slave_resp),
+    .fault_o ()
+  );
+% endif
 
+% if xheep.reliability:
   rel_system_bus #(
       .obi_req_t(obi_pkg::rel_obi_req_t),
       .obi_resp_t(obi_pkg::rel_obi_rsp_t),
@@ -365,6 +468,36 @@ module core_v_mini_mcu
       .rst_ni(rst_ni && debug_reset_n),
       .testmode_i('0),
       .fault_o(),
+      .core_instr_req_i(rel_core_instr_req),
+      .core_instr_resp_o(rel_core_instr_resp),
+      .core_data_req_i(rel_core_data_req),
+      .core_data_resp_o(rel_core_data_resp),
+      .debug_master_req_i(rel_debug_master_req),
+      .debug_master_resp_o(rel_debug_master_resp),
+      .dma_read_req_i(rel_dma_read_req),
+      .dma_read_resp_o(rel_dma_read_resp),
+      .dma_write_req_i(rel_dma_write_req),
+      .dma_write_resp_o(rel_dma_write_resp),
+      .dma_addr_req_i(rel_dma_addr_req),
+      .dma_addr_resp_o(rel_dma_addr_resp),
+      .ram_req_o(rel_ram_slave_req),
+      .ram_resp_i(rel_ram_slave_resp),
+      .debug_slave_req_o(rel_debug_slave_req),
+      .debug_slave_resp_i(rel_debug_slave_resp),
+      .ao_peripheral_slave_req_o(rel_ao_peripheral_slave_req),
+      .ao_peripheral_slave_resp_i(rel_ao_peripheral_slave_resp),
+      .peripheral_slave_req_o(rel_peripheral_slave_req),
+      .peripheral_slave_resp_i(rel_peripheral_slave_resp),
+      .flash_mem_slave_req_o(rel_flash_mem_slave_req),
+      .flash_mem_slave_resp_i(rel_flash_mem_slave_resp)  
+  );
+% else:
+  system_bus #(
+      .NUM_BANKS(core_v_mini_mcu_pkg::NUM_BANKS),
+      .EXT_XBAR_NMASTER(EXT_XBAR_NMASTER)
+  ) system_bus_i (
+      .clk_i,
+      .rst_ni(rst_ni && debug_reset_n),
       .core_instr_req_i(core_instr_req),
       .core_instr_resp_o(core_instr_resp),
       .core_data_req_i(core_data_req),
@@ -402,7 +535,26 @@ module core_v_mini_mcu
       .ext_dma_addr_req_o(ext_dma_addr_req_o),
       .ext_dma_addr_resp_i(ext_dma_addr_resp_i)
   );
+% endif
 
+% if xheep.reliability:
+  relobi_decoder #(
+    .Cfg (ObiCfg),
+    .relobi_req_t (rel_obi_req_t),
+    .relobi_rsp_t (rel_obi_rsp_t),
+    .obi_req_t (obi_req_t),
+    .obi_rsp_t (obi_rsp_t),
+    .a_optional_t (logic),
+    .r_optional_t (logic)
+  ) i_ram_decoder (
+    .rel_req_i (rel_ram_slave_req),
+    .rel_rsp_o (rel_ram_slave_resp),
+    .req_o (ram_slave_req),
+    .rel_rsp_i (rel_debug_master_resp),
+    .fault_o ()
+  );
+% endif
+  
   memory_subsystem #(
       .NUM_BANKS(core_v_mini_mcu_pkg::NUM_BANKS)
   ) memory_subsystem_i (
@@ -415,6 +567,88 @@ module core_v_mini_mcu
       .pwrgate_ack_no(memory_subsystem_banks_powergate_switch_ack_n),
       .set_retentive_ni(memory_subsystem_banks_set_retentive_n)
   );
+
+% if xheep.reliability:
+  relobi_decoder #(
+    .Cfg (ObiCfg),
+    .relobi_req_t (rel_obi_req_t),
+    .relobi_rsp_t (rel_obi_rsp_t),
+    .obi_req_t (obi_req_t),
+    .obi_rsp_t (obi_rsp_t),
+    .a_optional_t (logic),
+    .r_optional_t (logic)
+  ) i_ao_peripheral_decoder (
+    .rel_req_i (rel_ao_peripheral_slave_req),
+    .rel_rsp_o (rel_ao_peripheral_slave_resp),
+    .req_o (ao_peripheral_slave_req),
+    .rsp_i (ao_peripheral_slave_resp),
+    .fault_o ()
+  );
+
+  relobi_decoder #(
+    .Cfg (ObiCfg),
+    .relobi_req_t (rel_obi_req_t),
+    .relobi_rsp_t (rel_obi_rsp_t),
+    .obi_req_t (obi_req_t),
+    .obi_rsp_t (obi_rsp_t),
+    .a_optional_t (logic),
+    .r_optional_t (logic)
+  ) i_flash_mem_decoder (
+    .rel_req_i (rel_flash_mem_slave_req),
+    .rel_rsp_o (rel_flash_mem_slave_resp),
+    .req_o (flash_mem_slave_req),
+    .rsp_i (flash_mem_slave_resp),
+    .fault_o ()
+  );
+
+  relobi_encoder #(
+    .Cfg (ObiCfg),
+    .relobi_req_t (rel_obi_req_t),
+    .relobi_rsp_t (rel_obi_rsp_t),
+    .obi_req_t (obi_req_t),
+    .obi_rsp_t (obi_rsp_t),
+    .a_optional_t (logic),
+    .r_optional_t (logic)
+  ) i_dma_read_encoder (
+    .rel_req_i (rel_dma_read_req),
+    .rel_rsp_o (rel_dma_read_resp),
+    .req_o (dma_read_req),
+    .rsp_i (dma_read_resp),
+    .fault_o ()
+  );
+
+  relobi_encoder #(
+    .Cfg (ObiCfg),
+    .relobi_req_t (rel_obi_req_t),
+    .relobi_rsp_t (rel_obi_rsp_t),
+    .obi_req_t (obi_req_t),
+    .obi_rsp_t (obi_rsp_t),
+    .a_optional_t (logic),
+    .r_optional_t (logic)
+  ) i_dma_write_encoder (
+    .rel_req_i (rel_dma_write_req),
+    .rel_rsp_o (rel_dma_write_resp),
+    .req_o (dma_write_req),
+    .rsp_i (dma_write_resp),
+    .fault_o ()
+  );
+
+  relobi_encoder #(
+    .Cfg (ObiCfg),
+    .relobi_req_t (rel_obi_req_t),
+    .relobi_rsp_t (rel_obi_rsp_t),
+    .obi_req_t (obi_req_t),
+    .obi_rsp_t (obi_rsp_t),
+    .a_optional_t (logic),
+    .r_optional_t (logic)
+  ) i_dma_addr_encoder (
+    .rel_req_i (rel_dma_addr_req),
+    .rel_rsp_o (rel_dma_addr_resp),
+    .req_o (dma_addr_req),
+    .rsp_i (dma_addr_resp),
+    .fault_o ()
+  );
+% endif
 
   ao_peripheral_subsystem #(
       .AO_SPC_NUM(AO_SPC_NUM)

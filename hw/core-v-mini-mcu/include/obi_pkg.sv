@@ -6,24 +6,9 @@
  * Description: OBI package, contains common system definitions.
  *
  */
+`include "obi/typedef.svh"
 
 package obi_pkg;
-
-  `include "obi/typedef.svh"
-
-  typedef struct packed {
-    logic        req;
-    logic        we;
-    logic [3:0]  be;
-    logic [31:0] addr;
-    logic [31:0] wdata;
-  } obi_req_t;
-
-  typedef struct packed {
-    logic        gnt;
-    logic        rvalid;
-    logic [31:0] rdata;
-  } obi_resp_t;
 
   /// The OBI atomics type, to be expanded.
   typedef logic [5:0] atop_t;
@@ -163,5 +148,8 @@ package obi_pkg;
   } obi_atop_e;
 
   `RELOBI_TYPEDEF_ALL(rel_obi, ObiDefaultConfig)
+  `OBI_TYPEDEF_ALL(obi, ObiDefaultConfig)
+
+  typedef obi_rsp_t obi_resp_t;
 
 endpackage

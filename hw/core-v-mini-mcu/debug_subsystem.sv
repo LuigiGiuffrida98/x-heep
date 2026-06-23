@@ -176,7 +176,10 @@ module debug_subsystem
         .slave_resp_i (tofifo_resp)
     );
 
-    obi_fifo obi_fifo_i (
+    obi_fifo #(
+        .obi_req_t (obi_pkg::obi_req_t),
+        .obi_resp_t(obi_pkg::obi_resp_t)
+    ) obi_fifo_i (
         .clk_i,
         .rst_ni,
         .producer_req_i (tofifo_req),

@@ -5,9 +5,11 @@
 */
 
 module obi_spimemio
-  import obi_pkg::*;
   import reg_pkg::*;
-(
+#(
+    parameter type obi_req_t  = logic,
+    parameter type obi_resp_t = logic
+) (
     input  logic clk_i,
     input  logic rst_ni,
     output logic flash_csb_o,
@@ -48,7 +50,10 @@ module obi_spimemio
 
   obi_spimemio_reg2hw_t reg2hw;
 
-  obi_to_picorv32 obi_to_picorv32_i (
+  obi_to_picorv32 #(
+      .obi_req_t (obi_req_t),
+      .obi_resp_t(obi_resp_t)
+  ) obi_to_picorv32_i (
       .clk_i(clk_i),
       .rst_ni(rst_ni),
       .picorv32_req_o(picorv32_req),

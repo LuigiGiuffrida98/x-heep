@@ -513,13 +513,13 @@ module testharness #(
           .clk_i,
           .rst_ni,
           .req_i(slow_ram_slave_req[SLOW_MEMORY0_IDX].req),
-          .we_i(slow_ram_slave_req[SLOW_MEMORY0_IDX].we),
-          .addr_i(slow_ram_slave_req[SLOW_MEMORY0_IDX].addr[15:2]),
-          .wdata_i(slow_ram_slave_req[SLOW_MEMORY0_IDX].wdata),
-          .be_i(slow_ram_slave_req[SLOW_MEMORY0_IDX].be),
+          .we_i(slow_ram_slave_req[SLOW_MEMORY0_IDX].a.we),
+          .addr_i(slow_ram_slave_req[SLOW_MEMORY0_IDX].a.addr[15:2]),
+          .wdata_i(slow_ram_slave_req[SLOW_MEMORY0_IDX].a.wdata),
+          .be_i(slow_ram_slave_req[SLOW_MEMORY0_IDX].a.be),
           // output ports
           .gnt_o(slow_ram_slave_resp[SLOW_MEMORY0_IDX].gnt),
-          .rdata_o(slow_ram_slave_resp[SLOW_MEMORY0_IDX].rdata),
+          .rdata_o(slow_ram_slave_resp[SLOW_MEMORY0_IDX].r.rdata),
           .rvalid_o(slow_ram_slave_resp[SLOW_MEMORY0_IDX].rvalid)
       );
 
@@ -530,13 +530,13 @@ module testharness #(
           .clk_i,
           .rst_ni,
           .req_i(slow_ram_slave_req[SLOW_MEMORY1_IDX].req),
-          .we_i(slow_ram_slave_req[SLOW_MEMORY1_IDX].we),
-          .addr_i(slow_ram_slave_req[SLOW_MEMORY1_IDX].addr[15:2]),
-          .wdata_i(slow_ram_slave_req[SLOW_MEMORY1_IDX].wdata),
-          .be_i(slow_ram_slave_req[SLOW_MEMORY1_IDX].be),
+          .we_i(slow_ram_slave_req[SLOW_MEMORY1_IDX].a.we),
+          .addr_i(slow_ram_slave_req[SLOW_MEMORY1_IDX].a.addr[15:2]),
+          .wdata_i(slow_ram_slave_req[SLOW_MEMORY1_IDX].a.wdata),
+          .be_i(slow_ram_slave_req[SLOW_MEMORY1_IDX].a.be),
           // output ports
           .gnt_o(slow_ram_slave_resp[SLOW_MEMORY1_IDX].gnt),
-          .rdata_o(slow_ram_slave_resp[SLOW_MEMORY1_IDX].rdata),
+          .rdata_o(slow_ram_slave_resp[SLOW_MEMORY1_IDX].r.rdata),
           .rvalid_o(slow_ram_slave_resp[SLOW_MEMORY1_IDX].rvalid)
       );
 `endif
@@ -756,6 +756,8 @@ module testharness #(
       // ------------
       if ((core_v_mini_mcu_pkg::CpuType == cv32e40x || core_v_mini_mcu_pkg::CpuType == cv32e40px || core_v_mini_mcu_pkg::CpuType == cv32e20) && ${"1" if xif != None else "0"} && (QUADRILATERO != 0)) begin: gen_quadrilatero_wrapper
         quadrilatero_wrapper #(
+            .obi_req_t(obi_pkg::obi_req_t),
+            .obi_resp_t(obi_pkg::obi_rsp_t),
             .MATRIX_FPU(0)
         ) quadrilatero_wrapper_i (
             .clk_i,
@@ -818,20 +820,20 @@ module testharness #(
 
     end else begin : gen_DONT_USE_EXTERNAL_DEVICE_EXAMPLE
       assign slow_ram_slave_resp[0].gnt = '0;
-      assign slow_ram_slave_resp[0].rdata = '0;
+      assign slow_ram_slave_resp[0].r.rdata = '0;
       assign slow_ram_slave_resp[0].rvalid = '0;
       assign slow_ram_slave_resp[1].gnt = '0;
-      assign slow_ram_slave_resp[1].rdata = '0;
+      assign slow_ram_slave_resp[1].r.rdata = '0;
       assign slow_ram_slave_resp[1].rvalid = '0;
 
       assign ext_periph_slv_req = '0;
       assign ext_periph_slv_rsp = '0;
 
       assign ext_master_req[testharness_pkg::EXT_MASTER0_IDX].req = '0;
-      assign ext_master_req[testharness_pkg::EXT_MASTER0_IDX].we = '0;
-      assign ext_master_req[testharness_pkg::EXT_MASTER0_IDX].be = '0;
-      assign ext_master_req[testharness_pkg::EXT_MASTER0_IDX].addr = '0;
-      assign ext_master_req[testharness_pkg::EXT_MASTER0_IDX].wdata = '0;
+      assign ext_master_req[testharness_pkg::EXT_MASTER0_IDX].a.we = '0;
+      assign ext_master_req[testharness_pkg::EXT_MASTER0_IDX].a.be = '0;
+      assign ext_master_req[testharness_pkg::EXT_MASTER0_IDX].a.addr = '0;
+      assign ext_master_req[testharness_pkg::EXT_MASTER0_IDX].a.wdata = '0;
 
       assign memcopy_intr = '0;
       assign iffifo_int_o = '0;

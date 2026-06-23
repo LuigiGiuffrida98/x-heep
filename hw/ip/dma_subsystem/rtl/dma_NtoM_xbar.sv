@@ -19,21 +19,22 @@
  */
 
 module dma_NtoM_xbar #(
+    parameter type obi_req_t = logic,
+    parameter type obi_resp_t = logic,
     parameter int unsigned XBAR_NMASTER = 4,
-    parameter int unsigned XBAR_MSLAVE  = 2
+    parameter int unsigned XBAR_MSLAVE = 2
 ) (
     input logic clk_i,
     input logic rst_ni,
 
     // Master ports
-    input  obi_pkg::obi_req_t  [XBAR_NMASTER-1:0] master_req_i,
-    output obi_pkg::obi_resp_t [XBAR_NMASTER-1:0] master_resp_o,
+    input  obi_req_t  [XBAR_NMASTER-1:0] master_req_i,
+    output obi_resp_t [XBAR_NMASTER-1:0] master_resp_o,
 
     // slave ports
-    output obi_pkg::obi_req_t  [XBAR_MSLAVE-1:0] slave_req_o,
-    input  obi_pkg::obi_resp_t [XBAR_MSLAVE-1:0] slave_resp_i
+    output obi_req_t  [XBAR_MSLAVE-1:0] slave_req_o,
+    input  obi_resp_t [XBAR_MSLAVE-1:0] slave_resp_i
 );
-  import obi_pkg::*;
   import core_v_mini_mcu_pkg::*;
 
   /* Generation of the crossbars */

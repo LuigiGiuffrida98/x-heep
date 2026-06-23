@@ -20,7 +20,7 @@ module relobi_tmr_a #(
 
   bitwise_TMR_voter_fail #(
     .DataWidth(3*ObiCfg.AddrWidth)
-  ) i_r_data (
+  ) i_r_addr (
     .a_i        (three_a_i[0].addr),
     .b_i        (three_a_i[1].addr),
     .c_i        (three_a_i[2].addr),
@@ -36,7 +36,7 @@ module relobi_tmr_a #(
   );
   bitwise_TMR_voter_fail #(
     .DataWidth(ObiCfg.DataWidth/8)
-  ) i_r_data (
+  ) i_r_be (
     .a_i        (three_a_i[0].be),
     .b_i        (three_a_i[1].be),
     .c_i        (three_a_i[2].be),
@@ -45,7 +45,7 @@ module relobi_tmr_a #(
   );
   bitwise_TMR_voter_fail #(
     .DataWidth(ObiCfg.DataWidth+hsiao_ecc_pkg::min_ecc(ObiCfg.DataWidth))
-  ) i_r_data (
+  ) i_r_wdata (
     .a_i        (three_a_i[0].wdata),
     .b_i        (three_a_i[1].wdata),
     .c_i        (three_a_i[2].wdata),
@@ -54,7 +54,7 @@ module relobi_tmr_a #(
   );
   bitwise_TMR_voter_fail #(
     .DataWidth(3*ObiCfg.IdWidth)
-  ) i_r_id (
+  ) i_r_aid (
     .a_i        (three_a_i[0].aid),
     .b_i        (three_a_i[1].aid),
     .c_i        (three_a_i[2].aid),
@@ -72,7 +72,7 @@ module relobi_tmr_a #(
   if (ObiCfg.OptionalCfg.AUserWidth) begin : gen_auser
     bitwise_TMR_voter_fail #(
       .DataWidth(ObiCfg.OptionalCfg.RUserWidth)
-    ) i_r_id (
+    ) i_r_auser (
       .a_i        (three_a_i[0].a_optional.auser),
       .b_i        (three_a_i[1].a_optional.auser),
       .c_i        (three_a_i[2].a_optional.auser),
@@ -85,7 +85,7 @@ module relobi_tmr_a #(
   if (ObiCfg.OptionalCfg.WUserWidth) begin : gen_wuser
     bitwise_TMR_voter_fail #(
       .DataWidth(ObiCfg.OptionalCfg.RUserWidth)
-    ) i_r_id (
+    ) i_r_wuser (
       .a_i        (three_a_i[0].a_optional.wuser),
       .b_i        (three_a_i[1].a_optional.wuser),
       .c_i        (three_a_i[2].a_optional.wuser),
@@ -98,7 +98,7 @@ module relobi_tmr_a #(
   if (ObiCfg.OptionalCfg.UseAtop) begin : gen_atop
     bitwise_TMR_voter #(
       .DataWidth(6)
-    ) i_r_err (
+    ) i_r_atop (
       .a_i        (three_a_i[0].a_optional.atop),
       .b_i        (three_a_i[1].a_optional.atop),
       .c_i        (three_a_i[2].a_optional.atop),
@@ -111,7 +111,7 @@ module relobi_tmr_a #(
   if (ObiCfg.OptionalCfg.UseMemtype) begin : gen_memtype
     bitwise_TMR_voter_fail #(
       .DataWidth(2)
-    ) i_r_err (
+    ) i_r_memtype (
       .a_i        (three_a_i[0].a_optional.memtype),
       .b_i        (three_a_i[1].a_optional.memtype),
       .c_i        (three_a_i[2].a_optional.memtype),
@@ -124,7 +124,7 @@ module relobi_tmr_a #(
   if (ObiCfg.OptionalCfg.MidWidth) begin : gen_mid
     bitwise_TMR_voter_fail #(
       .DataWidth(ObiCfg.OptionalCfg.MidWidth)
-    ) i_r_err (
+    ) i_r_mid (
       .a_i        (three_a_i[0].a_optional.mid),
       .b_i        (three_a_i[1].a_optional.mid),
       .c_i        (three_a_i[2].a_optional.mid),
@@ -137,7 +137,7 @@ module relobi_tmr_a #(
   if (ObiCfg.OptionalCfg.UseProt) begin : gen_prot
     bitwise_TMR_voter_fail #(
       .DataWidth(3)
-    ) i_r_err (
+    ) i_r_prot (
       .a_i        (three_a_i[0].a_optional.prot),
       .b_i        (three_a_i[1].a_optional.prot),
       .c_i        (three_a_i[2].a_optional.prot),
@@ -148,7 +148,7 @@ module relobi_tmr_a #(
     assign faults[11] = 1'b0;
   end
   if (ObiCfg.OptionalCfg.UseDbg) begin : gen_dbg
-    TMR_voter_fail i_r_err (
+    TMR_voter_fail i_r_dbg (
       .a_i        (three_a_i[0].a_optional.dbg),
       .b_i        (three_a_i[1].a_optional.dbg),
       .c_i        (three_a_i[2].a_optional.dbg),
@@ -161,7 +161,7 @@ module relobi_tmr_a #(
   if (ObiCfg.OptionalCfg.AChkWidth) begin : gen_achk
     bitwise_TMR_voter_fail #(
       .DataWidth(ObiCfg.OptionalCfg.AChkWidth)
-    ) i_r_id (
+    ) i_r_achk (
       .a_i        (three_a_i[0].a_optional.achk),
       .b_i        (three_a_i[1].a_optional.achk),
       .c_i        (three_a_i[2].a_optional.achk),
@@ -183,7 +183,7 @@ module relobi_tmr_a #(
   end
   bitwise_TMR_voter_fail #(
     .DataWidth(hsiao_ecc_pkg::min_ecc(1+ObiCfg.DataWidth/8+ObiCfg.IdWidth+$bits(a_optional_t)))
-  ) i_r_id (
+  ) i_r_ecc (
     .a_i        (three_a_i[0].other_ecc),
     .b_i        (three_a_i[1].other_ecc),
     .c_i        (three_a_i[2].other_ecc),

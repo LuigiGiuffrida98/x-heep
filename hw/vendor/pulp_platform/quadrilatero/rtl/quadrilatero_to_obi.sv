@@ -14,8 +14,10 @@
 module quadrilatero_to_obi
   import quadrilatero_pkg::*;
   import xif_pkg::*;
-  import obi_pkg::*;
-(
+#(
+    parameter type obi_req_t  = logic,
+    parameter type obi_resp_t = logic
+)(
     // Clock and Reset
     input logic clk_i,
     input logic rst_ni,

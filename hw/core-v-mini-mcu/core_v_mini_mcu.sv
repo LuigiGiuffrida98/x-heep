@@ -244,9 +244,8 @@ module core_v_mini_mcu
     if_xif.cpu_result     xif_result_if,
 
     output reg_req_t pad_req_o,
-    input  reg_rsp_t pad_resp_i,
-
-    input  obi_req_t  [EXT_XBAR_NMASTER_RND-1:0] ext_xbar_master_req_i,
+    input reg_rsp_t pad_resp_i,
+    input obi_req_t [EXT_XBAR_NMASTER_RND-1:0] ext_xbar_master_req_i,
     output obi_resp_t [EXT_XBAR_NMASTER_RND-1:0] ext_xbar_master_resp_o,
 
     input  reg_req_t [AO_SPC_NUM_RND:0] ext_ao_peripheral_slave_req_i,
@@ -277,7 +276,6 @@ module core_v_mini_mcu
 
     output logic [EXT_HARTS_RND-1:0] ext_debug_req_o,
     output logic ext_debug_reset_no,
-
     // PLIC external interrupts
     input logic [NEXT_INT_RND-1:0] intr_vector_ext_i,
     // FIC external interrupt
@@ -297,12 +295,13 @@ module core_v_mini_mcu
     output logic [EXT_DOMAINS_RND-1:0] external_ram_banks_set_retentive_no,
     output logic [EXT_DOMAINS_RND-1:0] external_subsystem_clkgate_en_no,
 
-    output logic [31:0] exit_value_o,
-
     // External SPC interface
     input  logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] ext_dma_slot_tx_i,
     input  logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] ext_dma_slot_rx_i,
-    output logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] dma_done_o
+    output logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] dma_done_o,
+
+    output logic [31:0] exit_value_o
+
 );
 
   import core_v_mini_mcu_pkg::*;
@@ -324,10 +323,6 @@ module core_v_mini_mcu
 `endif
 
   // masters signals
-  obi_req_t core_instr_req;
-  obi_resp_t core_instr_resp;
-  obi_req_t core_data_req;
-  obi_resp_t core_data_resp;
   obi_req_t debug_master_req;
   obi_resp_t debug_master_resp;
   obi_req_t [1:0] dma_read_req;
@@ -354,10 +349,12 @@ module core_v_mini_mcu
   obi_req_t peripheral_slave_req;
   obi_resp_t peripheral_slave_resp;
 
+
   // signals to debug unit
   logic debug_core_req;
   logic debug_reset_n;
   logic [NRHARTS-1:0] debug_req;
+
   // core
   logic core_sleep;
 
@@ -502,47 +499,13 @@ module core_v_mini_mcu
       .core_sleep_o(core_sleep)
   );
 
-  debug_subsystem #(
-      .NRHARTS    (NRHARTS),
-      .JTAG_IDCODE(JTAG_IDCODE),
-      .SPI_SLAVE  (1)
-  ) debug_subsystem_i (
-      .clk_i,
-      .rst_ni,
-      .jtag_tck_i,
-      .jtag_tms_i,
-      .jtag_trst_ni,
-      .jtag_tdi_i,
-      .jtag_tdo_o,
-      .spi_slave_sck_i(spi_slave_sck_i),
-      .spi_slave_cs_i(spi_slave_cs_i),
-      .spi_slave_miso_o(spi_slave_miso_o),
-      .spi_slave_miso_oe_o(spi_slave_miso_oe_o),
-      .spi_slave_mosi_i(spi_slave_mosi_i),
-      .debug_core_req_o(debug_req),
-      .debug_ndmreset_no(debug_reset_n),
-      .debug_slave_req_i(debug_slave_req),
-      .debug_slave_resp_o(debug_slave_resp),
-      .debug_master_req_o(debug_master_req),
-      .debug_master_resp_i(debug_master_resp)
-  );
 
-  rel_system_bus #(
-      .obi_req_t(obi_pkg::rel_obi_req_t),
-      .obi_resp_t(obi_pkg::rel_obi_rsp_t),
-      .ObiCfg(obi_pkg::ObiDefaultConfig),
-      .obi_a_chan_t(obi_pkg::rel_obi_a_chan_t),
-      .obi_r_chan_t(obi_pkg::rel_obi_r_chan_t),
-      .a_optional_t(obi_pkg::rel_obi_a_chan_t),
-      .r_optional_t(obi_pkg::rel_obi_r_chan_t),
-      .addr_map_rule_t(core_v_mini_mcu_pkg::addr_map_rule_t),
+  system_bus #(
       .NUM_BANKS(core_v_mini_mcu_pkg::NUM_BANKS),
       .EXT_XBAR_NMASTER(EXT_XBAR_NMASTER)
   ) system_bus_i (
       .clk_i,
       .rst_ni(rst_ni && debug_reset_n),
-      .testmode_i('0),
-      .fault_o(),
       .core_instr_req_i(core_instr_req),
       .core_instr_resp_o(core_instr_resp),
       .core_data_req_i(core_data_req),
@@ -581,6 +544,7 @@ module core_v_mini_mcu
       .ext_dma_addr_resp_i(ext_dma_addr_resp_i)
   );
 
+
   memory_subsystem #(
       .NUM_BANKS(core_v_mini_mcu_pkg::NUM_BANKS)
   ) memory_subsystem_i (
@@ -593,6 +557,7 @@ module core_v_mini_mcu
       .pwrgate_ack_no(memory_subsystem_banks_powergate_switch_ack_n),
       .set_retentive_ni(memory_subsystem_banks_set_retentive_n)
   );
+
 
   ao_peripheral_subsystem #(
       .AO_SPC_NUM(AO_SPC_NUM)

@@ -7,10 +7,12 @@
 %>
 
 module spi_subsystem
-  import obi_pkg::*;
   import reg_pkg::*;
   import core_v_mini_mcu_pkg::*;
-(
+#(
+    parameter type obi_req_t = logic,
+    parameter type obi_resp_t = logic
+)(
     input logic clk_i,
     input logic rst_ni,
 
@@ -117,7 +119,10 @@ module spi_subsystem
   assign yo_spi_csb_en = 2'b01;
   assign yo_spi_csb[1] = 1'b1;
 
-  obi_spimemio obi_spimemio_i (
+  obi_spimemio #(
+    .obi_req_t(obi_req_t),
+    .obi_resp_t(obi_resp_t)
+  ) obi_spimemio_i (
       .clk_i,
       .rst_ni,
       .flash_csb_o(yo_spi_csb[0]),

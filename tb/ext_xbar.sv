@@ -69,7 +69,7 @@ module ext_xbar #(
             .addr_t(logic [31:0]),
             .rule_t(addr_map_rule_pkg::addr_map_rule_t)
         ) addr_decode_i (
-            .addr_i(master_req_i[i].addr),
+            .addr_i(master_req_i[i].a.addr),
             .addr_map_i(addr_map_i),
             .idx_o(pre_port_sel[i]),
             .dec_valid_o(),

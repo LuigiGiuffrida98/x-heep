@@ -8,9 +8,10 @@
 %>
 
 module cpu_subsystem
-  import obi_pkg::*;
   import core_v_mini_mcu_pkg::*;
 #(
+    parameter type obi_req_t = logic,
+    parameter type obi_resp_t = logic,
     parameter BOOT_ADDR = 'h180,
     parameter DM_HALTADDRESS = '0
 ) (
@@ -55,9 +56,9 @@ module cpu_subsystem
 
   assign fetch_enable = 1'b1;
 
-  assign core_instr_req_o.wdata = '0;
-  assign core_instr_req_o.we    = '0;
-  assign core_instr_req_o.be    = 4'b1111;
+  assign core_instr_req_o.a.wdata = '0;
+  assign core_instr_req_o.a.we    = '0;
+  assign core_instr_req_o.a.be    = 4'b1111;
 
 % if cpu.name == "cv32e20":
 
@@ -285,18 +286,18 @@ ${",\n".join(cv32e40px_params)}
         .hart_id_i,
         .dm_exception_addr_i(32'h0),
 
-        .instr_addr_o  (core_instr_req_o.addr),
+        .instr_addr_o  (core_instr_req_o.a.addr),
         .instr_req_o   (core_instr_req_o.req),
-        .instr_rdata_i (core_instr_resp_i.rdata),
+        .instr_rdata_i (core_instr_resp_i.r.rdata),
         .instr_gnt_i   (core_instr_resp_i.gnt),
         .instr_rvalid_i(core_instr_resp_i.rvalid),
 
-        .data_addr_o  (core_data_req_o.addr),
-        .data_wdata_o (core_data_req_o.wdata),
-        .data_we_o    (core_data_req_o.we),
+        .data_addr_o  (core_data_req_o.a.addr),
+        .data_wdata_o (core_data_req_o.a.wdata),
+        .data_we_o    (core_data_req_o.a.we),
         .data_req_o   (core_data_req_o.req),
-        .data_be_o    (core_data_req_o.be),
-        .data_rdata_i (core_data_resp_i.rdata),
+        .data_be_o    (core_data_req_o.a.be),
+        .data_rdata_i (core_data_resp_i.r.rdata),
         .data_gnt_i   (core_data_resp_i.gnt),
         .data_rvalid_i(core_data_resp_i.rvalid),
 

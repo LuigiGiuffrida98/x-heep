@@ -5,9 +5,11 @@
 */
 
 module obi_to_picorv32
-  import obi_pkg::*;
   import picorv32_pkg::*;
-(
+#(
+    parameter type obi_req_t  = logic,
+    parameter type obi_resp_t = logic
+) (
     input logic clk_i,
     input logic rst_ni,
 

@@ -12,12 +12,13 @@
  */
 
 module serial_link_xheep_wrapper
-  import obi_pkg::*;
   import serial_link_minimum_axi_pkg::*;
   import axi_pkg::*;
 #(
-    parameter int MaxClkDiv = 32,
-    parameter int DataWidth = 32
+    parameter type obi_req_t  = logic,
+    parameter type obi_resp_t = logic,
+    parameter int  MaxClkDiv  = 32,
+    parameter int  DataWidth  = 32
 ) (
     input logic clk_i,
     input logic rst_ni,
@@ -25,11 +26,11 @@ module serial_link_xheep_wrapper
     input logic rst_reg_ni,
     input logic testmode_i,
 
-    input  obi_pkg::obi_req_t  writer_req_i,
-    output obi_pkg::obi_resp_t writer_rsp_i,
+    input  obi_req_t  writer_req_i,
+    output obi_resp_t writer_rsp_i,
 
-    input  obi_pkg::obi_req_t  reader_req_i,
-    output obi_pkg::obi_resp_t reader_resp_o,
+    input  obi_req_t  reader_req_i,
+    output obi_resp_t reader_resp_o,
 
     input  reg_pkg::reg_req_t cfg_req_i,
     output reg_pkg::reg_rsp_t cfg_rsp_o,
@@ -63,13 +64,13 @@ module serial_link_xheep_wrapper
       .clk_i,
       .rst_ni,
       .mem_req_i      (writer_req_i.req),
-      .mem_addr_i     (writer_req_i.addr),
-      .mem_we_i       (writer_req_i.we),
-      .mem_wdata_i    (writer_req_i.wdata),
-      .mem_be_i       (writer_req_i.be),
+      .mem_addr_i     (writer_req_i.a.addr),
+      .mem_we_i       (writer_req_i.a.we),
+      .mem_wdata_i    (writer_req_i.a.wdata),
+      .mem_be_i       (writer_req_i.a.be),
       .mem_gnt_o      (writer_rsp_i.gnt),
-      .mem_rsp_valid_o(writer_rsp_i.rvalid),
-      .mem_rsp_rdata_o(writer_rsp_i.rdata),
+      .mem_rsp_valid_o(writer_rsp_i.w.rvalid),
+      .mem_rsp_rdata_o(writer_rsp_i.w.rdata),
       .mem_rsp_error_o(),
       .axi_req_o      (axi_lite_req),
       .axi_rsp_i      (axi_lite_rsp)
@@ -105,9 +106,9 @@ module serial_link_xheep_wrapper
       .rst_ni,
       .reader_gnt_o    (reader_resp_o.gnt),
       .reader_req_i    (reader_req_i.req),
-      .reader_rvalid_o (reader_resp_o.rvalid),
+      .reader_rvalid_o (reader_resp_o.w.rvalid),
       .reader_we_i     (reader_req_i.we),
-      .reader_rdata_o  (reader_resp_o.rdata),
+      .reader_rdata_o  (reader_resp_o.w.rdata),
       .writer_axi_req_i(fast_sl_req_O),
       .writer_axi_rsp_o(fast_sl_rsp_O)
   );
