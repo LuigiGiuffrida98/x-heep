@@ -323,6 +323,10 @@ module core_v_mini_mcu
 `endif
 
   // masters signals
+  obi_req_t core_instr_req;
+  obi_resp_t core_instr_resp;
+  obi_req_t core_data_req;
+  obi_resp_t core_data_resp;
   obi_req_t debug_master_req;
   obi_resp_t debug_master_resp;
   obi_req_t [1:0] dma_read_req;

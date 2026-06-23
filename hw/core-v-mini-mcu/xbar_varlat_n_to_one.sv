@@ -62,7 +62,7 @@ module xbar_varlat_n_to_one #(
       assign master_resp_o[i] = '{
               gnt: xbar_master_rsp_gnt[i],
               rvalid: xbar_master_rsp_rvalid[i],
-              rdata: xbar_master_rsp_data[i]
+              r: '{rdata: xbar_master_rsp_data[i], default: '0}
           };
     end
   endgenerate
@@ -70,12 +70,16 @@ module xbar_varlat_n_to_one #(
   // Unroll OBI slave signals
   assign slave_req_o.req = xbar_slave_req_req_outstanding;
   assign {
-    slave_req_o..we,
+    slave_req_o.a.we,
     slave_req_o.a.be,
     slave_req_o.a.addr,
     slave_req_o.a.wdata
   } = xbar_slave_req_data[0];
-  assign {slave_xbar_rsp_gnt[0], slave_xbar_rsp_rvalid[0], slave_xbar_rsp_data[0]} = slave_resp_i;
+  assign slave_req_o.a.aid = '0;
+  assign slave_req_o.a.a_optional = '0;
+  assign slave_xbar_rsp_gnt[0] = slave_resp_i.gnt;
+  assign slave_xbar_rsp_rvalid[0] = slave_resp_i.rvalid;
+  assign slave_xbar_rsp_data[0] = slave_resp_i.r.rdata;
 
   // Instantiate crossbar
   xbar_varlat #(
