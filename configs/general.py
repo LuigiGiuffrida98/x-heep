@@ -7,6 +7,7 @@
 
 from xheep import XHeep
 from cpu.cv32e20 import cv32e20
+from cpu.cv32e40px import cv32e40px
 from bus_type import BusType
 from memory_ss.memory_ss import MemorySS
 from memory_ss.linker_section import LinkerSection
@@ -42,8 +43,8 @@ from peripherals.user_peripherals import (
 
 
 def config():
-    system = XHeep(BusType.onetoM)
-    system.set_cpu(cv32e20(rv32e=False, rv32m="RV32MSlow"))
+    system = XHeep(BusType.onetoM, reliability=True)
+    system.set_cpu(cv32e40px())
 
     memory_ss = MemorySS()
     memory_ss.add_ram_banks([32] * 2)
@@ -65,9 +66,9 @@ def config():
         DMA(
             address=0x30000,
             length=0x10000,
-            num_channels=4,
-            num_master_ports=2,
-            num_channels_per_master_port=2,
+            num_channels=1,
+            num_master_ports=1,
+            num_channels_per_master_port=1,
         )
     )
     base_peripheral_domain.add_peripheral(Power_manager(0x00040000))
@@ -77,14 +78,6 @@ def config():
     base_peripheral_domain.add_peripheral(Pad_control(0x00080000))
     base_peripheral_domain.add_peripheral(GPIO_ao(0x00090000))
 
-    # User peripherals. All are optional. They must be added with "add_peripheral".
-    user_peripheral_domain.add_peripheral(RV_plic(0x00000000))
-    user_peripheral_domain.add_peripheral(SPI_host(0x00010000))
-    user_peripheral_domain.add_peripheral(GPIO(0x00020000))
-    user_peripheral_domain.add_peripheral(I2C(0x00030000))
-    user_peripheral_domain.add_peripheral(RV_timer(0x00040000))
-    user_peripheral_domain.add_peripheral(SPI2(0x00050000))
-    user_peripheral_domain.add_peripheral(I2S(0x00070000))
     user_peripheral_domain.add_peripheral(UART(0x00080000))
 
     # Add the peripheral domains to the system
