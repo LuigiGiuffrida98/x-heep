@@ -487,14 +487,14 @@ module testharness #(
   obi_resp_t ext_systemc_resp;
 
   assign ext_systemc_req_req_o            = ext_systemc_req.req;
-  assign ext_systemc_req_we_o             = ext_systemc_req.we;
-  assign ext_systemc_req_be_o             = ext_systemc_req.be;
-  assign ext_systemc_req_addr_o           = ext_systemc_req.addr;
-  assign ext_systemc_req_wdata_o          = ext_systemc_req.wdata;
+  assign ext_systemc_req_we_o             = ext_systemc_req.a.we;
+  assign ext_systemc_req_be_o             = ext_systemc_req.a.be;
+  assign ext_systemc_req_addr_o           = ext_systemc_req.a.addr;
+  assign ext_systemc_req_wdata_o          = ext_systemc_req.a.wdata;
 
   assign ext_systemc_resp.gnt             = ext_systemc_resp_gnt_i;
   assign ext_systemc_resp.rvalid          = ext_systemc_resp_rvalid_i;
-  assign ext_systemc_resp.rdata           = ext_systemc_resp_rdata_i;
+  assign ext_systemc_resp.r.rdata         = ext_systemc_resp_rdata_i;
 
   assign ext_systemc_req                  = ext_slave_req[SLOW_MEMORY0_IDX];
   assign ext_slave_resp[SLOW_MEMORY0_IDX] = ext_systemc_resp;
