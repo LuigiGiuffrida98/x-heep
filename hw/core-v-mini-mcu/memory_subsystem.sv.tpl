@@ -82,7 +82,7 @@ module memory_subsystem
       .pwrgate_ni(pwrgate_ni[${i}]),
       .pwrgate_ack_no(pwrgate_ack_no[${i}]),
       .set_retentive_ni(set_retentive_ni[${i}]),
-      .rdata_o(ram_resp_o[${i}].w.rdata)
+      .rdata_o(ram_resp_o[${i}].r.rdata)
   );
 
 %endfor

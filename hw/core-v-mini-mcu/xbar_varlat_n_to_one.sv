@@ -62,7 +62,8 @@ module xbar_varlat_n_to_one #(
       assign master_resp_o[i] = '{
               gnt: xbar_master_rsp_gnt[i],
               rvalid: xbar_master_rsp_rvalid[i],
-              r: '{rdata: xbar_master_rsp_data[i], default: '0}
+              r: '{rdata: xbar_master_rsp_data[i], default: '0},
+              default: '0
           };
     end
   endgenerate

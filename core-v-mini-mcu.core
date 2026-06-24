@@ -196,7 +196,7 @@ parameters:
     paramtype: vlogparam
     description: |
       Enables testbench modules compilation. Admitted values: 1|0.
-    default: 0
+    default: 1
   USE_UPF:
     datatype: bool
     paramtype: vlogdefine

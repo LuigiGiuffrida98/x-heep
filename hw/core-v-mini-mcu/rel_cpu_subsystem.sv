@@ -122,7 +122,7 @@ module rel_cpu_subsystem
       .req_i(instr_req),
       .rsp_o(instr_rsp),
       .rel_req_o(core_instr_req_o),
-      .rel_rsp_i(core_instr_rsp_i),
+      .rel_rsp_i(core_instr_resp_i),
       .fault_o()
   );
 
@@ -138,7 +138,7 @@ module rel_cpu_subsystem
       .req_i(data_req),
       .rsp_o(data_rsp),
       .rel_req_o(core_data_req_o),
-      .rel_rsp_i(core_data_rsp_i),
+      .rel_rsp_i(core_data_resp_i),
       .fault_o()
   );
 

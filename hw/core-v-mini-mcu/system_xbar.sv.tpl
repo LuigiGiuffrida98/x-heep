@@ -77,7 +77,7 @@ module system_xbar
           .addr_t(logic [31:0]),
           .rule_t(addr_map_rule_pkg::addr_map_rule_t)
       ) addr_decode_i (
-          .addr_i(master_req_i[i].addr),
+          .addr_i(master_req_i[i].a.addr),
           .addr_map_i,
 % if not memory_ss.has_il_ram():
           .idx_o(port_sel[i]),
@@ -94,11 +94,11 @@ module system_xbar
     for (genvar j = 0; j < XBAR_NMASTER; j++) begin : gen_addr_napot
       always_comb begin
         port_sel[j] = pre_port_sel[j];
-        post_master_req_addr[j] = master_req_i[j].addr;
+        post_master_req_addr[j] = master_req_i[j].a.addr;
 % for i, group in enumerate(memory_ss.iter_il_groups()):
         if (pre_port_sel[j] == RAM_IL${i}_IDX[LOG_XBAR_NSLAVE-1:0]) begin
-          port_sel[j] = RAM_IL${i}_IDX[LOG_XBAR_NSLAVE-1:0] + $unsigned(master_req_i[j].addr[${group.n.bit_length()-1 +1}:2]);
-          post_master_req_addr[j] = {master_req_i[j].addr[31:${2+group.n.bit_length()-1}], ${2+group.n.bit_length()-1}'h0};
+          port_sel[j] = RAM_IL${i}_IDX[LOG_XBAR_NSLAVE-1:0] + $unsigned(master_req_i[j].a.addr[${group.n.bit_length()-1 +1}:2]);
+          post_master_req_addr[j] = {master_req_i[j].a.addr[31:${2+group.n.bit_length()-1}], ${2+group.n.bit_length()-1}'h0};
         end
 % endfor
       end
@@ -111,14 +111,18 @@ module system_xbar
     for (genvar i = 0; i < XBAR_NMASTER; i++) begin : gen_unroll_master
       assign master_req[i] = '{
         req: master_req_i[i].req,
-        we: master_req_i[i].we,
-        be: master_req_i[i].be,
+        a: '{
+          we: master_req_i[i].a.we,
+          be: master_req_i[i].a.be,
   % if not memory_ss.has_il_ram():
-        addr: master_req_i[i].addr,
+          addr: master_req_i[i].a.addr,
   % else:
-        addr: post_master_req_addr[i],
+          addr: post_master_req_addr[i],
   % endif
-        wdata: master_req_i[i].wdata
+          wdata: master_req_i[i].a.wdata,
+          default: '0
+        },
+        default: '0
       };
     end
   endgenerate
@@ -130,20 +134,22 @@ module system_xbar
     for (genvar i = 0; unsigned'(i) < XBAR_NMASTER; i++) begin: gen_unroll_master
       assign master_req_req[i] = master_req[i].req;
       assign master_req_data[i] = {
-        master_req[i].we,
-        master_req[i].be,
-        master_req[i].addr,
-        master_req[i].wdata
+        master_req[i].a.we,
+        master_req[i].a.be,
+        master_req[i].a.addr,
+        master_req[i].a.wdata
       };
       assign master_resp_o[i].gnt = master_resp_gnt[i];
-      assign master_resp_o[i].rdata = master_resp_rdata[i];
+      assign master_resp_o[i].r.rdata = master_resp_rdata[i];
       assign master_resp_o[i].rvalid = master_resp_rvalid[i];
     end
 
     for (genvar i = 0; i < XBAR_NSLAVE; i++) begin : gen_unroll_slave
       assign slave_req_o[i].req = slave_req_req[i];
-      assign {slave_req_o[i].we, slave_req_o[i].be, slave_req_o[i].addr, slave_req_o[i].wdata} = slave_req_out_data[i];
-      assign slave_resp_rdata[i] = slave_resp_i[i].rdata;
+      assign {slave_req_o[i].a.we, slave_req_o[i].a.be, slave_req_o[i].a.addr, slave_req_o[i].a.wdata} = slave_req_out_data[i];
+      assign slave_req_o[i].a.aid = '0;
+      assign slave_req_o[i].a.a_optional = '0;
+      assign slave_resp_rdata[i] = slave_resp_i[i].r.rdata;
       assign slave_resp_gnt[i] = slave_resp_i[i].gnt;
       assign slave_resp_rvalid[i] = slave_resp_i[i].rvalid;
     end

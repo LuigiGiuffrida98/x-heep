@@ -135,9 +135,6 @@ module rel_system_bus #(
   assign int_master_req[3] = dma_read_req_i[0];
   assign int_master_req[4] = dma_write_req_i[0];
   assign int_master_req[5] = dma_addr_req_i[0];
-  assign int_master_req[6] = dma_read_req_i[1];
-  assign int_master_req[7] = dma_write_req_i[1];
-  assign int_master_req[8] = dma_addr_req_i[1];
 
   // Internal + external master requests
   generate
@@ -166,9 +163,6 @@ module rel_system_bus #(
   assign dma_read_resp_o[0] = int_master_resp[3];
   assign dma_write_resp_o[0] = int_master_resp[4];
   assign dma_addr_resp_o[0] = int_master_resp[5];
-  assign dma_read_resp_o[1] = int_master_resp[6];
-  assign dma_write_resp_o[1] = int_master_resp[7];
-  assign dma_addr_resp_o[1] = int_master_resp[8];
 
   // External master responses
   if (EXT_XBAR_NMASTER == 0) begin : gen_no_ext_master_resp

@@ -151,5 +151,6 @@ package obi_pkg;
   `OBI_TYPEDEF_ALL(obi, ObiDefaultConfig)
 
   typedef obi_rsp_t obi_resp_t;
+  typedef rel_obi_rsp_t rel_obi_resp_t;
 
 endpackage
