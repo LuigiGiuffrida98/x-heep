@@ -200,7 +200,9 @@ module dma
 
   /* Buffer unit */
   dma_buffer_unit #(
-      .FIFO_DEPTH(FIFO_DEPTH)
+      .FIFO_DEPTH(FIFO_DEPTH),
+      .fifo_req_t(fifo_req_t),
+      .fifo_resp_t(fifo_resp_t)
   ) dma_buffer_unit_i (
       .clk_i(clk_cg),
       .rst_ni,
@@ -518,8 +520,6 @@ module dma
   assign dma_read_req_o.a.be = data_in_be;
   assign dma_read_req_o.a.addr = data_in_addr;
   assign dma_read_req_o.a.wdata = 32'h0;
-  assign dma_read_req_o.a.aid = '0;
-  assign dma_read_req_o.a.a_optional = '0;
 
   assign data_in_gnt = dma_read_resp_i.gnt;
   assign data_in_rvalid = dma_read_resp_i.rvalid;
@@ -530,8 +530,6 @@ module dma
   assign dma_addr_req_o.a.be = data_addr_in_be;
   assign dma_addr_req_o.a.addr = data_addr_in_addr;
   assign dma_addr_req_o.a.wdata = 32'h0;
-  assign dma_addr_req_o.a.aid = '0;
-  assign dma_addr_req_o.a.a_optional = '0;
 
   assign data_addr_in_gnt = dma_addr_resp_i.gnt;
   assign data_addr_in_rvalid = dma_addr_resp_i.rvalid;
@@ -542,8 +540,6 @@ module dma
   assign dma_write_req_o.a.be = data_out_be;
   assign dma_write_req_o.a.addr = data_out_addr;
   assign dma_write_req_o.a.wdata = data_out_wdata;
-  assign dma_write_req_o.a.aid = '0;
-  assign dma_write_req_o.a.a_optional = '0;
 
   assign data_out_gnt = dma_write_resp_i.gnt;
   assign data_out_rvalid = dma_write_resp_i.rvalid;

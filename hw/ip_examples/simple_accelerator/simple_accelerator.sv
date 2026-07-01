@@ -7,7 +7,7 @@ module simple_accelerator #(
     parameter type reg_req_t = logic,
     parameter type reg_rsp_t = logic,
     parameter type obi_req_t = logic,
-    parameter type obi_resp_t = logic
+    parameter type obi_rsp_t = logic
 ) (
     input logic clk_i,
     input logic rst_ni,
@@ -15,11 +15,11 @@ module simple_accelerator #(
     input  reg_req_t reg_req_i,
     output reg_rsp_t reg_rsp_o,
 
-    output obi_req_t  acc_read_ch0_req_o,
-    input  obi_resp_t acc_read_ch0_resp_i,
+    output obi_req_t acc_read_ch0_req_o,
+    input  obi_rsp_t acc_read_ch0_resp_i,
 
-    output obi_req_t  acc_write_ch0_req_o,
-    input  obi_resp_t acc_write_ch0_resp_i
+    output obi_req_t acc_write_ch0_req_o,
+    input  obi_rsp_t acc_write_ch0_resp_i
 
 );
 
@@ -99,8 +99,6 @@ module simple_accelerator #(
   assign acc_read_ch0_req_o.a.be = data_in_be;
   assign acc_read_ch0_req_o.a.addr = data_in_addr;
   assign acc_read_ch0_req_o.a.wdata = 32'h0;
-  assign acc_read_ch0_req_o.a.aid = '0;
-  assign acc_read_ch0_req_o.a.a_optional = '0;
 
   assign data_in_gnt = acc_read_ch0_resp_i.gnt;
   assign data_in_rvalid = acc_read_ch0_resp_i.rvalid;
@@ -110,8 +108,6 @@ module simple_accelerator #(
   assign acc_write_ch0_req_o.a.we = data_out_we;
   assign acc_write_ch0_req_o.a.be = data_out_be;
   assign acc_write_ch0_req_o.a.addr = data_out_addr;
-  assign acc_write_ch0_req_o.a.aid = '0;
-  assign acc_write_ch0_req_o.a.a_optional = '0;
 
   //complete the function
   assign acc_write_ch0_req_o.a.wdata = data_out_wdata > threshold_q ? data_out_wdata : threshold_q;

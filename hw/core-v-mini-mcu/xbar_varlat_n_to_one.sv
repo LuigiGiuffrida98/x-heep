@@ -8,18 +8,20 @@
 // Description: N-to-1 crossbar
 
 module xbar_varlat_n_to_one #(
-    parameter int unsigned XBAR_NMASTER = 2
+    parameter int unsigned XBAR_NMASTER = 2,
+    parameter type         obi_req_t    = logic,
+    parameter type         obi_rsp_t    = logic
 ) (
     input logic clk_i,
     input logic rst_ni,
 
     // Master ports
-    input  obi_pkg::obi_req_t  [XBAR_NMASTER-1:0] master_req_i,
-    output obi_pkg::obi_resp_t [XBAR_NMASTER-1:0] master_resp_o,
+    input  obi_req_t [XBAR_NMASTER-1:0] master_req_i,
+    output obi_rsp_t [XBAR_NMASTER-1:0] master_resp_o,
 
     // Slave port
-    output obi_pkg::obi_req_t  slave_req_o,
-    input  obi_pkg::obi_resp_t slave_resp_i
+    output obi_req_t slave_req_o,
+    input  obi_rsp_t slave_resp_i
 );
   // ARCHITECTURE
   // ------------
@@ -62,8 +64,7 @@ module xbar_varlat_n_to_one #(
       assign master_resp_o[i] = '{
               gnt: xbar_master_rsp_gnt[i],
               rvalid: xbar_master_rsp_rvalid[i],
-              r: '{rdata: xbar_master_rsp_data[i], default: '0},
-              default: '0
+              r: '{rdata: xbar_master_rsp_data[i], rid: '0, err: '0, r_optional: '0}
           };
     end
   endgenerate
@@ -76,8 +77,6 @@ module xbar_varlat_n_to_one #(
     slave_req_o.a.addr,
     slave_req_o.a.wdata
   } = xbar_slave_req_data[0];
-  assign slave_req_o.a.aid = '0;
-  assign slave_req_o.a.a_optional = '0;
   assign slave_xbar_rsp_gnt[0] = slave_resp_i.gnt;
   assign slave_xbar_rsp_rvalid[0] = slave_resp_i.rvalid;
   assign slave_xbar_rsp_data[0] = slave_resp_i.r.rdata;

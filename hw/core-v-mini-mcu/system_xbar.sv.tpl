@@ -7,14 +7,16 @@
 %>
 
 module system_xbar
-  import obi_pkg::*;
   import addr_map_rule_pkg::*;
   import core_v_mini_mcu_pkg::*;
 #(
     parameter core_v_mini_mcu_pkg::bus_type_e BUS_TYPE = core_v_mini_mcu_pkg::BusType,
     parameter XBAR_NMASTER = 3,
     parameter XBAR_NSLAVE = 6,
-    localparam int unsigned IdxWidth = cf_math_pkg::idx_width(XBAR_NSLAVE)
+    localparam int unsigned IdxWidth = cf_math_pkg::idx_width(XBAR_NSLAVE),
+    // OBI data types
+    parameter type obi_req_t = xheep_obi_pkg::xheep_obi_req_t,
+    parameter type obi_rsp_t = xheep_obi_pkg::xheep_obi_rsp_t
 ) (
     input logic clk_i,
     input logic rst_ni,
@@ -25,11 +27,11 @@ module system_xbar
     // Default slave index
     input logic [IdxWidth-1:0] default_idx_i,
 
-    input  obi_req_t  [XBAR_NMASTER-1:0] master_req_i,
-    output obi_resp_t [XBAR_NMASTER-1:0] master_resp_o,
+    input  obi_req_t [XBAR_NMASTER-1:0] master_req_i,
+    output obi_rsp_t [XBAR_NMASTER-1:0] master_resp_o,
 
-    output obi_req_t  [XBAR_NSLAVE-1:0] slave_req_o,
-    input  obi_resp_t [XBAR_NSLAVE-1:0] slave_resp_i
+    output obi_req_t [XBAR_NSLAVE-1:0] slave_req_o,
+    input  obi_rsp_t [XBAR_NSLAVE-1:0] slave_resp_i
 
 );
 
@@ -51,7 +53,7 @@ module system_xbar
 
   // Neck crossbar
   obi_req_t neck_req;
-  obi_resp_t neck_resp;
+  obi_rsp_t neck_resp;
 
   logic [XBAR_NMASTER-1:0] master_req_req;
   logic [XBAR_NMASTER-1:0] master_resp_gnt;
@@ -109,21 +111,15 @@ module system_xbar
   // Propagate interleaved address
   generate
     for (genvar i = 0; i < XBAR_NMASTER; i++) begin : gen_unroll_master
-      assign master_req[i] = '{
-        req: master_req_i[i].req,
-        a: '{
-          we: master_req_i[i].a.we,
-          be: master_req_i[i].a.be,
+      assign master_req[i].req = master_req_i[i].req;
+      assign master_req[i].a.we = master_req_i[i].a.we;
+      assign master_req[i].a.be = master_req_i[i].a.be;
   % if not memory_ss.has_il_ram():
-          addr: master_req_i[i].a.addr,
+      assign master_req[i].a.addr = master_req_i[i].a.addr;
   % else:
-          addr: post_master_req_addr[i],
+      assign master_req[i].a.addr = post_master_req_addr[i];
   % endif
-          wdata: master_req_i[i].a.wdata,
-          default: '0
-        },
-        default: '0
-      };
+      assign master_req[i].a.wdata = master_req_i[i].a.wdata;
     end
   endgenerate
 
@@ -182,7 +178,9 @@ module system_xbar
 
     // N-to-1 crossbar
     xbar_varlat_n_to_one #(
-      .XBAR_NMASTER (XBAR_NMASTER)
+      .XBAR_NMASTER (XBAR_NMASTER),
+      .obi_req_t    (obi_req_t),
+      .obi_rsp_t    (obi_rsp_t)
     ) xbar_varlat_n_to_one_i (
       .clk_i         (clk_i),
       .rst_ni        (rst_ni),
@@ -204,7 +202,9 @@ module system_xbar
 
       xbar_varlat_one_to_n #(
         .XBAR_NSLAVE   (XBAR_NSLAVE),
-        .AGGREGATE_GNT (32'd0) // the neck request is aggregating all the input masters
+        .AGGREGATE_GNT (32'd0), // the neck request is aggregating all the input masters
+        .obi_req_t     (obi_req_t),
+        .obi_rsp_t     (obi_rsp_t)
       ) xbar_varlat_one_to_n_i (
         .clk_i         (clk_i),
         .rst_ni        (rst_ni),

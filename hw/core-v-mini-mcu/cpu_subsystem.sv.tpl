@@ -13,7 +13,9 @@ module cpu_subsystem
     parameter type obi_req_t = logic,
     parameter type obi_resp_t = logic,
     parameter BOOT_ADDR = 'h180,
-    parameter DM_HALTADDRESS = '0
+    parameter DM_HALTADDRESS = '0,
+    parameter type obi_req_t = xheep_obi_pkg::xheep_obi_req_t,
+    parameter type obi_rsp_t = xheep_obi_pkg::xheep_obi_rsp_t
 ) (
     // Clock and Reset
     input logic clk_i,
@@ -24,11 +26,11 @@ module cpu_subsystem
 
     // Instruction memory interface
     output obi_req_t  core_instr_req_o,
-    input  obi_resp_t core_instr_resp_i,
+    input  obi_rsp_t  core_instr_resp_i,
 
     // Data memory interface
     output obi_req_t  core_data_req_o,
-    input  obi_resp_t core_data_resp_i,
+    input  obi_rsp_t  core_data_resp_i,
 
     // eXtension interface
     if_xif.cpu_compressed xif_compressed_if,

@@ -10,7 +10,9 @@
 module xbar_varlat_one_to_n #(
     parameter int unsigned XBAR_NSLAVE = 2,
     parameter int unsigned NUM_RULES = XBAR_NSLAVE,  // number of ranges in the address map
-    parameter int unsigned AGGREGATE_GNT = 32'd0, // the master port is not aggregating multiple masters
+    parameter int unsigned AGGREGATE_GNT = 32'd0, // the master port is not aggregating multiple masters,
+    parameter type obi_req_t = logic,
+    parameter type obi_rsp_t = logic,
     // Dependent parameters: do not override!
     localparam int unsigned IdxWidth = cf_math_pkg::idx_width(XBAR_NSLAVE)
 ) (
@@ -24,15 +26,13 @@ module xbar_varlat_one_to_n #(
     input logic [IdxWidth-1:0] default_idx_i,
 
     // Master port
-    input  obi_pkg::obi_req_t  master_req_i,
-    output obi_pkg::obi_resp_t master_resp_o,
+    input  obi_req_t master_req_i,
+    output obi_rsp_t master_resp_o,
 
     // slave ports
-    output obi_pkg::obi_req_t  [XBAR_NSLAVE-1:0] slave_req_o,
-    input  obi_pkg::obi_resp_t [XBAR_NSLAVE-1:0] slave_resp_i
+    output obi_req_t [XBAR_NSLAVE-1:0] slave_req_o,
+    input  obi_rsp_t [XBAR_NSLAVE-1:0] slave_resp_i
 );
-  import obi_pkg::*;
-
   // ARCHITECTURE
   // ------------
   //                ,---- SLAVE[0]
@@ -102,22 +102,26 @@ module xbar_varlat_one_to_n #(
   assign master_resp_o = '{
           gnt: xbar_master_rsp_gnt[0],
           rvalid: xbar_master_rsp_rvalid[0],
-          r: '{rdata: xbar_master_rsp_data[0], default: '0},
-          default: '0
+          r: '{rdata: xbar_master_rsp_data[0], rid: '0, err: '0, r_optional: '0}
       };
 
   // Unroll OBI slave signals
+  // ponytail: drive each slave_req_o[i] struct in a single assignment. Partial
+  // field-by-field writes to elements of this array-of-struct output port crash
+  // the DFG cycle-breaking pass (V3DfgBreakCycles Wrong result width) in the
+  // simulator. Assigning the whole struct at once sidesteps the bug.
   generate
     for (genvar i = 0; unsigned'(i) < XBAR_NSLAVE; i++) begin : gen_unroll_obi
-      assign slave_req_o[i].req = xbar_slave_req_req[i];
-      assign {
-        slave_req_o[i].a.we,
-        slave_req_o[i].a.be,
-        slave_req_o[i].a.addr,
-        slave_req_o[i].a.wdata
-      } = xbar_slave_req_data[i];
-      assign slave_req_o[i].a.aid = '0;
-      assign slave_req_o[i].a.a_optional = '0;
+      assign slave_req_o[i] = '{
+              req: xbar_slave_req_req[i],
+              a: '{
+                  we: xbar_slave_req_data[i][ReqDataWidth-1],
+                  be: xbar_slave_req_data[i][ReqDataWidth-2-:4],
+                  addr: xbar_slave_req_data[i][32+:32],
+                  wdata: xbar_slave_req_data[i][31:0],
+                  default: '0
+              }
+          };
       assign slave_xbar_rsp_gnt[i] = slave_resp_i[i].gnt;
       assign slave_xbar_rsp_rvalid[i] = slave_resp_i[i].rvalid;
       assign slave_xbar_rsp_data[i] = slave_resp_i[i].r.rdata;
