@@ -13,7 +13,7 @@ module rel_cpu_subsystem
     parameter type rel_obi_req_t = logic,
     parameter type rel_obi_rsp_t = logic,
 
-    parameter obi_pkg::obi_cfg_t ObiCfg = obi_pkg::ObiDefaultConfig,
+    parameter xheep_obi_pkg::obi_cfg_t ObiCfg = xheep_obi_pkg::xheep_obiCfg,
 
     parameter BOOT_ADDR = 'h180,
     parameter DM_HALTADDRESS = '0

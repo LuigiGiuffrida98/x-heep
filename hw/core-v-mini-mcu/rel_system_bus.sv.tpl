@@ -24,7 +24,7 @@
 module rel_system_bus #(
     parameter type obi_req_t     = logic,
     parameter type obi_resp_t    = logic,
-    parameter obi_pkg::obi_cfg_t ObiCfg        = obi_pkg::ObiDefaultConfig,
+    parameter xheep_obi_pkg::obi_cfg_t ObiCfg          = xheep_obi_pkg::xheep_obiCfg,
     parameter type addr_map_rule_t = logic,
     parameter type a_optional_t = logic,
     parameter type r_optional_t = logic,
@@ -248,7 +248,9 @@ module rel_system_bus #(
     for (genvar i = 0; unsigned'(i) < core_v_mini_mcu_pkg::SYSTEM_XBAR_NMASTER; i++) begin : gen_demux_xbar
       xbar_varlat_one_to_n #(
           .XBAR_NSLAVE (32'd2), // internal crossbar + external crossbar
-          .NUM_RULES   (32'd1) // only the external address space is defined
+          .NUM_RULES   (32'd1), // only the external address space is defined
+          .obi_req_t(obi_req_t),
+          .obi_rsp_t(obi_resp_t)
       ) demux_xbar_i (
           .clk_i        (clk_i),
           .rst_ni       (rst_ni),

@@ -33,6 +33,12 @@ module core_v_mini_mcu #(
     // NOTE: the address and data withs of the following types must match
     parameter type obi_req_t = xheep_obi_pkg::xheep_obi_req_t,
     parameter type obi_rsp_t = xheep_obi_pkg::xheep_obi_rsp_t,
+    % if xheep.reliability:
+    parameter type rel_obi_req_t = xheep_obi_pkg::xheep_rel_obi_req_t,
+    parameter type rel_obi_rsp_t = xheep_obi_pkg::xheep_rel_obi_rsp_t,
+    parameter type rel_obi_a_chan_t = xheep_obi_pkg::xheep_rel_obi_a_chan_t,
+    parameter type rel_obi_r_chan_t = xheep_obi_pkg::xheep_rel_obi_r_chan_t,  
+    %endif
     parameter type reg_req_t = xheep_reg_pkg::xheep_reg_req_t,
     parameter type reg_rsp_t = xheep_reg_pkg::xheep_reg_rsp_t,
     parameter type fifo_req_t = xheep_fifo_pkg::xheep_fifo_req_t,
@@ -188,53 +194,53 @@ module core_v_mini_mcu #(
 % if xheep.reliability:
   // REL master signals
   rel_obi_req_t rel_core_instr_req;
-  rel_obi_resp_t rel_core_instr_resp;
+  rel_obi_rsp_t rel_core_instr_resp;
   rel_obi_req_t rel_core_data_req;
-  rel_obi_resp_t rel_core_data_resp;
+  rel_obi_rsp_t rel_core_data_resp;
   rel_obi_req_t rel_debug_master_req;
-  rel_obi_resp_t rel_debug_master_resp;
+  rel_obi_rsp_t rel_debug_master_resp;
   rel_obi_req_t [${dma_obi_msb}:0]rel_dma_read_req;
-  rel_obi_resp_t [${dma_obi_msb}:0]rel_dma_read_resp;
+  rel_obi_rsp_t [${dma_obi_msb}:0]rel_dma_read_resp;
   rel_obi_req_t [${dma_obi_msb}:0]rel_dma_write_req;
-  rel_obi_resp_t [${dma_obi_msb}:0]rel_dma_write_resp;
+  rel_obi_rsp_t [${dma_obi_msb}:0]rel_dma_write_resp;
   rel_obi_req_t [${dma_obi_msb}:0]rel_dma_addr_req;
-  rel_obi_resp_t [${dma_obi_msb}:0]rel_dma_addr_resp;
+  rel_obi_rsp_t [${dma_obi_msb}:0]rel_dma_addr_resp;
 
   // REL ram signals
   rel_obi_req_t [core_v_mini_mcu_pkg::NUM_BANKS-1:0] rel_ram_slave_req;
-  rel_obi_resp_t [core_v_mini_mcu_pkg::NUM_BANKS-1:0] rel_ram_slave_resp;
+  rel_obi_rsp_t [core_v_mini_mcu_pkg::NUM_BANKS-1:0] rel_ram_slave_resp;
 
   // REL peripherals signals
   rel_obi_req_t rel_ao_peripheral_slave_req;
-  rel_obi_resp_t rel_ao_peripheral_slave_resp;
+  rel_obi_rsp_t rel_ao_peripheral_slave_resp;
   rel_obi_req_t rel_peripheral_slave_req;
-  rel_obi_resp_t rel_peripheral_slave_resp;
+  rel_obi_rsp_t rel_peripheral_slave_resp;
 
   // REL debug signals
   rel_obi_req_t rel_debug_slave_req;
-  rel_obi_resp_t rel_debug_slave_resp;
+  rel_obi_rsp_t rel_debug_slave_resp;
 
   // REL Memory Map SPI Region
   rel_obi_req_t rel_flash_mem_slave_req;
-  rel_obi_resp_t rel_flash_mem_slave_resp;
+  rel_obi_rsp_t rel_flash_mem_slave_resp;
 
   // REL external master ports (xbar)
   rel_obi_req_t  [EXT_XBAR_NMASTER_RND-1:0] rel_ext_xbar_master_req;
-  rel_obi_resp_t [EXT_XBAR_NMASTER_RND-1:0] rel_ext_xbar_master_resp;
+  rel_obi_rsp_t [EXT_XBAR_NMASTER_RND-1:0] rel_ext_xbar_master_resp;
 
   // REL external slave ports
   rel_obi_req_t  rel_ext_core_instr_req;
-  rel_obi_resp_t rel_ext_core_instr_resp;
+  rel_obi_rsp_t rel_ext_core_instr_resp;
   rel_obi_req_t  rel_ext_core_data_req;
-  rel_obi_resp_t rel_ext_core_data_resp;
+  rel_obi_rsp_t rel_ext_core_data_resp;
   rel_obi_req_t  rel_ext_debug_master_req;
-  rel_obi_resp_t rel_ext_debug_master_resp;
+  rel_obi_rsp_t rel_ext_debug_master_resp;
   rel_obi_req_t  [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] rel_ext_dma_read_req;
-  rel_obi_resp_t [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] rel_ext_dma_read_resp;
+  rel_obi_rsp_t [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] rel_ext_dma_read_resp;
   rel_obi_req_t  [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] rel_ext_dma_write_req;
-  rel_obi_resp_t [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] rel_ext_dma_write_resp;
+  rel_obi_rsp_t [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] rel_ext_dma_write_resp;
   rel_obi_req_t  [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] rel_ext_dma_addr_req;
-  rel_obi_resp_t [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] rel_ext_dma_addr_resp;
+  rel_obi_rsp_t [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] rel_ext_dma_addr_resp;
 % endif
 
   // signals to debug unit
@@ -376,8 +382,6 @@ module core_v_mini_mcu #(
       .rel_obi_req_t(rel_obi_req_t),
       .rel_obi_rsp_t(rel_obi_rsp_t),
       .ObiCfg(ObiCfg),
-      .obi_req_t(obi_req_t),
-      .obi_rsp_t(obi_rsp_t),
       .BOOT_ADDR(BOOT_ADDR),
       .DM_HALTADDRESS(DM_HALTADDRESS),
       .obi_req_t(obi_req_t),
@@ -521,7 +525,7 @@ module core_v_mini_mcu #(
 % if xheep.reliability:
   rel_system_bus #(
       .obi_req_t(rel_obi_req_t),
-      .obi_rsp_t(rel_obi_rsp_t),
+      .obi_resp_t(rel_obi_rsp_t),
       .ObiCfg(ObiCfg),
       .obi_a_chan_t(rel_obi_a_chan_t),
       .obi_r_chan_t(rel_obi_r_chan_t),
