@@ -10,8 +10,6 @@
 module cpu_subsystem
   import core_v_mini_mcu_pkg::*;
 #(
-    parameter type obi_req_t = logic,
-    parameter type obi_resp_t = logic,
     parameter BOOT_ADDR = 'h180,
     parameter DM_HALTADDRESS = '0,
     parameter type obi_req_t = xheep_obi_pkg::xheep_obi_req_t,

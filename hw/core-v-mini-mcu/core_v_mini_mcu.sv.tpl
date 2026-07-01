@@ -36,8 +36,10 @@ module core_v_mini_mcu #(
     parameter type reg_req_t = xheep_reg_pkg::xheep_reg_req_t,
     parameter type reg_rsp_t = xheep_reg_pkg::xheep_reg_rsp_t,
     parameter type fifo_req_t = xheep_fifo_pkg::xheep_fifo_req_t,
-    parameter type fifo_rsp_t = xheep_fifo_pkg::xheep_fifo_rsp_t
-) (
+    parameter type fifo_rsp_t = xheep_fifo_pkg::xheep_fifo_rsp_t,
+    parameter xheep_obi_pkg::obi_cfg_t ObiCfg = xheep_obi_pkg::xheep_obiCfg
+
+  ) (
 
     % if clk_module != "core_v_mini_mcu":
       input logic clk_i,
@@ -135,8 +137,6 @@ module core_v_mini_mcu #(
   import core_v_mini_mcu_pkg::*;
   import cv32e40p_apu_core_pkg::*;
   import power_manager_pkg::*;
-
-  localparam obi_pkg::obi_cfg_t ObiCfg = obi_pkg::ObiDefaultConfig;
 
   localparam NUM_BYTES = core_v_mini_mcu_pkg::MEM_SIZE;
   localparam DM_HALTADDRESS = core_v_mini_mcu_pkg::DEBUG_START_ADDRESS + 32'h00000800; //debug rom code (section .text in linker) starts at 0x800
@@ -361,11 +361,11 @@ module core_v_mini_mcu #(
 
 % if xheep.reliability:
   rel_cpu_subsystem #(
-      .rel_obi_req_t(obi_pkg::rel_obi_req_t),
-      .rel_obi_rsp_t(obi_pkg::rel_obi_rsp_t),
-      .ObiCfg(obi_pkg::ObiDefaultConfig),
-      .obi_req_t(obi_pkg::obi_req_t),
-      .obi_rsp_t(obi_pkg::obi_rsp_t),
+      .rel_obi_req_t(rel_obi_req_t),
+      .rel_obi_rsp_t(rel_obi_rsp_t),
+      .ObiCfg(ObiCfg),
+      .obi_req_t(obi_req_t),
+      .obi_rsp_t(obi_rsp_t),
       .BOOT_ADDR(BOOT_ADDR),
       .DM_HALTADDRESS(DM_HALTADDRESS),
       .obi_req_t(obi_req_t),
@@ -395,8 +395,8 @@ module core_v_mini_mcu #(
   cpu_subsystem #(
       .BOOT_ADDR(BOOT_ADDR),
       .DM_HALTADDRESS(DM_HALTADDRESS),
-      .obi_req_t(obi_pkg::obi_req_t),
-      .obi_resp_t(obi_pkg::obi_resp_t)
+      .obi_req_t(obi_req_t),
+      .obi_rsp_t(obi_rsp_t)
   ) cpu_subsystem_i (
       // Clock and Reset
       .clk_i,
@@ -508,13 +508,13 @@ module core_v_mini_mcu #(
 
 % if xheep.reliability:
   rel_system_bus #(
-      .obi_req_t(obi_pkg::rel_obi_req_t),
-      .obi_resp_t(obi_pkg::rel_obi_rsp_t),
-      .ObiCfg(obi_pkg::ObiDefaultConfig),
-      .obi_a_chan_t(obi_pkg::rel_obi_a_chan_t),
-      .obi_r_chan_t(obi_pkg::rel_obi_r_chan_t),
-      .a_optional_t(obi_pkg::rel_obi_a_chan_t),
-      .r_optional_t(obi_pkg::rel_obi_r_chan_t),
+      .obi_req_t(rel_obi_req_t),
+      .obi_rsp_t(rel_obi_rsp_t),
+      .ObiCfg(ObiCfg),
+      .obi_a_chan_t(rel_obi_a_chan_t),
+      .obi_r_chan_t(rel_obi_r_chan_t),
+      .a_optional_t(rel_obi_a_chan_t),
+      .r_optional_t(rel_obi_r_chan_t),
       .addr_map_rule_t(core_v_mini_mcu_pkg::addr_map_rule_t),
       .NUM_BANKS(core_v_mini_mcu_pkg::NUM_BANKS),
       .EXT_XBAR_NMASTER(EXT_XBAR_NMASTER)

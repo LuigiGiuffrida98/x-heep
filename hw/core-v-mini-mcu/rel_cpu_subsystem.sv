@@ -89,7 +89,7 @@ module rel_cpu_subsystem
           },
           req : instr_req_o,
           rready : 1'b1,  // always ready to accept response
-          default : '0  // reqpar / rreadypar unused
+          default: '0  // reqpar / rreadypar unused
       };
   assign data_req = '{
           a : '{
@@ -102,7 +102,7 @@ module rel_cpu_subsystem
           },
           req : data_req_o,
           rready : 1'b1,  // always ready to accept response
-          default : '0  // reqpar / rreadypar unused
+          default: '0  // reqpar / rreadypar unused
       };
 
   assign instr_gnt_i = instr_rsp.gnt;
