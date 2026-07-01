@@ -596,28 +596,6 @@ module core_v_mini_mcu #(
       .set_retentive_ni(memory_subsystem_banks_set_retentive_n)
   );
 
-  // reg_req_t ao_peripheral_slave_req_reg;
-  // reg_rsp_t ao_peripheral_slave_resp_reg;
-
-  // assign ao_peripheral_slave_req_reg = '{
-  //   addr:  ao_peripheral_slave_req.a.addr,
-  //   write: ao_peripheral_slave_req.a.we,
-  //   wdata: ao_peripheral_slave_req.a.wdata,
-  //   wstrb: 4'b1111,
-  //   valid: ao_peripheral_slave_req.req
-  // };
-
-  // assign ao_peripheral_slave_resp = '{
-  //   r : '{
-  //     rdata:      ao_peripheral_slave_resp_reg.rdata,
-  //     rid:        '0,
-  //     err:        ao_peripheral_slave_resp_reg.error,
-  //     r_optional: '0
-  //   },
-  //   gnt: ao_peripheral_slave_req.req,
-
-  // };
-
   ao_peripheral_subsystem #(
       .AO_SPC_NUM(AO_SPC_NUM),
       .obi_req_t (obi_req_t),
