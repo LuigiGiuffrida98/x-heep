@@ -111,17 +111,15 @@ module system_xbar
   // Propagate interleaved address
   generate
     for (genvar i = 0; i < XBAR_NMASTER; i++) begin : gen_unroll_master
-      assign master_req[i] = '{
-        req: master_req_i[i].req,
-        we: master_req_i[i].we,
-        be: master_req_i[i].be,
+      assign master_req[i].req = master_req_i[i].req;
+      assign master_req[i].a.we = master_req_i[i].a.we;
+      assign master_req[i].a.be = master_req_i[i].a.be;
   % if not memory_ss.has_il_ram():
-        addr: master_req_i[i].addr,
+      assign master_req[i].a.addr = master_req_i[i].a.addr;
   % else:
-        addr: post_master_req_addr[i],
+      assign master_req[i].a.addr = post_master_req_addr[i];
   % endif
-        wdata: master_req_i[i].wdata
-      };
+      assign master_req[i].a.wdata = master_req_i[i].a.wdata;
     end
   endgenerate
 

@@ -46,7 +46,7 @@ module xheep_obi_fifo #(
   // remove .req from here if not it stays at 1
   assign {producer_data_req.we, producer_data_req.be, producer_data_req.addr, producer_data_req.wdata} =
           {
-    producer_req_i.we, producer_req_i.be, producer_req_i.addr, producer_req_i.wdata
+    producer_req_i.a.we, producer_req_i.a.be, producer_req_i.a.addr, producer_req_i.a.wdata
   };
 
   logic fifo_req_full, fifo_req_empty, fifo_req_push, fifo_req_pop;
@@ -60,7 +60,7 @@ module xheep_obi_fifo #(
     consumer_state_n = consumer_state_q;
     consumer_req_o.req = ~fifo_req_empty;
     save_request = 1'b0;
-    {consumer_req_o.we, consumer_req_o.be, consumer_req_o.addr, consumer_req_o.wdata} = {
+    {consumer_req_o.a.we, consumer_req_o.a.be, consumer_req_o.a.addr, consumer_req_o.a.wdata} = {
       consumer_data_req.we, consumer_data_req.be, consumer_data_req.addr, consumer_data_req.wdata
     };
 
@@ -75,7 +75,7 @@ module xheep_obi_fifo #(
 
       CONSUMER_WAIT_FOR_GNT: begin
         consumer_req_o.req = 1'b1;
-        {consumer_req_o.we, consumer_req_o.be, consumer_req_o.addr, consumer_req_o.wdata} = {
+        {consumer_req_o.a.we, consumer_req_o.a.be, consumer_req_o.a.addr, consumer_req_o.a.wdata} = {
           consumer_data_req_q.we,
           consumer_data_req_q.be,
           consumer_data_req_q.addr,
@@ -167,10 +167,10 @@ module xheep_obi_fifo #(
       .full_o(fifo_resp_full),
       .empty_o(fifo_resp_empty),
       .usage_o(),
-      .data_i(consumer_resp_i.rdata),
+      .data_i(consumer_resp_i.r.rdata),
       .push_i(fifo_resp_push),
       // grant is given above
-      .data_o(producer_resp_o.rdata),
+      .data_o(producer_resp_o.r.rdata),
       .pop_i(fifo_resp_pop)
   );
 

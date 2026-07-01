@@ -67,18 +67,18 @@ module obi_to_picorv32 #(
     picorv32_req_o.wstrb = READ_MEM;
     obi_resp_o.gnt = 1'b0;
     obi_resp_o.rvalid = 1'b0;
-    obi_resp_o.rdata = rdata_buf;
+    obi_resp_o.r.rdata = rdata_buf;
     rdata_buf_next = picorv32_resp_i.rdata;
     // fsm
     case (state)
       IDLE: begin
         if (obi_req_i.req) begin
-          if (obi_req_i.we == 1'b1) begin
+          if (obi_req_i.a.we == 1'b1) begin
             state_next = WRITE;
             obi_resp_o.gnt = 1'b1;
           end else begin
             state_next = READ;
-            addr_buf_next = obi_req_i.addr;
+            addr_buf_next = obi_req_i.a.addr;
             obi_resp_o.gnt = 1'b1;
           end
         end
