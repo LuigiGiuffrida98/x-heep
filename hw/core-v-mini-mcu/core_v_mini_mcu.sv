@@ -325,10 +325,6 @@ module core_v_mini_mcu
 `endif
 
   // masters signals
-  obi_req_t core_instr_req;
-  obi_resp_t core_instr_resp;
-  obi_req_t core_data_req;
-  obi_resp_t core_data_resp;
   obi_req_t debug_master_req;
   obi_resp_t debug_master_resp;
   obi_req_t [0:0] dma_read_req;
@@ -482,6 +478,15 @@ module core_v_mini_mcu
   assign memory_subsystem_banks_powergate_iso_n[1] = memory_subsystem_pwr_ctrl_out[1].isogate_en_n;
   assign memory_subsystem_banks_set_retentive_n[1] = memory_subsystem_pwr_ctrl_out[1].retentive_en_n;
   assign memory_subsystem_clkgate_en_n[1] = memory_subsystem_pwr_ctrl_out[1].clkgate_en_n;
+
+  for (genvar i = 0; i < EXT_DOMAINS_RND; i = i + 1) begin : gen_external_subsystem_pwr_gating
+    assign external_subsystem_powergate_switch_no[i]       = '1;
+    assign external_subsystem_powergate_iso_no[i]          = '1;
+    assign external_subsystem_rst_no[i]                    = '1;
+    assign external_ram_banks_set_retentive_no[i]          = '1;
+    assign external_subsystem_clkgate_en_no[i]             = '1;
+    assign external_subsystem_pwr_ctrl_in[i].pwrgate_ack_n = '1;
+  end
 
 
   // DMA
@@ -828,6 +833,22 @@ module core_v_mini_mcu
       .rel_rsp_o(rel_ao_peripheral_slave_resp),
       .req_o(ao_peripheral_slave_req),
       .rsp_i(ao_peripheral_slave_resp),
+      .fault_o()
+  );
+
+  relobi_decoder #(
+      .Cfg(ObiCfg),
+      .relobi_req_t(rel_obi_req_t),
+      .relobi_rsp_t(rel_obi_rsp_t),
+      .obi_req_t(obi_req_t),
+      .obi_rsp_t(obi_rsp_t),
+      .a_optional_t(logic),
+      .r_optional_t(logic)
+  ) i_peripheral_decoder (
+      .rel_req_i(rel_peripheral_slave_req),
+      .rel_rsp_o(rel_peripheral_slave_resp),
+      .req_o(peripheral_slave_req),
+      .rsp_i(peripheral_slave_resp),
       .fault_o()
   );
 
