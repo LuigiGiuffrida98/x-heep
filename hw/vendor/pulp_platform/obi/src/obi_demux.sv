@@ -130,7 +130,7 @@ module obi_demux_intf #(
   OBI_BUS.Manager     mgr_ports [NumMgrPorts]
 );
 
-  `OBI_TYPEDEF_ALL(obi, ObiCfg)
+  `OBI_TYPEDEF_ALL(obi, ObiCfg, obi_pkg)
 
   obi_req_t sbr_port_req;
   obi_rsp_t sbr_port_rsp;

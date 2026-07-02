@@ -170,7 +170,7 @@ module obi_sim_mem_intf import obi_pkg::*; #(
 );
 
   `ifdef TARGET_VSIM
-  `OBI_TYPEDEF_ALL(obi, ObiCfg)
+  `OBI_TYPEDEF_ALL(obi, ObiCfg, obi_pkg)
   `else
   `OBI_TYPEDEF_ALL_WITH_OPTIONAL(obi, ObiCfg, a_optional_t, r_optional_t)
   `endif

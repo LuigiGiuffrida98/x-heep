@@ -267,6 +267,21 @@ module rel_system_bus #(
 
   // Internal system crossbar
   // ------------------------
+
+  logic [2:0][core_v_mini_mcu_pkg::SYSTEM_XBAR_NMASTER + EXT_XBAR_NMASTER-1:0] default_idx;
+  addr_map_rule_t [2:0] [core_v_mini_mcu_pkg::SYSTEM_XBAR_NSLAVE-1:0] addr_map_rule;
+
+  assign default_idx = '{
+          core_v_mini_mcu_pkg::ERROR_IDX[core_v_mini_mcu_pkg::LOG_SYSTEM_XBAR_NSLAVE-1:0],
+          core_v_mini_mcu_pkg::ERROR_IDX[core_v_mini_mcu_pkg::LOG_SYSTEM_XBAR_NSLAVE-1:0],
+          core_v_mini_mcu_pkg::ERROR_IDX[core_v_mini_mcu_pkg::LOG_SYSTEM_XBAR_NSLAVE-1:0]
+      };
+  assign addr_map_rule = '{
+          core_v_mini_mcu_pkg::XBAR_ADDR_RULES,
+          core_v_mini_mcu_pkg::XBAR_ADDR_RULES,
+          core_v_mini_mcu_pkg::XBAR_ADDR_RULES
+      };
+
   relobi_xbar #(
       /// The OBI configuration for the subordinate ports (input ports).
       .SbrPortObiCfg(ObiCfg),
@@ -318,9 +333,9 @@ module rel_system_bus #(
       .mgr_ports_req_o(int_slave_req),
       .mgr_ports_rsp_i(int_slave_resp),
 
-      .addr_map_i(core_v_mini_mcu_pkg::XBAR_ADDR_RULES),
+      .addr_map_i(addr_map_rule),
       .en_default_idx_i('1),
-      .default_idx_i(core_v_mini_mcu_pkg::ERROR_IDX[core_v_mini_mcu_pkg::LOG_SYSTEM_XBAR_NSLAVE-1:0]),
+      .default_idx_i(default_idx),
 
       .fault_o(fault_o)
   );
