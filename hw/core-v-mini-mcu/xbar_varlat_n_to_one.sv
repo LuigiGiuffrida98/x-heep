@@ -79,7 +79,7 @@ module xbar_varlat_n_to_one #(
     slave_req_o.a.addr,
     slave_req_o.a.wdata
   } = xbar_slave_req_data[0];
-  
+
   assign slave_req_o.reqpar = ~xbar_slave_req_req_outstanding;
   assign slave_req_o.rready = 1'b1;
   assign slave_req_o.rreadypar = 1'b0;
