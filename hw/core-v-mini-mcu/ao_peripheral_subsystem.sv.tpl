@@ -246,9 +246,6 @@ module ao_peripheral_subsystem
       .reg_rsp_i(peripheral_rsp)
   );
 
-  // OBI integrity fields (Integrity disabled: drive to keep relobi typedef bits defined).
-  // gnt/rvalid come from temp wires (not read back from the struct) so Verilator can
-  // split the packed struct and avoid a DFG self-cycle on the zero-width fields.
   logic slave_fifoout_gnt, slave_fifoout_rvalid;
   assign slave_fifoout_resp.gnt       = slave_fifoout_gnt;
   assign slave_fifoout_resp.rvalid    = slave_fifoout_rvalid;
