@@ -182,7 +182,7 @@ module relobi_err_sbr_intf #(
   OBI_BUS.Subordinate sbr_port
 );
 
-  `OBI_TYPEDEF_ALL(obi, ObiCfg)
+  `OBI_TYPEDEF_ALL(obi, ObiCfg, obi_pkg)
 
   obi_req_t obi_req;
   obi_rsp_t obi_rsp;

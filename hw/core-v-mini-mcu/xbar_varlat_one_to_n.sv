@@ -102,7 +102,7 @@ module xbar_varlat_one_to_n #(
   assign master_resp_o = '{
           gnt: xbar_master_rsp_gnt[0],
           rvalid: xbar_master_rsp_rvalid[0],
-          r: '{rdata: xbar_master_rsp_data[0], rid: '0, err: '0, r_optional: '0}
+          r: '{rdata: xbar_master_rsp_data[0], rid: '0, err: '0, default: '0}
       };
 
   // Unroll OBI slave signals

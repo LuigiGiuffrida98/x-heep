@@ -88,7 +88,6 @@ module rel_cpu_subsystem
               a_optional : '0  // dummy signal
           },
           req : instr_req_o,
-          rready : 1'b1,  // always ready to accept response
           default: '0  // reqpar / rreadypar unused
       };
   assign data_req = '{
@@ -101,7 +100,6 @@ module rel_cpu_subsystem
               a_optional : '0  // dummy signal
           },
           req : data_req_o,
-          rready : 1'b1,  // always ready to accept response
           default: '0  // reqpar / rreadypar unused
       };
 

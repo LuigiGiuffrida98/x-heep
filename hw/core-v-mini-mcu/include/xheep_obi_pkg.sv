@@ -76,3 +76,10 @@ package xheep_obi_pkg;
   `RELOBI_TYPEDEF_ALL(xheep_rel_obi, xheep_obiCfg, xheep_obi_pkg)
 
 endpackage
+
+package obi_pgk;
+
+  import xheep_obi_pkg::*;
+  export xheep_obi_pkg::*;
+
+endpackage
