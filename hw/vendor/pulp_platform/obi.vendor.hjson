@@ -10,6 +10,8 @@
     rev: "6b331000e2345ccc84bc1197c8a641e2223c0fc1",
   },
 
+  patch_dir: "../patches/pulp_platform_obi",
+
   exclude_from_upstream: [
     ".github",
     ".gitignore",
