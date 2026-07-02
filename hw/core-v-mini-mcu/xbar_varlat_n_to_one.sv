@@ -64,7 +64,9 @@ module xbar_varlat_n_to_one #(
       assign master_resp_o[i] = '{
               gnt: xbar_master_rsp_gnt[i],
               rvalid: xbar_master_rsp_rvalid[i],
-              r: '{rdata: xbar_master_rsp_data[i], rid: '0, err: '0, r_optional: '0}
+              r: '{rdata: xbar_master_rsp_data[i], rid: '0, err: '0, r_optional: '0},
+              gntpar: ~xbar_master_rsp_gnt[i],
+              rvalidpar: ~xbar_master_rsp_rvalid[i]
           };
     end
   endgenerate
@@ -77,6 +79,10 @@ module xbar_varlat_n_to_one #(
     slave_req_o.a.addr,
     slave_req_o.a.wdata
   } = xbar_slave_req_data[0];
+  
+  assign slave_req_o.reqpar = ~xbar_slave_req_req_outstanding;
+  assign slave_req_o.rready = 1'b1;
+  assign slave_req_o.rreadypar = 1'b0;
   assign slave_xbar_rsp_gnt[0] = slave_resp_i.gnt;
   assign slave_xbar_rsp_rvalid[0] = slave_resp_i.rvalid;
   assign slave_xbar_rsp_data[0] = slave_resp_i.r.rdata;

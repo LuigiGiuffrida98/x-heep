@@ -251,6 +251,12 @@ module peripheral_subsystem #(
 
 `endif
 
+  logic slave_fifo_resp_gnt, slave_fifo_resp_rvalid;
+  assign slave_fifo_resp_sel.gnt       = slave_fifo_resp_gnt;
+  assign slave_fifo_resp_sel.rvalid    = slave_fifo_resp_rvalid;
+  assign slave_fifo_resp_sel.gntpar    = ~slave_fifo_resp_gnt;
+  assign slave_fifo_resp_sel.rvalidpar = ~slave_fifo_resp_rvalid;
+
   periph_to_reg #(
       .req_t(reg_req_t),
       .rsp_t(reg_rsp_t),
@@ -264,11 +270,11 @@ module peripheral_subsystem #(
       .wdata_i(slave_fifo_req_sel.a.wdata),
       .be_i(slave_fifo_req_sel.a.be),
       .id_i('0),
-      .gnt_o(slave_fifo_resp_sel.gnt),
+      .gnt_o(slave_fifo_resp_gnt),
       .r_rdata_o(slave_fifo_resp_sel.r.rdata),
       .r_opc_o(),
       .r_id_o(),
-      .r_valid_o(slave_fifo_resp_sel.rvalid),
+      .r_valid_o(slave_fifo_resp_rvalid),
       .reg_req_o(peripheral_req),
       .reg_rsp_i(peripheral_rsp)
   );
