@@ -18,9 +18,12 @@ package xheep_obi_pkg;
     bit          UseMemtype;
     bit          UseProt;
     bit          UseDbg;
-    int unsigned AUserWidth;
+    int unsigned ATopWidth;
+    int unsigned MemtypeWidth;
+    int unsigned ProtWidth;
     int unsigned WUserWidth;
     int unsigned RUserWidth;
+    int unsigned AUserWidth;
     int unsigned MidWidth;
     int unsigned AChkWidth;
     int unsigned RChkWidth;
@@ -32,6 +35,9 @@ package xheep_obi_pkg;
       UseMemtype: 1'b0,
       UseProt: 1'b0,
       UseDbg: 1'b0,
+      ATopWidth: 0,
+      MemtypeWidth: 0,
+      ProtWidth: 0,
       AUserWidth: 0,
       WUserWidth: 0,
       RUserWidth: 0,
@@ -63,6 +69,6 @@ package xheep_obi_pkg;
       OptionalCfg: ObiMinimalOptionalConfig
   };
 
-  `OBI_TYPEDEF_DEFAULT_ALL(xheep_obi, xheep_obiCfg)
+  `OBI_TYPEDEF_ALL(xheep_obi, xheep_obiCfg)
 
 endpackage
