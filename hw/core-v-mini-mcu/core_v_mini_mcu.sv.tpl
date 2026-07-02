@@ -417,7 +417,7 @@ module core_v_mini_mcu #(
       .pwrgate_ack_no(memory_subsystem_banks_powergate_switch_ack_n),
       .set_retentive_ni(memory_subsystem_banks_set_retentive_n)
   );
-  
+
   ao_peripheral_subsystem #(
       .AO_SPC_NUM(AO_SPC_NUM),
       .obi_req_t(obi_req_t),
