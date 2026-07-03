@@ -12,15 +12,6 @@
 
 package xheep_obi_pkg;
 
-  /// The OBI atomics type, to be expanded.
-  typedef logic [5:0] atop_t;
-
-  /// The OBI memtype type, to be expanded.
-  typedef logic [1:0] memtype_t;
-
-  /// The OBI prot type, to be expanded.
-  typedef logic [2:0] prot_t;
-
   /// The config type for OBI bus optional fields.
   typedef struct packed {
     bit          UseAtop;
@@ -79,13 +70,6 @@ package xheep_obi_pkg;
   };
 
   `OBI_TYPEDEF_ALL(xheep_obi, xheep_obiCfg)
-  `RELOBI_TYPEDEF_ALL(xheep_rel_obi, xheep_obiCfg, xheep_obi_pkg)
-
-endpackage
-
-package obi_pgk;
-
-  import xheep_obi_pkg::*;
-  export xheep_obi_pkg::*;
+  `RELOBI_TYPEDEF_ALL(xheep_rel_obi, xheep_obiCfg)
 
 endpackage

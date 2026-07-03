@@ -28,6 +28,9 @@ package obi_pkg;
     bit          UseMemtype;
     bit          UseProt;
     bit          UseDbg;
+    int unsigned ATopWidth;
+    int unsigned MemtypeWidth;
+    int unsigned ProtWidth;
     int unsigned AUserWidth;
     int unsigned WUserWidth;
     int unsigned RUserWidth;
@@ -47,7 +50,10 @@ package obi_pkg;
     RUserWidth:    0,
     MidWidth:      0,
     AChkWidth:     0,
-    RChkWidth:     0
+    RChkWidth:     0,
+    ATopWidth:     5,
+    MemtypeWidth:  1,   
+    ProtWidth:     2
   };
 
   /// The atop optional config only enables atomics, everything else is disabled.
@@ -61,7 +67,10 @@ package obi_pkg;
     RUserWidth:    0,
     MidWidth:      0,
     AChkWidth:     0,
-    RChkWidth:     0
+    RChkWidth:     0,
+    ATopWidth:     5,
+    MemtypeWidth:  1,   
+    ProtWidth:     2
   };
 
   /// Returns a config enabling all optional features with specified user, mid, and chk widths.
@@ -78,7 +87,10 @@ package obi_pkg;
       RUserWidth: RUserWidth,
       MidWidth:     MidWidth,
       AChkWidth:   AChkWidth,
-      RChkWidth:   RChkWidth
+      RChkWidth:   RChkWidth,
+      ATopWidth:     5,
+      MemtypeWidth:  1,   
+      ProtWidth:     2
     };
   endfunction
 

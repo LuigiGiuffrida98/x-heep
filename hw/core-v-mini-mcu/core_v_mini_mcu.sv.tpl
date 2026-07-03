@@ -525,7 +525,7 @@ module core_v_mini_mcu #(
 % if xheep.reliability:
   rel_system_bus #(
       .obi_req_t(rel_obi_req_t),
-      .obi_resp_t(rel_obi_rsp_t),
+      .obi_rsp_t(rel_obi_rsp_t),
       .ObiCfg(ObiCfg),
       .obi_a_chan_t(rel_obi_a_chan_t),
       .obi_r_chan_t(rel_obi_r_chan_t),

@@ -179,8 +179,8 @@
     logic [2:0] rvalid;                       \
   } rsp_t;
 
-`define RELOBI_TYPEDEF_ALL(obi_t, cfg, obi_pkg)                                                                                                                           \
-  `OBI_TYPEDEF_ALL_A_OPTIONAL(obi_t``_a_optional_t, cfg.OptionalCfg.AUserWidth, cfg.OptionalCfg.WUserWidth, cfg.OptionalCfg.MidWidth, cfg.OptionalCfg.AChkWidth, obi_pkg) \
+`define RELOBI_TYPEDEF_ALL(obi_t, cfg)                                                                                                                           \
+  `OBI_TYPEDEF_ALL_A_OPTIONAL(obi_t``_a_optional_t, cfg.OptionalCfg.AUserWidth, cfg.OptionalCfg.WUserWidth, cfg.OptionalCfg.MidWidth, cfg.OptionalCfg.AChkWidth, cfg.OptionalCfg.UseAtop*cfg.OptionalCfg.ATopWidth, cfg.OptionalCfg.UseMemtype * cfg.OptionalCfg.MemtypeWidth, cfg.OptionalCfg.UseProt * cfg.OptionalCfg.ProtWidth) \
   `RELOBI_TYPEDEF_A_CHAN_T(obi_t``_a_chan_t, cfg.AddrWidth, cfg.DataWidth, cfg.IdWidth, obi_t``_a_optional_t)                                                             \
   `RELOBI_TYPEDEF_DEFAULT_REQ_T(obi_t``_req_t, obi_t``_a_chan_t)                                                                                                          \
   `OBI_TYPEDEF_ALL_R_OPTIONAL(obi_t``_r_optional_t, cfg.OptionalCfg.RUserWidth, cfg.OptionalCfg.RChkWidth)                                                                \
