@@ -799,21 +799,23 @@ module core_v_mini_mcu #(
     );
   end
 
-  relobi_decoder #(
-      .Cfg(ObiCfg),
-      .relobi_req_t(rel_obi_req_t),
-      .relobi_rsp_t(rel_obi_rsp_t),
-      .obi_req_t(obi_req_t),
-      .obi_rsp_t(obi_rsp_t),
-      .a_optional_t(logic),
-      .r_optional_t(logic)
-  ) i_ram_decoder (
-      .rel_req_i(rel_ram_slave_req),
-      .rel_rsp_o(rel_ram_slave_resp),
-      .req_o(ram_slave_req),
-      .rsp_i(ram_slave_resp),
-      .fault_o()
-  );
+  for (genvar i = 0; i < core_v_mini_mcu_pkg::NUM_BANKS; i++) begin : memory_rel_decoder
+    relobi_decoder #(
+        .Cfg(ObiCfg),
+        .relobi_req_t(rel_obi_req_t),
+        .relobi_rsp_t(rel_obi_rsp_t),
+        .obi_req_t(obi_req_t),
+        .obi_rsp_t(obi_rsp_t),
+        .a_optional_t(logic),
+        .r_optional_t(logic)
+    ) i_ram_decoder (
+        .rel_req_i(rel_ram_slave_req[i]),
+        .rel_rsp_o(rel_ram_slave_resp[i]),
+        .req_o(ram_slave_req[i]),
+        .rsp_i(ram_slave_resp[i]),
+        .fault_o()
+    );
+  end
 
   memory_subsystem #(
       .NUM_BANKS(core_v_mini_mcu_pkg::NUM_BANKS),
