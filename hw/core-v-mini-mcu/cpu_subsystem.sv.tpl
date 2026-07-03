@@ -60,9 +60,6 @@ module cpu_subsystem
   assign core_instr_req_o.a.we    = '0;
   assign core_instr_req_o.a.be    = 4'b1111;
 
-  // OBI integrity/rready fields (Integrity/UseRReady disabled: drive to keep relobi typedef bits defined).
-  // req is taken from a temp wire (not read back from the struct) so Verilator can
-  // split the packed struct and break the OBI combinational path.
   logic core_instr_req, core_data_req;
   assign core_instr_req_o.req        = core_instr_req;
   assign core_instr_req_o.reqpar     = ~core_instr_req;
