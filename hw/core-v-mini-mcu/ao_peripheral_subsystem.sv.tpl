@@ -237,14 +237,20 @@ module ao_peripheral_subsystem
       .wdata_i(slave_fifoout_req.a.wdata),
       .be_i(slave_fifoout_req.a.be),
       .id_i('0),
-      .gnt_o(slave_fifoout_resp.gnt),
+      .gnt_o(slave_fifoout_gnt),
       .r_rdata_o(slave_fifoout_resp.r.rdata),
       .r_opc_o(),
       .r_id_o(),
-      .r_valid_o(slave_fifoout_resp.rvalid),
+      .r_valid_o(slave_fifoout_rvalid),
       .reg_req_o(peripheral_req),
       .reg_rsp_i(peripheral_rsp)
   );
+
+  logic slave_fifoout_gnt, slave_fifoout_rvalid;
+  assign slave_fifoout_resp.gnt       = slave_fifoout_gnt;
+  assign slave_fifoout_resp.rvalid    = slave_fifoout_rvalid;
+  assign slave_fifoout_resp.gntpar    = ~slave_fifoout_gnt;
+  assign slave_fifoout_resp.rvalidpar = ~slave_fifoout_rvalid;
 
   /* SPC crossbar & FIFOs */
   generate

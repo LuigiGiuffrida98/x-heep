@@ -72,8 +72,8 @@ module serial_link_xheep_wrapper
       .mem_wdata_i    (writer_req_i.a.wdata),
       .mem_be_i       (writer_req_i.a.be),
       .mem_gnt_o      (writer_rsp_i.gnt),
-      .mem_rsp_valid_o(writer_rsp_i.w.rvalid),
-      .mem_rsp_rdata_o(writer_rsp_i.w.rdata),
+      .mem_rsp_valid_o(writer_rsp_i.rvalid),
+      .mem_rsp_rdata_o(writer_rsp_i.r.rdata),
       .mem_rsp_error_o(),
       .axi_req_o      (axi_lite_req),
       .axi_rsp_i      (axi_lite_rsp)
@@ -109,9 +109,9 @@ module serial_link_xheep_wrapper
       .rst_ni,
       .reader_gnt_o    (reader_resp_o.gnt),
       .reader_req_i    (reader_req_i.req),
-      .reader_rvalid_o (reader_resp_o.w.rvalid),
-      .reader_we_i     (reader_req_i.we),
-      .reader_rdata_o  (reader_resp_o.w.rdata),
+      .reader_rvalid_o (reader_resp_o.rvalid),
+      .reader_we_i     (reader_req_i.a.we),
+      .reader_rdata_o  (reader_resp_o.r.rdata),
       .writer_axi_req_i(fast_sl_req_O),
       .writer_axi_rsp_o(fast_sl_rsp_O)
   );

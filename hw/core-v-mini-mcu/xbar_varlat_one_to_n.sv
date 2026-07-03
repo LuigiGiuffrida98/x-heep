@@ -102,14 +102,11 @@ module xbar_varlat_one_to_n #(
   assign master_resp_o = '{
           gnt: xbar_master_rsp_gnt[0],
           rvalid: xbar_master_rsp_rvalid[0],
-          r: '{rdata: xbar_master_rsp_data[0], rid: '0, err: '0, r_optional: '0, default: '0}
+          r: '{rdata: xbar_master_rsp_data[0], rid: '0, err: '0, r_optional: '0},
+          gntpar: ~xbar_master_rsp_gnt[0],
+          rvalidpar: ~xbar_master_rsp_rvalid[0]
       };
 
-  // Unroll OBI slave signals
-  // ponytail: drive each slave_req_o[i] struct in a single assignment. Partial
-  // field-by-field writes to elements of this array-of-struct output port crash
-  // the DFG cycle-breaking pass (V3DfgBreakCycles Wrong result width) in the
-  // simulator. Assigning the whole struct at once sidesteps the bug.
   generate
     for (genvar i = 0; unsigned'(i) < XBAR_NSLAVE; i++) begin : gen_unroll_obi
       assign slave_req_o[i] = '{
@@ -119,8 +116,12 @@ module xbar_varlat_one_to_n #(
                   be: xbar_slave_req_data[i][ReqDataWidth-2-:4],
                   addr: xbar_slave_req_data[i][32+:32],
                   wdata: xbar_slave_req_data[i][31:0],
-                  default: '0
-              }
+                  aid: '0,
+                  a_optional: '0
+              },
+              rready: '1,
+              reqpar: ~xbar_slave_req_req[i],
+              rreadypar: '0
           };
       assign slave_xbar_rsp_gnt[i] = slave_resp_i[i].gnt;
       assign slave_xbar_rsp_rvalid[i] = slave_resp_i[i].rvalid;

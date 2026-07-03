@@ -135,16 +135,30 @@ module system_xbar
         master_req[i].a.addr,
         master_req[i].a.wdata
       };
-      assign master_resp_o[i].gnt = master_resp_gnt[i];
-      assign master_resp_o[i].r.rdata = master_resp_rdata[i];
-      assign master_resp_o[i].rvalid = master_resp_rvalid[i];
+      assign master_resp_o[i] = '{
+              gnt: master_resp_gnt[i],
+              rvalid: master_resp_rvalid[i],
+              r: '{rdata: master_resp_rdata[i], rid: '0, err: '0, r_optional: '0},
+              gntpar: ~master_resp_gnt[i],
+              rvalidpar: ~master_resp_rvalid[i]
+          };
     end
 
     for (genvar i = 0; i < XBAR_NSLAVE; i++) begin : gen_unroll_slave
-      assign slave_req_o[i].req = slave_req_req[i];
-      assign {slave_req_o[i].a.we, slave_req_o[i].a.be, slave_req_o[i].a.addr, slave_req_o[i].a.wdata} = slave_req_out_data[i];
-      assign slave_req_o[i].a.aid = '0;
-      assign slave_req_o[i].a.a_optional = '0;
+      assign slave_req_o[i] = '{
+              req: slave_req_req[i],
+              a: '{
+                  we: slave_req_out_data[i][REQ_AGG_DATA_WIDTH-1],
+                  be: slave_req_out_data[i][REQ_AGG_DATA_WIDTH-2-:4],
+                  addr: slave_req_out_data[i][32+:32],
+                  wdata: slave_req_out_data[i][31:0],
+                  aid: '0,
+                  a_optional: '0
+              },
+              rready: '1,
+              reqpar: ~slave_req_req[i],
+              rreadypar: '0
+          };
       assign slave_resp_rdata[i] = slave_resp_i[i].r.rdata;
       assign slave_resp_gnt[i] = slave_resp_i[i].gnt;
       assign slave_resp_rvalid[i] = slave_resp_i[i].rvalid;

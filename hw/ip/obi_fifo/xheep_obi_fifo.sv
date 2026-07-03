@@ -89,6 +89,7 @@ module xheep_obi_fifo #(
         end
       end
     endcase
+    consumer_req_o.reqpar = ~consumer_req_o.req;
   end
 
   //block producer outstanding transactions, the FIFO in theory can support more request at a time
@@ -121,6 +122,7 @@ module xheep_obi_fifo #(
         end
       end
     endcase
+    producer_resp_o.gntpar = ~producer_resp_o.gnt;
   end
 
   always_ff @(posedge clk_i or negedge rst_ni) begin
@@ -157,6 +159,10 @@ module xheep_obi_fifo #(
   assign fifo_resp_push = consumer_resp_i.rvalid & !fifo_resp_full;
   assign fifo_resp_pop = !fifo_resp_empty;
   assign producer_resp_o.rvalid = fifo_resp_pop;
+
+  assign consumer_req_o.rready = 1'b1;
+  assign consumer_req_o.rreadypar = 1'b0;
+  assign producer_resp_o.rvalidpar = ~fifo_resp_pop;
 
   fifo_v3 #(
       .DEPTH(1),

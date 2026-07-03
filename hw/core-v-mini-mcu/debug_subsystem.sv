@@ -106,17 +106,17 @@ module debug_subsystem #(
       .hartinfo_i   (hartinfo),
 
       .slave_req_i   (debug_slave_req_i.req),
-      .slave_gnt_o   (debug_slave_resp_o.gnt),
+      .slave_gnt_o   (debug_slave_gnt),
       .slave_we_i    (debug_slave_req_i.a.we),
       .slave_addr_i  (debug_slave_req_i.a.addr),
       .slave_be_i    (debug_slave_req_i.a.be),
       .slave_wdata_i (debug_slave_req_i.a.wdata),
       .slave_aid_i   ('0),
       .slave_rdata_o (debug_slave_resp_o.r.rdata),
-      .slave_rvalid_o(debug_slave_resp_o.rvalid),
+      .slave_rvalid_o(debug_slave_rvalid),
       .slave_rid_o   (),
 
-      .master_req_o      (dm_req.req),
+      .master_req_o      (dm_req_req),
       .master_addr_o     (dm_req.a.addr),
       .master_we_o       (dm_req.a.we),
       .master_wdata_o    (dm_req.a.wdata),
@@ -136,6 +136,16 @@ module debug_subsystem #(
       .dmi_resp_o      (dmi_resp)
   );
 
+  logic debug_slave_gnt, debug_slave_rvalid, dm_req_req;
+  assign debug_slave_resp_o.gnt       = debug_slave_gnt;
+  assign debug_slave_resp_o.rvalid    = debug_slave_rvalid;
+  assign debug_slave_resp_o.gntpar    = ~debug_slave_gnt;
+  assign debug_slave_resp_o.rvalidpar = ~debug_slave_rvalid;
+  assign dm_req.req                   = dm_req_req;
+  assign dm_req.reqpar                = ~dm_req_req;
+  assign dm_req.rready                = 1'b1;
+  assign dm_req.rreadypar             = 1'b0;
+
   if (SPI_SLAVE) begin : gen_spi_slave
 
     obi_spi_slave obi_spi_slave_i (
@@ -145,7 +155,7 @@ module debug_subsystem #(
         .spi_mosi_i(spi_slave_mosi_i),
         .obi_clk_i(clk_i),
         .obi_rstn_i(rst_ni),
-        .obi_master_req_o(spi_slave_req.req),
+        .obi_master_req_o(spi_slave_req_req),
         .obi_master_gnt_i(spi_slave_resp.gnt),
         .obi_master_addr_o(spi_slave_req.a.addr),
         .obi_master_we_o(spi_slave_req.a.we),
@@ -155,14 +165,20 @@ module debug_subsystem #(
         .obi_master_r_data_i(spi_slave_resp.r.rdata)
     );
 
-    assign dbg_spi_req[0]      = dm_req;
-    assign dbg_spi_req[1]      = spi_slave_req;
-    assign dm_resp             = dbg_spi_resp[0];
-    assign spi_slave_resp      = dbg_spi_resp[1];
+    logic spi_slave_req_req;
+    assign spi_slave_req.req       = spi_slave_req_req;
+    assign spi_slave_req.reqpar    = ~spi_slave_req_req;
+    assign spi_slave_req.rready    = 1'b1;
+    assign spi_slave_req.rreadypar = 1'b0;
+
+    assign dbg_spi_req[0]          = dm_req;
+    assign dbg_spi_req[1]          = spi_slave_req;
+    assign dm_resp                 = dbg_spi_resp[0];
+    assign spi_slave_resp          = dbg_spi_resp[1];
 
     // To prevent the spi slave from keeping the MISO signal high
     // when it is not its turn to speak
-    assign spi_slave_miso_oe_o = ~spi_slave_cs_i;
+    assign spi_slave_miso_oe_o     = ~spi_slave_cs_i;
 
     // 2-to-1 crossbar
     xbar_varlat_n_to_one #(
