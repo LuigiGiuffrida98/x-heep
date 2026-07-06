@@ -78,39 +78,36 @@ module rel_cpu_subsystem
   obi_req_t        data_req;
   obi_rsp_t        data_rsp;
 
-  assign instr_req = '{
-          a : '{
-              addr : instr_addr_o,
-              we   : 1'b0,  // always read
-              be   : 4'b1111,  // always read full word
-              wdata : 32'h0,  // dummy value
-              aid   : '0,  // dummy value
-              a_optional : '0  // dummy signal
-          },
-          req : instr_req_o,
-          default: '0  // reqpar / rreadypar unused
-      };
-  assign data_req = '{
-          a : '{
-              addr : data_addr_o,
-              we   : data_we_o,
-              be   : data_be_o,
-              wdata : data_wdata_o,
-              aid   : '0,  // dummy value
-              a_optional : '0  // dummy signal
-          },
-          req : data_req_o,
-          default: '0  // reqpar / rreadypar unused
-      };
+  assign instr_req.req          = instr_req_o;
+  assign instr_req.reqpar       = ~instr_req_o;
+  assign instr_req.rready       = 1'b1;
+  assign instr_req.rreadypar    = 1'b0;
+  assign instr_req.a.addr       = instr_addr_o;
+  assign instr_req.a.wdata      = '0;
+  assign instr_req.a.we         = '0;
+  assign instr_req.a.be         = '0;
+  assign instr_req.a.aid        = '0;
+  assign instr_req.a.a_optional = '0;
 
-  assign instr_gnt_i = instr_rsp.gnt;
-  assign instr_rvalid_i = instr_rsp.rvalid;
-  assign instr_rdata_i = instr_rsp.r.rdata;
-  assign instr_err_i = instr_rsp.r.err;
-  assign data_gnt_i = data_rsp.gnt;
-  assign data_rvalid_i = data_rsp.rvalid;
-  assign data_rdata_i = data_rsp.r.rdata;
-  assign data_err_i = data_rsp.r.err;
+  assign data_req.req           = data_req_o;
+  assign data_req.reqpar        = ~data_req_o;
+  assign data_req.rready        = 1'b1;
+  assign data_req.rreadypar     = 1'b0;
+  assign data_req.a.addr        = data_addr_o;
+  assign data_req.a.wdata       = data_wdata_o;
+  assign data_req.a.we          = data_we_o;
+  assign data_req.a.be          = data_be_o;
+  assign data_req.a.aid         = '0;
+  assign data_req.a.a_optional  = '0;
+
+  assign instr_gnt_i            = instr_rsp.gnt;
+  assign instr_rvalid_i         = instr_rsp.rvalid;
+  assign instr_rdata_i          = instr_rsp.r.rdata;
+  assign instr_err_i            = instr_rsp.r.err;
+  assign data_gnt_i             = data_rsp.gnt;
+  assign data_rvalid_i          = data_rsp.rvalid;
+  assign data_rdata_i           = data_rsp.r.rdata;
+  assign data_err_i             = data_rsp.r.err;
 
   relobi_encoder #(
       .Cfg(ObiCfg),
