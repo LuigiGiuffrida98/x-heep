@@ -377,11 +377,12 @@ module core_v_mini_mcu #(
     rv_timer_intr[1]
   };
 
+  cpu_subsystem #(
 % if xheep.reliability:
-  rel_cpu_subsystem #(
       .rel_obi_req_t(rel_obi_req_t),
       .rel_obi_rsp_t(rel_obi_rsp_t),
       .ObiCfg(ObiCfg),
+% endif
       .BOOT_ADDR(BOOT_ADDR),
       .DM_HALTADDRESS(DM_HALTADDRESS),
       .obi_req_t(obi_req_t),
@@ -407,34 +408,6 @@ module core_v_mini_mcu #(
       .debug_req_i(debug_core_req),
       .core_sleep_o(core_sleep)
   );
-% else: 
-  cpu_subsystem #(
-      .BOOT_ADDR(BOOT_ADDR),
-      .DM_HALTADDRESS(DM_HALTADDRESS),
-      .obi_req_t(obi_req_t),
-      .obi_rsp_t(obi_rsp_t)
-  ) cpu_subsystem_i (
-      // Clock and Reset
-      .clk_i,
-      .rst_ni(cpu_subsystem_rst_n && debug_reset_n),
-      .hart_id_i,
-      .core_instr_req_o(core_instr_req),
-      .core_instr_resp_i(core_instr_resp),
-      .core_data_req_o(core_data_req),
-      .core_data_resp_i(core_data_resp),
-      .xif_compressed_if,
-      .xif_issue_if,
-      .xif_commit_if,
-      .xif_mem_if,
-      .xif_mem_result_if,
-      .xif_result_if,
-      .irq_i(intr),
-      .irq_ack_o(irq_ack),
-      .irq_id_o(irq_id_out),
-      .debug_req_i(debug_core_req),
-      .core_sleep_o(core_sleep)
-  );
-% endif
 
 % if xheep.reliability:
   debug_subsystem #(
@@ -523,62 +496,6 @@ module core_v_mini_mcu #(
 % endif
 
 % if xheep.reliability:
-  rel_system_bus #(
-      .obi_req_t(rel_obi_req_t),
-      .obi_rsp_t(rel_obi_rsp_t),
-      .ObiCfg(ObiCfg),
-      .obi_a_chan_t(rel_obi_a_chan_t),
-      .obi_r_chan_t(rel_obi_r_chan_t),
-      .a_optional_t(rel_obi_a_chan_t),
-      .r_optional_t(rel_obi_r_chan_t),
-      .addr_map_rule_t(core_v_mini_mcu_pkg::addr_map_rule_t),
-      .NUM_BANKS(core_v_mini_mcu_pkg::NUM_BANKS),
-      .EXT_XBAR_NMASTER(EXT_XBAR_NMASTER)
-  ) system_bus_i (
-      .clk_i,
-      .rst_ni(rst_ni && debug_reset_n),
-      .testmode_i('0),
-      .fault_o(),
-      .core_instr_req_i(rel_core_instr_req),
-      .core_instr_resp_o(rel_core_instr_resp),
-      .core_data_req_i(rel_core_data_req),
-      .core_data_resp_o(rel_core_data_resp),
-      .debug_master_req_i(rel_debug_master_req),
-      .debug_master_resp_o(rel_debug_master_resp),
-      .dma_read_req_i(rel_dma_read_req),
-      .dma_read_resp_o(rel_dma_read_resp),
-      .dma_write_req_i(rel_dma_write_req),
-      .dma_write_resp_o(rel_dma_write_resp),
-      .dma_addr_req_i(rel_dma_addr_req),
-      .dma_addr_resp_o(rel_dma_addr_resp),
-      .ram_req_o(rel_ram_slave_req),
-      .ram_resp_i(rel_ram_slave_resp),
-      .debug_slave_req_o(rel_debug_slave_req),
-      .debug_slave_resp_i(rel_debug_slave_resp),
-      .ao_peripheral_slave_req_o(rel_ao_peripheral_slave_req),
-      .ao_peripheral_slave_resp_i(rel_ao_peripheral_slave_resp),
-      .peripheral_slave_req_o(rel_peripheral_slave_req),
-      .peripheral_slave_resp_i(rel_peripheral_slave_resp),
-      .flash_mem_slave_req_o(rel_flash_mem_slave_req),
-      .flash_mem_slave_resp_i(rel_flash_mem_slave_resp),
-      // External master ports
-      .ext_xbar_master_req_i(rel_ext_xbar_master_req),
-      .ext_xbar_master_resp_o(rel_ext_xbar_master_resp),
-      // External slave ports
-      .ext_core_instr_req_o(rel_ext_core_instr_req),
-      .ext_core_instr_resp_i(rel_ext_core_instr_resp),
-      .ext_core_data_req_o(rel_ext_core_data_req),
-      .ext_core_data_resp_i(rel_ext_core_data_resp),
-      .ext_debug_master_req_o(rel_ext_debug_master_req),
-      .ext_debug_master_resp_i(rel_ext_debug_master_resp),
-      .ext_dma_read_req_o(rel_ext_dma_read_req),
-      .ext_dma_read_resp_i(rel_ext_dma_read_resp),
-      .ext_dma_write_req_o(rel_ext_dma_write_req),
-      .ext_dma_write_resp_i(rel_ext_dma_write_resp),
-      .ext_dma_addr_req_o(rel_ext_dma_addr_req),
-      .ext_dma_addr_resp_i(rel_ext_dma_addr_resp)
-  );
-
   // External masters: encode incoming OBI requests into reliable OBI
   for (genvar i = 0; i < EXT_XBAR_NMASTER; i++) begin : gen_ext_master_enc
     relobi_encoder #(
@@ -698,53 +615,68 @@ module core_v_mini_mcu #(
       .fault_o ()
     );
   end
-% else:
+% endif
+
   system_bus #(
-      .NUM_BANKS(core_v_mini_mcu_pkg::NUM_BANKS),
-      .EXT_XBAR_NMASTER(EXT_XBAR_NMASTER),
+% if xheep.reliability:
+      .obi_req_t(rel_obi_req_t),
+      .obi_rsp_t(rel_obi_rsp_t),
+      .ObiCfg(ObiCfg),
+      .obi_a_chan_t(rel_obi_a_chan_t),
+      .obi_r_chan_t(rel_obi_r_chan_t),
+      .a_optional_t(rel_obi_a_chan_t),
+      .r_optional_t(rel_obi_r_chan_t),
+% else:
       .obi_req_t(obi_req_t),
-      .obi_rsp_t(obi_rsp_t)
+      .obi_rsp_t(obi_rsp_t),
+% endif
+      .NUM_BANKS(core_v_mini_mcu_pkg::NUM_BANKS),
+      .EXT_XBAR_NMASTER(EXT_XBAR_NMASTER)
   ) system_bus_i (
       .clk_i,
       .rst_ni(rst_ni && debug_reset_n),
-      .core_instr_req_i(core_instr_req),
-      .core_instr_resp_o(core_instr_resp),
-      .core_data_req_i(core_data_req),
-      .core_data_resp_o(core_data_resp),
-      .debug_master_req_i(debug_master_req),
-      .debug_master_resp_o(debug_master_resp),
-      .dma_read_req_i(dma_read_req),
-      .dma_read_resp_o(dma_read_resp),
-      .dma_write_req_i(dma_write_req),
-      .dma_write_resp_o(dma_write_resp),
-      .dma_addr_req_i(dma_addr_req),
-      .dma_addr_resp_o(dma_addr_resp),
-      .ext_xbar_master_req_i(ext_xbar_master_req_i),
-      .ext_xbar_master_resp_o(ext_xbar_master_resp_o),
-      .ram_req_o(ram_slave_req),
-      .ram_resp_i(ram_slave_resp),
-      .debug_slave_req_o(debug_slave_req),
-      .debug_slave_resp_i(debug_slave_resp),
-      .ao_peripheral_slave_req_o(ao_peripheral_slave_req),
-      .ao_peripheral_slave_resp_i(ao_peripheral_slave_resp),
-      .peripheral_slave_req_o(peripheral_slave_req),
-      .peripheral_slave_resp_i(peripheral_slave_resp),
-      .flash_mem_slave_req_o(flash_mem_slave_req),
-      .flash_mem_slave_resp_i(flash_mem_slave_resp),
-      .ext_core_instr_req_o(ext_core_instr_req_o),
-      .ext_core_instr_resp_i(ext_core_instr_resp_i),
-      .ext_core_data_req_o(ext_core_data_req_o),
-      .ext_core_data_resp_i(ext_core_data_resp_i),
-      .ext_debug_master_req_o(ext_debug_master_req_o),
-      .ext_debug_master_resp_i(ext_debug_master_resp_i),
-      .ext_dma_read_req_o(ext_dma_read_req_o),
-      .ext_dma_read_resp_i(ext_dma_read_resp_i),
-      .ext_dma_write_req_o(ext_dma_write_req_o),
-      .ext_dma_write_resp_i(ext_dma_write_resp_i),
-      .ext_dma_addr_req_o(ext_dma_addr_req_o),
-      .ext_dma_addr_resp_i(ext_dma_addr_resp_i)
-  );
+% if xheep.reliability:
+      .fault_o(),
+      .testmode_i('0),
 % endif
+      .core_instr_req_i(${"" if not xheep.reliability else "rel_"}core_instr_req),
+      .core_instr_resp_o(${"" if not xheep.reliability else "rel_"}core_instr_resp),
+      .core_data_req_i(${"" if not xheep.reliability else "rel_"}core_data_req),
+      .core_data_resp_o(${"" if not xheep.reliability else "rel_"}core_data_resp),
+      .debug_master_req_i(${"" if not xheep.reliability else "rel_"}debug_master_req),
+      .debug_master_resp_o(${"" if not xheep.reliability else "rel_"}debug_master_resp),
+      .dma_read_req_i(${"" if not xheep.reliability else "rel_"}dma_read_req),
+      .dma_read_resp_o(${"" if not xheep.reliability else "rel_"}dma_read_resp),
+      .dma_write_req_i(${"" if not xheep.reliability else "rel_"}dma_write_req),
+      .dma_write_resp_o(${"" if not xheep.reliability else "rel_"}dma_write_resp),
+      .dma_addr_req_i(${"" if not xheep.reliability else "rel_"}dma_addr_req),
+      .dma_addr_resp_o(${"" if not xheep.reliability else "rel_"}dma_addr_resp),
+      .ext_xbar_master_req_i(${"" if not xheep.reliability else "rel_"}ext_xbar_master_req${"_i" if not xheep.reliability else ""}),
+      .ext_xbar_master_resp_o(${"" if not xheep.reliability else "rel_"}ext_xbar_master_resp${"_o" if not xheep.reliability else ""}),
+      .ram_req_o(${"" if not xheep.reliability else "rel_"}ram_slave_req),
+      .ram_resp_i(${"" if not xheep.reliability else "rel_"}ram_slave_resp),
+      .debug_slave_req_o(${"" if not xheep.reliability else "rel_"}debug_slave_req),
+      .debug_slave_resp_i(${"" if not xheep.reliability else "rel_"}debug_slave_resp),
+      .ao_peripheral_slave_req_o(${"" if not xheep.reliability else "rel_"}ao_peripheral_slave_req),
+      .ao_peripheral_slave_resp_i(${"" if not xheep.reliability else "rel_"}ao_peripheral_slave_resp),
+      .peripheral_slave_req_o(${"" if not xheep.reliability else "rel_"}peripheral_slave_req),
+      .peripheral_slave_resp_i(${"" if not xheep.reliability else "rel_"}peripheral_slave_resp),
+      .flash_mem_slave_req_o(${"" if not xheep.reliability else "rel_"}flash_mem_slave_req),
+      .flash_mem_slave_resp_i(${"" if not xheep.reliability else "rel_"}flash_mem_slave_resp),
+      .ext_core_instr_req_o(${"" if not xheep.reliability else "rel_"}ext_core_instr_req${"_o" if not xheep.reliability else ""}),
+      .ext_core_instr_resp_i(${"" if not xheep.reliability else "rel_"}ext_core_instr_resp${"_i" if not xheep.reliability else ""}),
+      .ext_core_data_req_o(${"" if not xheep.reliability else "rel_"}ext_core_data_req${"_o" if not xheep.reliability else ""}),
+      .ext_core_data_resp_i(${"" if not xheep.reliability else "rel_"}ext_core_data_resp${"_i" if not xheep.reliability else ""}),
+      .ext_debug_master_req_o(${"" if not xheep.reliability else "rel_"}ext_debug_master_req${"_o" if not xheep.reliability else ""}),
+      .ext_debug_master_resp_i(${"" if not xheep.reliability else "rel_"}ext_debug_master_resp${"_i" if not xheep.reliability else ""}),
+      .ext_dma_read_req_o(${"" if not xheep.reliability else "rel_"}ext_dma_read_req${"_o" if not xheep.reliability else ""}),
+      .ext_dma_read_resp_i(${"" if not xheep.reliability else "rel_"}ext_dma_read_resp${"_i" if not xheep.reliability else ""}),
+      .ext_dma_write_req_o(${"" if not xheep.reliability else "rel_"}ext_dma_write_req${"_o" if not xheep.reliability else ""}),
+      .ext_dma_write_resp_i(${"" if not xheep.reliability else "rel_"}ext_dma_write_resp${"_i" if not xheep.reliability else ""}),
+      .ext_dma_addr_req_o(${"" if not xheep.reliability else "rel_"}ext_dma_addr_req${"_o" if not xheep.reliability else ""}),
+      .ext_dma_addr_resp_i(${"" if not xheep.reliability else "rel_"}ext_dma_addr_resp${"_i" if not xheep.reliability else ""})
+  );
+
 
 % if xheep.reliability:
   for (genvar i = 0; i < core_v_mini_mcu_pkg::NUM_BANKS; i++) begin : memory_rel_decoder
