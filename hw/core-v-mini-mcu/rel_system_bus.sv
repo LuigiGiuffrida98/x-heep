@@ -256,8 +256,8 @@ module rel_system_bus #(
 
       for (genvar j = 0; j < 3; j++) begin : gen_addr_decode
         addr_decode #(
-            .NoIndices(1),
-            .NoRules  (1),
+            .NoIndices(2),
+            .NoRules  (2),
             .addr_t   (logic [ObiCfg.AddrWidth-1:0]),
             .rule_t   (addr_map_rule_t)
         ) i_addr_decode (
@@ -285,7 +285,7 @@ module rel_system_bus #(
           /// The number of manager ports.
           .NumMgrPorts(32'd2),
           /// The maximum number of outstanding transactions.
-          .NumMaxTrans(32'd0),
+          .NumMaxTrans(32'd1),
           /// Use TMR for select signal
           .TmrSelect(1'b1)
       ) demux_xbar_i (
@@ -309,19 +309,19 @@ module rel_system_bus #(
   // Internal system crossbar
   // ------------------------
 
-  logic [2:0][core_v_mini_mcu_pkg::SYSTEM_XBAR_NMASTER + EXT_XBAR_NMASTER-1:0] default_idx;
-  addr_map_rule_t [2:0][core_v_mini_mcu_pkg::SYSTEM_XBAR_NSLAVE-1:0] addr_map_rule;
+  // logic [2:0] [core_v_mini_mcu_pkg::SYSTEM_XBAR_NMASTER + EXT_XBAR_NMASTER-1:0] default_idx;
+  // // addr_map_rule_t [2:0] [core_v_mini_mcu_pkg::SYSTEM_XBAR_NSLAVE-1:0] addr_map_rule;
 
-  assign default_idx = '{
-          core_v_mini_mcu_pkg::ERROR_IDX[core_v_mini_mcu_pkg::LOG_SYSTEM_XBAR_NSLAVE-1:0],
-          core_v_mini_mcu_pkg::ERROR_IDX[core_v_mini_mcu_pkg::LOG_SYSTEM_XBAR_NSLAVE-1:0],
-          core_v_mini_mcu_pkg::ERROR_IDX[core_v_mini_mcu_pkg::LOG_SYSTEM_XBAR_NSLAVE-1:0]
-      };
-  assign addr_map_rule = '{
-          core_v_mini_mcu_pkg::XBAR_ADDR_RULES,
-          core_v_mini_mcu_pkg::XBAR_ADDR_RULES,
-          core_v_mini_mcu_pkg::XBAR_ADDR_RULES
-      };
+  // assign default_idx = '{
+  //         core_v_mini_mcu_pkg::ERROR_IDX[core_v_mini_mcu_pkg::LOG_SYSTEM_XBAR_NSLAVE-1:0],
+  //         core_v_mini_mcu_pkg::ERROR_IDX[core_v_mini_mcu_pkg::LOG_SYSTEM_XBAR_NSLAVE-1:0],
+  //         core_v_mini_mcu_pkg::ERROR_IDX[core_v_mini_mcu_pkg::LOG_SYSTEM_XBAR_NSLAVE-1:0]
+  //     };
+  // assign addr_map_rule = '{
+  //         core_v_mini_mcu_pkg::XBAR_ADDR_RULES,
+  //         core_v_mini_mcu_pkg::XBAR_ADDR_RULES,
+  //         core_v_mini_mcu_pkg::XBAR_ADDR_RULES
+  //     };
 
   relobi_xbar #(
       /// The OBI configuration for the subordinate ports (input ports).
@@ -351,17 +351,17 @@ module rel_system_bus #(
       /// The number of manager ports (output ports).
       .NumMgrPorts(core_v_mini_mcu_pkg::SYSTEM_XBAR_NSLAVE),
       /// The maximum number of outstanding transactions.
-      .NumMaxTrans(32'd2),
+      .NumMaxTrans(32'd1),
       /// The number of address rules.
       .NumAddrRules(core_v_mini_mcu_pkg::SYSTEM_XBAR_NSLAVE),
       /// The address map rule type.
-      .addr_map_rule_t(addr_map_rule_t)
+      .addr_map_rule_t(addr_map_rule_t),
       /// Use the extended ID field (aid & rid) to route the response
       // parameter bit                UseIdForRouting    = 1'b0,
       /// Connectivity matrix to disable certain paths.
       // parameter bit [NumSbrPorts-1:0][NumMgrPorts-1:0] Connectivity = '1,
       /// Use TMR for addr map signal
-      // parameter bit                TmrMap          = 1'b1,
+      .TmrMap(1'b1)
       // parameter int unsigned       MapWidth    = TmrMap ? 3 : 1,
       // parameter bit                DecodeAbort = 1'b0
   ) i_relobi_xbar (
@@ -375,9 +375,13 @@ module rel_system_bus #(
       .mgr_ports_req_o(int_slave_req),
       .mgr_ports_rsp_i(int_slave_resp),
 
-      .addr_map_i(addr_map_rule),
+      .addr_map_i({
+        core_v_mini_mcu_pkg::XBAR_ADDR_RULES,
+        core_v_mini_mcu_pkg::XBAR_ADDR_RULES,
+        core_v_mini_mcu_pkg::XBAR_ADDR_RULES
+      }),
       .en_default_idx_i('1),
-      .default_idx_i(default_idx),
+      .default_idx_i(core_v_mini_mcu_pkg::ERROR_IDX[core_v_mini_mcu_pkg::LOG_SYSTEM_XBAR_NSLAVE-1:0]),
 
       .fault_o(fault_xbar)
   );
