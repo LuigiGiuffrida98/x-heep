@@ -534,7 +534,7 @@ module core_v_mini_mcu #(
     rv_timer_intr[1]
   };
 
-  rel_cpu_subsystem #(
+  cpu_subsystem #(
       .rel_obi_req_t(rel_obi_req_t),
       .rel_obi_rsp_t(rel_obi_rsp_t),
       .ObiCfg(ObiCfg),
@@ -621,62 +621,6 @@ module core_v_mini_mcu #(
       .req_o(debug_slave_req),
       .rsp_i(debug_slave_resp),
       .fault_o()
-  );
-
-  rel_system_bus #(
-      .obi_req_t(rel_obi_req_t),
-      .obi_rsp_t(rel_obi_rsp_t),
-      .ObiCfg(ObiCfg),
-      .obi_a_chan_t(rel_obi_a_chan_t),
-      .obi_r_chan_t(rel_obi_r_chan_t),
-      .a_optional_t(rel_obi_a_chan_t),
-      .r_optional_t(rel_obi_r_chan_t),
-      .addr_map_rule_t(core_v_mini_mcu_pkg::addr_map_rule_t),
-      .NUM_BANKS(core_v_mini_mcu_pkg::NUM_BANKS),
-      .EXT_XBAR_NMASTER(EXT_XBAR_NMASTER)
-  ) system_bus_i (
-      .clk_i,
-      .rst_ni(rst_ni && debug_reset_n),
-      .testmode_i('0),
-      .fault_o(),
-      .core_instr_req_i(rel_core_instr_req),
-      .core_instr_resp_o(rel_core_instr_resp),
-      .core_data_req_i(rel_core_data_req),
-      .core_data_resp_o(rel_core_data_resp),
-      .debug_master_req_i(rel_debug_master_req),
-      .debug_master_resp_o(rel_debug_master_resp),
-      .dma_read_req_i(rel_dma_read_req),
-      .dma_read_resp_o(rel_dma_read_resp),
-      .dma_write_req_i(rel_dma_write_req),
-      .dma_write_resp_o(rel_dma_write_resp),
-      .dma_addr_req_i(rel_dma_addr_req),
-      .dma_addr_resp_o(rel_dma_addr_resp),
-      .ram_req_o(rel_ram_slave_req),
-      .ram_resp_i(rel_ram_slave_resp),
-      .debug_slave_req_o(rel_debug_slave_req),
-      .debug_slave_resp_i(rel_debug_slave_resp),
-      .ao_peripheral_slave_req_o(rel_ao_peripheral_slave_req),
-      .ao_peripheral_slave_resp_i(rel_ao_peripheral_slave_resp),
-      .peripheral_slave_req_o(rel_peripheral_slave_req),
-      .peripheral_slave_resp_i(rel_peripheral_slave_resp),
-      .flash_mem_slave_req_o(rel_flash_mem_slave_req),
-      .flash_mem_slave_resp_i(rel_flash_mem_slave_resp),
-      // External master ports
-      .ext_xbar_master_req_i(rel_ext_xbar_master_req),
-      .ext_xbar_master_resp_o(rel_ext_xbar_master_resp),
-      // External slave ports
-      .ext_core_instr_req_o(rel_ext_core_instr_req),
-      .ext_core_instr_resp_i(rel_ext_core_instr_resp),
-      .ext_core_data_req_o(rel_ext_core_data_req),
-      .ext_core_data_resp_i(rel_ext_core_data_resp),
-      .ext_debug_master_req_o(rel_ext_debug_master_req),
-      .ext_debug_master_resp_i(rel_ext_debug_master_resp),
-      .ext_dma_read_req_o(rel_ext_dma_read_req),
-      .ext_dma_read_resp_i(rel_ext_dma_read_resp),
-      .ext_dma_write_req_o(rel_ext_dma_write_req),
-      .ext_dma_write_resp_i(rel_ext_dma_write_resp),
-      .ext_dma_addr_req_o(rel_ext_dma_addr_req),
-      .ext_dma_addr_resp_i(rel_ext_dma_addr_resp)
   );
 
   // External masters: encode incoming OBI requests into reliable OBI
@@ -798,6 +742,60 @@ module core_v_mini_mcu #(
         .fault_o()
     );
   end
+
+  system_bus #(
+      .obi_req_t(rel_obi_req_t),
+      .obi_rsp_t(rel_obi_rsp_t),
+      .ObiCfg(ObiCfg),
+      .obi_a_chan_t(rel_obi_a_chan_t),
+      .obi_r_chan_t(rel_obi_r_chan_t),
+      .a_optional_t(rel_obi_a_chan_t),
+      .r_optional_t(rel_obi_r_chan_t),
+      .NUM_BANKS(core_v_mini_mcu_pkg::NUM_BANKS),
+      .EXT_XBAR_NMASTER(EXT_XBAR_NMASTER)
+  ) system_bus_i (
+      .clk_i,
+      .rst_ni(rst_ni && debug_reset_n),
+      .fault_o(),
+      .testmode_i('0),
+      .core_instr_req_i(rel_core_instr_req),
+      .core_instr_resp_o(rel_core_instr_resp),
+      .core_data_req_i(rel_core_data_req),
+      .core_data_resp_o(rel_core_data_resp),
+      .debug_master_req_i(rel_debug_master_req),
+      .debug_master_resp_o(rel_debug_master_resp),
+      .dma_read_req_i(rel_dma_read_req),
+      .dma_read_resp_o(rel_dma_read_resp),
+      .dma_write_req_i(rel_dma_write_req),
+      .dma_write_resp_o(rel_dma_write_resp),
+      .dma_addr_req_i(rel_dma_addr_req),
+      .dma_addr_resp_o(rel_dma_addr_resp),
+      .ext_xbar_master_req_i(rel_ext_xbar_master_req),
+      .ext_xbar_master_resp_o(rel_ext_xbar_master_resp),
+      .ram_req_o(rel_ram_slave_req),
+      .ram_resp_i(rel_ram_slave_resp),
+      .debug_slave_req_o(rel_debug_slave_req),
+      .debug_slave_resp_i(rel_debug_slave_resp),
+      .ao_peripheral_slave_req_o(rel_ao_peripheral_slave_req),
+      .ao_peripheral_slave_resp_i(rel_ao_peripheral_slave_resp),
+      .peripheral_slave_req_o(rel_peripheral_slave_req),
+      .peripheral_slave_resp_i(rel_peripheral_slave_resp),
+      .flash_mem_slave_req_o(rel_flash_mem_slave_req),
+      .flash_mem_slave_resp_i(rel_flash_mem_slave_resp),
+      .ext_core_instr_req_o(rel_ext_core_instr_req),
+      .ext_core_instr_resp_i(rel_ext_core_instr_resp),
+      .ext_core_data_req_o(rel_ext_core_data_req),
+      .ext_core_data_resp_i(rel_ext_core_data_resp),
+      .ext_debug_master_req_o(rel_ext_debug_master_req),
+      .ext_debug_master_resp_i(rel_ext_debug_master_resp),
+      .ext_dma_read_req_o(rel_ext_dma_read_req),
+      .ext_dma_read_resp_i(rel_ext_dma_read_resp),
+      .ext_dma_write_req_o(rel_ext_dma_write_req),
+      .ext_dma_write_resp_i(rel_ext_dma_write_resp),
+      .ext_dma_addr_req_o(rel_ext_dma_addr_req),
+      .ext_dma_addr_resp_i(rel_ext_dma_addr_resp)
+  );
+
 
   for (genvar i = 0; i < core_v_mini_mcu_pkg::NUM_BANKS; i++) begin : memory_rel_decoder
     relobi_decoder #(
