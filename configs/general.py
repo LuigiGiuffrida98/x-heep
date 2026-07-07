@@ -43,7 +43,7 @@ from peripherals.user_peripherals import (
 
 
 def config():
-    system = XHeep(BusType.onetoM, reliability=True)
+    system = XHeep(BusType.onetoM)
     system.set_cpu(cv32e40px())
 
     memory_ss = MemorySS()
