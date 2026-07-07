@@ -44,6 +44,8 @@ module sram_wrapper #(
         .douta(rdata_o)
     );
   end else begin
-    $error("Bank size not generated.");
+    $error(
+        "Bank size not generated."
+    );
   end
 endmodule
