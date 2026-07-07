@@ -120,7 +120,7 @@ ${",\n".join(cv32e20_params)}
         .dm_halt_addr_i(DM_HALTADDRESS),
 
         .instr_addr_o  (core_instr_req_o.a.addr),
-        .instr_req_o   (core_instr_req),
+        .instr_req_o   (core_instr_req_o.req),
         .instr_rdata_i (core_instr_resp_i.r.rdata),
         .instr_gnt_i   (core_instr_resp_i.gnt),
         .instr_rvalid_i(core_instr_resp_i.rvalid),
@@ -128,7 +128,7 @@ ${",\n".join(cv32e20_params)}
         .data_addr_o  (core_data_req_o.a.addr),
         .data_wdata_o (core_data_req_o.a.wdata),
         .data_we_o    (core_data_req_o.a.we),
-        .data_req_o   (core_data_req),
+        .data_req_o   (core_data_req_o.req),
         .data_be_o    (core_data_req_o.a.be),
         .data_rdata_i (core_data_resp_i.r.rdata),
         .data_gnt_i   (core_data_resp_i.gnt),
@@ -272,14 +272,11 @@ ${",\n".join(cv32e40x_params)}
 
     import cv32e40px_core_v_xif_pkg::*;
 
-% if xheep.reliability:
-
     logic            instr_req;
     logic            instr_gnt;
     logic            instr_rvalid;
     logic     [31:0] instr_addr;
     logic     [31:0] instr_rdata;
-    logic            instr_err;
     logic            data_req;
     logic            data_gnt;
     logic            data_rvalid;
@@ -288,6 +285,10 @@ ${",\n".join(cv32e40x_params)}
     logic     [31:0] data_addr;
     logic     [31:0] data_wdata;
     logic     [31:0] data_rdata;
+
+% if xheep.reliability:
+
+    logic            instr_err;
     logic            data_err;
     obi_req_t        instr_req_struct;
     obi_rsp_t        instr_rsp_struct;
@@ -358,16 +359,16 @@ ${",\n".join(cv32e40x_params)}
     );
 % else:
     assign core_instr_req_o.a.addr = instr_addr;
-    assign core_instr_req          = instr_req;
+    assign core_instr_req_o.req    = instr_req;
     assign instr_rdata             = core_instr_resp_i.r.rdata;
     assign instr_gnt               = core_instr_resp_i.gnt;
     assign instr_rvalid            = core_instr_resp_i.rvalid;
 
-    assign core_data_req_o.a.addr  = data_addr_o;
-    assign core_data_req_o.a.wdata = data_wdata_o;
-    assign core_data_req_o.a.we    = data_we_o;
-    assign core_data_req           = data_req_o;
-    assign core_data_req_o.a.be    = data_be_o;
+    assign core_data_req_o.a.addr  = data_addr;
+    assign core_data_req_o.a.wdata = data_wdata;
+    assign core_data_req_o.a.we    = data_we;
+    assign core_data_req_o.req     = data_req;
+    assign core_data_req_o.a.be    = data_be;
     assign data_rdata              = core_data_resp_i.r.rdata;
     assign data_gnt                = core_data_resp_i.gnt;
     assign data_rvalid             = core_data_resp_i.rvalid;
@@ -493,7 +494,7 @@ ${",\n".join(cv32e40p_params)}
         .dm_exception_addr_i(32'h0),
 
         .instr_addr_o  (core_instr_req_o.a.addr),
-        .instr_req_o   (core_instr_req),
+        .instr_req_o   (core_instr_req_o.req),
         .instr_rdata_i (core_instr_resp_i.r.rdata),
         .instr_gnt_i   (core_instr_resp_i.gnt),
         .instr_rvalid_i(core_instr_resp_i.rvalid),
@@ -501,7 +502,7 @@ ${",\n".join(cv32e40p_params)}
         .data_addr_o  (core_data_req_o.a.addr),
         .data_wdata_o (core_data_req_o.a.wdata),
         .data_we_o    (core_data_req_o.a.we),
-        .data_req_o   (core_data_req),
+        .data_req_o   (core_data_req_o.req),
         .data_be_o    (core_data_req_o.a.be),
         .data_rdata_i (core_data_resp_i.r.rdata),
         .data_gnt_i   (core_data_resp_i.gnt),
@@ -520,6 +521,17 @@ ${",\n".join(cv32e40p_params)}
         .core_sleep_o
     );
 
+% endif
+
+% if not xheep.reliability:
+  // Drive OBI request-side control and integrity parity bits. The cores only
+  // provide req/rready; parity mirrors the reliable path (reqpar = ~req).
+  assign core_instr_req_o.rready    = 1'b1;
+  assign core_instr_req_o.reqpar    = ~core_instr_req_o.req;
+  assign core_instr_req_o.rreadypar = ~core_instr_req_o.rready;
+  assign core_data_req_o.rready     = 1'b1;
+  assign core_data_req_o.reqpar     = ~core_data_req_o.req;
+  assign core_data_req_o.rreadypar  = ~core_data_req_o.rready;
 % endif
 
 endmodule

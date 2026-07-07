@@ -701,8 +701,8 @@ module peripheral_subsystem #(
   };
 
   serial_link_xheep_wrapper #(
-    .obi_req_t(obi_pkg::obi_req_t),
-    .obi_resp_t(obi_pkg::obi_resp_t),
+    .obi_req_t(obi_req_t),
+    .obi_rsp_t(obi_rsp_t),
     .MaxClkDiv(32),
     .DataWidth(32)
   ) serial_link_xheep_wrapper_i (

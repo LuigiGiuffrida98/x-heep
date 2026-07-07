@@ -335,12 +335,12 @@ module core_v_mini_mcu #(
   obi_rsp_t core_data_resp;
   obi_req_t debug_master_req;
   obi_rsp_t debug_master_resp;
-  obi_req_t [0:0] dma_read_req;
-  obi_rsp_t [0:0] dma_read_resp;
-  obi_req_t [0:0] dma_write_req;
-  obi_rsp_t [0:0] dma_write_resp;
-  obi_req_t [0:0] dma_addr_req;
-  obi_rsp_t [0:0] dma_addr_resp;
+  obi_req_t [1:0] dma_read_req;
+  obi_rsp_t [1:0] dma_read_resp;
+  obi_req_t [1:0] dma_write_req;
+  obi_rsp_t [1:0] dma_write_resp;
+  obi_req_t [1:0] dma_addr_req;
+  obi_rsp_t [1:0] dma_addr_resp;
 
   // ram signals
   obi_req_t [core_v_mini_mcu_pkg::NUM_BANKS-1:0] ram_slave_req;
@@ -494,10 +494,10 @@ module core_v_mini_mcu #(
       .clk_i,
       .rst_ni(cpu_subsystem_rst_n && debug_reset_n),
       .hart_id_i,
-      .core_instr_req_o(rel_core_instr_req),
-      .core_instr_resp_i(rel_core_instr_resp),
-      .core_data_req_o(rel_core_data_req),
-      .core_data_resp_i(rel_core_data_resp),
+      .core_instr_req_o(core_instr_req),
+      .core_instr_resp_i(core_instr_resp),
+      .core_data_req_o(core_data_req),
+      .core_data_resp_i(core_data_resp),
       .xif_compressed_if,
       .xif_issue_if,
       .xif_commit_if,
