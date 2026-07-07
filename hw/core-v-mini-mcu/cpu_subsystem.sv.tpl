@@ -28,12 +28,21 @@ module cpu_subsystem
     input logic [31:0] hart_id_i,
 
     // Instruction memory interface
+% if xheep.reliability:
+    output rel_obi_req_t  core_instr_req_o,
+    input  rel_obi_rsp_t  core_instr_resp_i,
+
+    // Data memory interface
+    output rel_obi_req_t  core_data_req_o,
+    input  rel_obi_rsp_t  core_data_resp_i,
+% else:
     output obi_req_t  core_instr_req_o,
     input  obi_rsp_t  core_instr_resp_i,
 
     // Data memory interface
     output obi_req_t  core_data_req_o,
     input  obi_rsp_t  core_data_resp_i,
+% endif
 
     // eXtension interface
     if_xif.cpu_compressed xif_compressed_if,
