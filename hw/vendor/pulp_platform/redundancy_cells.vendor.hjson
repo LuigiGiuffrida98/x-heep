@@ -10,7 +10,7 @@
     rev: "master",
   },
   
-  //patch_dir: "../patches/pulp_platform_common_cells",
+  patch_dir: "../patches/pulp_platform_redundancy_cells",
   
   exclude_from_upstream: [
     "test",
