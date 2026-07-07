@@ -53,18 +53,15 @@ lint_off -rule UNUSED -file "*/cve2_xif_wrapper.sv" -match "Bits of signal are n
 lint_off -rule UNUSED -file "*/cve2_xif_wrapper.sv" -match "Bits of signal are not used: 'cve2_x_register'[134:99]"
 lint_off -rule UNUSED -file "*/cve2_xif_wrapper.sv" -match "Bits of signal are not used: 'cve2_x_commit'[36:5]"
 lint_off -rule UNOPTFLAT -file "*/cv32e40px_xif_wrapper.sv" -match "Signal unoptimizable: Circular combinational logic: '*cv32e40px_xif_wrapper_i.x_issue_valid'"
-lint_off -rule UNUSED -file "*/cpu_subsystem.sv" -match "Signal is not used: 'hart_id_i'*"
 lint_off -rule UNDRIVEN -file "*/core_v_mini_mcu.sv" -match "Signal is not driven: 'ddr_i*"
 lint_off -rule UNDRIVEN -file "*/core_v_mini_mcu.sv" -match "Signal is not driven: 'ddr_o*"
 lint_off -rule UNDRIVEN -file "*/core_v_mini_mcu.sv" -match "Signal is not driven: 'ddr_rcv_clk*"
 
-
-
-// Reliable cpu_subsystem
-lint_off -rule UNUSED -file "*/rel_cpu_subsystem.sv" -match "Signal is not used: 'instr_err_i'"
-lint_off -rule UNUSED -file "*/rel_cpu_subsystem.sv" -match "Signal is not used: 'data_err_i'"
-lint_off -rule UNUSED -file "*/rel_cpu_subsystem.sv" -match "Bits of signal are not used: 'instr_rsp'[2,0]"
-lint_off -rule UNUSED -file "*/rel_cpu_subsystem.sv" -match "Bits of signal are not used: 'data_rsp'[2,0]"
+lint_off -rule UNUSED -file "*/cpu_subsystem.sv" -match "Signal is not used: 'hart_id_i'*"
+lint_off -rule UNUSED -file "*/cpu_subsystem.sv" -match "Signal is not used: 'instr_err'"
+lint_off -rule UNUSED -file "*/cpu_subsystem.sv" -match "Signal is not used: 'data_err'"
+lint_off -rule UNUSED -file "*/cpu_subsystem.sv" -match "Bits of signal are not used: 'instr_rsp_struct'[2,0]"
+lint_off -rule UNUSED -file "*/cpu_subsystem.sv" -match "Bits of signal are not used: 'data_rsp_struct'[2,0]"
 lint_off -rule UNDRIVEN -file "*/relobi_decoder.sv" -match "Bits of signal are not driven: 'req_o'[2:0]"
 lint_off -rule UNUSED -file "*/relobi_decoder.sv" -match "Bits of signal are not used: 'rsp_i'[2,0]"
 lint_off -rule UNUSED -file "*/relobi_encoder.sv" -match "Bits of signal are not used: 'req_i'[2:0]"

@@ -751,6 +751,7 @@ module core_v_mini_mcu #(
       .obi_r_chan_t(rel_obi_r_chan_t),
       .a_optional_t(rel_obi_a_chan_t),
       .r_optional_t(rel_obi_r_chan_t),
+      .addr_map_rule_t(addr_map_rule_pkg::addr_map_rule_t),
       .NUM_BANKS(core_v_mini_mcu_pkg::NUM_BANKS),
       .EXT_XBAR_NMASTER(EXT_XBAR_NMASTER)
   ) system_bus_i (
