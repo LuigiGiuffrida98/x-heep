@@ -20,7 +20,7 @@ filesets:
     - pulp-platform.org::riscv_dbg
     - pulp-platform.org::register_interface
     - pulp-platform.org::serial_link
-    - pulp-platform.org::reliability
+    - pulp-platform.org::relobi
     - pulp-platform.org::redundancy_cells
     - openhwgroup.org:ip:soc_ctrl
     - lowrisc:ip:uart:0.1
@@ -295,6 +295,7 @@ scripts:
 targets:
   default: &default_target
     filesets:
+    - files_rtl_generic
     - target_sim ? (tool_verilator? (files_verilator_waiver))
     - target_sim_sc ? (tool_verilator? (files_verilator_waiver))
     toplevel: [core_v_mini_mcu]
@@ -305,7 +306,6 @@ targets:
     filesets_append:
     - tb-utils
     - rtl-simulation
-    - files_rtl_generic
     - tool_modelsim? (pre_build_remote_bitbang)
     - tool_modelsim? (pre_build_uartdpi)
     - tool_modelsim? (pre_patch_modelsim_Makefile)

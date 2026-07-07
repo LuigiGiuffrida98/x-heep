@@ -7,7 +7,7 @@ name: pulp-platform.org::obi
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
 filesets:
-  rtl_sim:
+  rtl:
     files:
     - pulp_platform/obi/include/obi/typedef.svh : {is_include_file : true, include_path : pulp_platform/obi/include}
     file_type: systemVerilogSource
@@ -15,5 +15,4 @@ filesets:
 targets:
   default:
     filesets:
-    - target_sim? (rtl_sim)
-    - target_sim_sc? (rtl_sim)
+    - rtl
