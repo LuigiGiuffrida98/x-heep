@@ -210,6 +210,11 @@ module core_v_mini_mcu #(
   rel_obi_req_t [core_v_mini_mcu_pkg::NUM_BANKS-1:0] rel_ram_slave_req;
   rel_obi_rsp_t [core_v_mini_mcu_pkg::NUM_BANKS-1:0] rel_ram_slave_resp;
 
+  // Memory scrubbing handling
+  localparam RelObiDataWidth = ObiCfg.DataWidth + hsiao_ecc_pkg::min_ecc(ObiCfg.DataWidth );
+  logic [31:0] scrub_mem_interval, counter_value;
+  logic [2:0] scrub_interval;
+
   // REL peripherals signals
   rel_obi_req_t rel_ao_peripheral_slave_req;
   rel_obi_rsp_t rel_ao_peripheral_slave_resp;
@@ -680,11 +685,8 @@ module core_v_mini_mcu #(
 
 
 % if xheep.reliability:
-  // TODO: for compatibility eventually move to top
-  localparam RelObiDataWidth = ObiCfg.DataWidth + hsiao_ecc_pkg::min_ecc(ObiCfg.DataWidth );
-  logic [31:0] scrub_mem_interval, counter_value;
-  logic [2:0] scrub_interval;
-  // TODO: make them register, this is just for test
+
+  // TODO: make them registers in case you want to change the scrub interval at runtime
   assign scrub_interval[0] = 1000;
   assign scrub_interval[1] = 1000;
   assign scrub_interval[2] = 1000;
