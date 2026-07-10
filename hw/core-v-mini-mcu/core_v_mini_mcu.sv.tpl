@@ -164,6 +164,8 @@ module core_v_mini_mcu #(
   obi_rsp_t  core_instr_resp;
   obi_req_t core_data_req;
   obi_rsp_t  core_data_resp;
+  obi_req_t [core_v_mini_mcu_pkg::NUM_BANKS-1:0] ram_slave_req;
+  obi_rsp_t  [core_v_mini_mcu_pkg::NUM_BANKS-1:0] ram_slave_resp;
 % endif
   obi_req_t debug_master_req;
   obi_rsp_t  debug_master_resp;
@@ -175,8 +177,6 @@ module core_v_mini_mcu #(
   obi_rsp_t  [${dma_obi_msb}:0]dma_addr_resp;
 
   // ram signals
-  obi_req_t [core_v_mini_mcu_pkg::NUM_BANKS-1:0] ram_slave_req;
-  obi_rsp_t  [core_v_mini_mcu_pkg::NUM_BANKS-1:0] ram_slave_resp;
 
   // w25q128jw controller signals
   logic w25q128jw_controller_intr;
@@ -680,35 +680,80 @@ module core_v_mini_mcu #(
 
 
 % if xheep.reliability:
-  for (genvar i = 0; i < core_v_mini_mcu_pkg::NUM_BANKS; i++) begin : memory_rel_decoder
-    relobi_decoder #(
-      .Cfg (ObiCfg),
-      .relobi_req_t (rel_obi_req_t),
-      .relobi_rsp_t (rel_obi_rsp_t),
-      .obi_req_t (obi_req_t),
-      .obi_rsp_t (obi_rsp_t),
-      .a_optional_t (logic),
-      .r_optional_t (logic)
-    ) i_ram_decoder (
-      .rel_req_i (rel_ram_slave_req[i]),
-      .rel_rsp_o (rel_ram_slave_resp[i]),
-      .req_o (ram_slave_req[i]),
-      .rsp_i (ram_slave_resp[i]),
-      .fault_o ()
-    );
-  end
+  // TODO: for compatibility eventually move to top
+  localparam RelObiDataWidth = ObiCfg.DataWidth + hsiao_ecc_pkg::min_ecc(ObiCfg.DataWidth );
+  logic [31:0] scrub_mem_interval, counter_value;
+  logic [2:0] scrub_interval;
+  // TODO: make them register, this is just for test
+  assign scrub_interval[0] = 1000;
+  assign scrub_interval[1] = 1000;
+  assign scrub_interval[2] = 1000;
+
+  // TMR on scrub interval registers
+  // -------------------------------
+  bitwise_TMR_voter_fail #(
+    .DataWidth ( 32 )
+  ) scrub_interval_voter_i (
+    .a_i ( scrub_interval[0]),
+    .b_i ( scrub_interval[1]),
+    .c_i ( scrub_interval[2]),
+    .majority_o ( scrub_mem_interval ),
+    .fault_detected_o() // Unconnected
+  );
+
+  // Scrub counter
+  // -------------
+  // Count up to scrub_mem_interval (reg value), then trigger mem scrubbing
+  counter #(
+    .WIDTH           ( 32   ),
+    .STICKY_OVERFLOW ( 1'b0 )
+  ) scrub_counter_i (
+    .clk_i,
+    .rst_ni    (rst_ni && debug_reset_n),
+    .clear_i   ( scrub_mem_interval == '0 ),
+    .en_i      ( scrub_mem_interval != '0 ),
+    .load_i    ( counter_value == scrub_mem_interval ),
+    .down_i    ( 1'b0 ),
+    .d_i       ( '0 ),
+    .q_o       ( counter_value ),
+    .overflow_o()
+  );
+
+
 % endif
-  
+
   memory_subsystem #(
       .NUM_BANKS(core_v_mini_mcu_pkg::NUM_BANKS),
+      .ObiCfg(ObiCfg),
+    % if xheep.reliability:
+      .DATA_WIDTH(RelObiDataWidth),
+      .a_optional_t(logic),
+      .r_optional_t(logic),
+      .EnableScrubber(1'b1),
+      .ScrubberCorrectRead(1'b1),
+      .obi_req_t(rel_obi_req_t),
+      .obi_rsp_t(rel_obi_rsp_t)
+    % else:
+      .DATA_WIDTH(ObiCfg.DataWidth),
       .obi_req_t(obi_req_t),
       .obi_rsp_t(obi_rsp_t)
+    % endif
   ) memory_subsystem_i (
       .clk_i,
       .rst_ni(rst_ni && debug_reset_n),
       .clk_gate_en_ni(memory_subsystem_clkgate_en_n),
+    % if xheep.reliability:
+      .ram_req_i(rel_ram_slave_req),
+      .ram_resp_o(rel_ram_slave_resp),
+      // Scrub signals
+      .scrub_trigger_i(scrub_mem_interval != '0 && counter_value == scrub_mem_interval),
+      .scrub_bit_corrected_o(),     // Unconnected
+      .scrub_uncorrectable_o(),     // Unconnected
+      .fault_o(),                   // Unconnected
+    % else:
       .ram_req_i(ram_slave_req),
       .ram_resp_o(ram_slave_resp),
+    % endif
       .pwrgate_ni(memory_subsystem_banks_powergate_switch_n),
       .pwrgate_ack_no(memory_subsystem_banks_powergate_switch_ack_n),
       .set_retentive_ni(memory_subsystem_banks_set_retentive_n)
