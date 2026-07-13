@@ -17,6 +17,7 @@ module relobi_sram_shim #(
   parameter bit                EnableScrubber = 1'b0,
   parameter int unsigned       ScrubberMemWords = 256,
   parameter bit                ScrubberCorrectRead = 1'b1,
+  parameter int unsigned       AddrOffset = 0, // Default is 0, set to a different value to support interleaved mem banks with correct truncation
   parameter int unsigned       AddrWidth = EnableScrubber ? $clog2(ScrubberMemWords) : ObiCfg.AddrWidth
 ) (
   input  logic                          clk_i,
@@ -198,7 +199,8 @@ module relobi_sram_shim #(
       .hsiao_errs(hsiao_errs[4*i+:4]),
       .voter_err(int_voter_errs[i])
     );
-    assign addr_decoded_trimmed[i] = addr_decoded[i][AddrWidth-1+$clog2(ObiCfg.AddrWidth/8):$clog2(ObiCfg.AddrWidth/8)];
+    //assign addr_decoded_trimmed[i] = addr_decoded[i][AddrWidth-1+$clog2(ObiCfg.AddrWidth/8):$clog2(ObiCfg.AddrWidth/8)];
+    assign addr_decoded_trimmed[i] = addr_decoded[i][AddrWidth-1+$clog2(ObiCfg.DataWidth/8)+AddrOffset : $clog2(ObiCfg.DataWidth/8)+AddrOffset];
   end
   assign voter_errs[4] = |int_voter_errs;
   TMR_voter_fail i_we_vote (

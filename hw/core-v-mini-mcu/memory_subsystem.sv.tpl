@@ -95,7 +95,8 @@ module memory_subsystem #(
         .r_optional_t(r_optional_t),
         .EnableScrubber(EnableScrubber),
         .ScrubberMemWords(${bank.size() // 4}), // TODO: check
-        .ScrubberCorrectRead(ScrubberCorrectRead)
+        .ScrubberCorrectRead(ScrubberCorrectRead),
+        .AddrOffset(${bank.il_level()})
       ) obi_sram_shim_i (
         .clk_i(clk_cg[i]),
         .rst_ni(rst_ni),
