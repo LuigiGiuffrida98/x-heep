@@ -18,7 +18,7 @@ export "DPI-C" task tb_set_exit_loop;
 export "DPI-C" task load_flash_hex;
 
 import core_v_mini_mcu_pkg::*;
-% if xheep.reliability:
+% if xheep.reliability.memory_ecc:
 import hsiao_ecc_pkg::*;
 % endif
 
@@ -33,7 +33,7 @@ task tb_readHEX;
   $readmemh(file, stimuli);
 endtask
 
-% if xheep.reliability:
+% if xheep.reliability.memory_ecc:
 function automatic logic [38:0] tb_encode_sram_word;
   input logic [31:0] data;
   localparam int unsigned DataWidth = 32;
@@ -114,8 +114,12 @@ task tb_writetoSram${bank.name()};
   input [7:0] val1;
   input [7:0] val0;
 `ifdef VCS
+% if (not xheep.reliability.bus_redundant and xheep.reliability.memory_ecc):
+  force x_heep_system_i.core_v_mini_mcu_i.memory_subsystem_i.ecc_sram_${bank.name()}_i.ram_i.tc_ram_i.sram[addr] = tb_encode_sram_word({val3, val2, val1, val0});
+  release x_heep_system_i.core_v_mini_mcu_i.memory_subsystem_i.ecc_sram_${bank.name()}_i.ram_i.tc_ram_i.sram[addr];
+% else:
   force x_heep_system_i.core_v_mini_mcu_i.memory_subsystem_i.ram${bank.name()}_i.tc_ram_i.sram[addr] =
-% if xheep.reliability:
+% if xheep.reliability.bus_redundant and xheep.reliability.memory_ecc:
       tb_encode_sram_word({val3, val2, val1, val0});
 % else:
       {
@@ -123,14 +127,20 @@ task tb_writetoSram${bank.name()};
   };
 % endif
   release x_heep_system_i.core_v_mini_mcu_i.memory_subsystem_i.ram${bank.name()}_i.tc_ram_i.sram[addr];
+% endif
 `else
+  // TODO: change this here + add ecc_sram_xheep_wrapper to core file
+% if (not xheep.reliability.bus_redundant and xheep.reliability.memory_ecc):
+  x_heep_system_i.core_v_mini_mcu_i.memory_subsystem_i.ecc_sram_${bank.name()}_i.ram_i.tc_ram_i.sram[addr] = tb_encode_sram_word({val3, val2, val1, val0});
+% else:
   x_heep_system_i.core_v_mini_mcu_i.memory_subsystem_i.ram${bank.name()}_i.tc_ram_i.sram[addr] =
-% if xheep.reliability:
+% if xheep.reliability.bus_redundant and xheep.reliability.memory_ecc:
       tb_encode_sram_word({val3, val2, val1, val0});
 % else:
       {
     val3, val2, val1, val0
   };
+% endif
 % endif
 `endif
 endtask

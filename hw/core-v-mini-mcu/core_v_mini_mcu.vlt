@@ -113,6 +113,11 @@ lint_off -rule UNUSED -file "*/ecc_scrubber.sv" -match "Signal is not used: 'ecc
 lint_off -rule UNUSED -file "*/ecc_scrubber.sv" -match "Signal is not used: 'ecc_err_i'"
 lint_off -rule UNUSED -file "*/ecc_scrubber.sv" -match "Signal is not used: 'intc_wdata_i'"
 
+// Disable TMR on ECC memories
+lint_off -rule UNDRIVEN -file "*/ecc_scrubber.sv" -match "Bits of signal are not driven: 'faults'[41:1]"
+lint_off -rule UNUSED -file "*/ecc_scrubber.sv" -match "Signal is not used: 'read_add_d'"
+lint_off -rule UNUSED -file "*/ecc_scrubber.sv" -match "Signal is not used: 'read_d'"
+
 
 
 lint_off -rule SYNCASYNCNET -file "*/counter.sv" -match "Signal flopped as both synchronous and async:*rst_ni'"
