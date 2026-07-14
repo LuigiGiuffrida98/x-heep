@@ -55,6 +55,16 @@ module memory_subsystem #(
   localparam int unsigned BeWidth = (DATA_WIDTH + PhysicalByteWidth - 1) / PhysicalByteWidth;
   logic [NUM_BANKS-1:0][BeWidth-1:0] ram_be;
   logic [NUM_BANKS-1:0][ObiCfg.AddrWidth-1:0] ram_addr;
+
+% if xheep.reliability.bus_redundant and xheep.reliability.memory_ecc:
+  // Used to correctly size the address range inside the relobi_sram_shim
+  localparam int unsigned BankNumWords [NUM_BANKS] = '{
+      ${", ".join(str(bank.size() // 4) for bank in memory_ss.iter_ram_banks())}
+  };
+  localparam int unsigned BankInterleaveLevel [NUM_BANKS] = '{
+      ${", ".join(str(bank.il_level()) for bank in memory_ss.iter_ram_banks())}
+  };
+% endif
  
   // Clock-gating
   logic [NUM_BANKS-1:0] clk_cg;
@@ -94,9 +104,9 @@ module memory_subsystem #(
         .a_optional_t(a_optional_t),
         .r_optional_t(r_optional_t),
         .EnableScrubber(EnableScrubber),
-        .ScrubberMemWords(${bank.size() // 4}), // TODO: check
+        .ScrubberMemWords(BankNumWords[i]),
         .ScrubberCorrectRead(ScrubberCorrectRead),
-        .AddrOffset(${bank.il_level()})
+        .AddrOffset(BankInterleaveLevel[i])
       ) obi_sram_shim_i (
         .clk_i(clk_cg[i]),
         .rst_ni(rst_ni),
