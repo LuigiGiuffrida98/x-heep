@@ -23,6 +23,7 @@ run_verif_rtl_log.txt
 tb/tb_util.svh
 tb/testharness.sv
 tb/testharness_pkg.sv
+tb/ext_bus.sv
 
 hw/core-v-mini-mcu/include/core_v_mini_mcu_pkg.sv
 hw/core-v-mini-mcu/system_bus.sv
@@ -65,6 +66,7 @@ hw/fpga/xheep_fpga_support/constraints/pynq-z2/constraints.xdc
 hw/fpga/xheep_fpga_support/constraints/pynq-z2/pin_assign.xdc
 
 hw/vendor/xheep/spi/rtl/spi_subsystem.sv
+hw/vendor/xheep/dma/data/xheep_dma.hjson
 
 # Automatically generated C header files, linker scripts, and assembly files
 sw/device/lib/crt/crt0.S
@@ -73,7 +75,6 @@ sw/device/lib/runtime/core_v_mini_mcu.h
 sw/device/lib/runtime/core_v_mini_mcu_memory.h
 
 sw/linker/link.ld
-sw/linker/link_flash_exec.ld
 sw/linker/link_flash_load.ld
 
 sw/device/lib/drivers/soc_ctrl/soc_ctrl_regs.h
