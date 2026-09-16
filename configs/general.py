@@ -45,7 +45,10 @@ from peripherals.peripheral_domain import PeripheralDomain
 
 
 def config():
-    system = XHeep(BusType.onetoM)
+    system = XHeep()
+
+    system.set_bus_type(BusType.onetoM)
+
     system.set_cpu(cv32e20(rv32e=False, rv32m="RV32MSlow"))
 
     memory_ss = MemorySS()
