@@ -27,9 +27,6 @@ from peripherals.base_peripherals import (
     GPIO_ao,
 )
 
-from peripherals.base_peripherals_domain import BasePeripheralDomain
-from peripherals.user_peripherals_domain import UserPeripheralDomain
-
 from peripherals.user_peripherals import (
     RV_plic,
     SPI_host,
@@ -44,6 +41,7 @@ from peripherals.user_peripherals import (
 
 from linker_script.linker_script import LinkerScript
 from interrupts.interrupts import Interrupts
+from peripherals.peripheral_domain import PeripheralDomain
 
 
 def config():
@@ -60,20 +58,20 @@ def config():
 
     system.set_debug_ss(DebugSS(has_spi_slave=1))
 
+    base_peripherals = AddressRegion(
+        "base_peripheral_domain", start_address=0x20000000, length=0x00100000
+    )
+
+    user_peripherals = AddressRegion(
+        "user_peripheral_domain", start_address=0x30000000, length=0x00100000
+    )
+
     address_map = AddressMap()
     address_map.add_region(
         AddressRegion("debug", start_address=0x10000000, length=0x00100000)
     )
-    address_map.add_region(
-        AddressRegion(
-            "base_peripheral_domain", start_address=0x20000000, length=0x00100000
-        )
-    )
-    address_map.add_region(
-        AddressRegion(
-            "user_peripheral_domain", start_address=0x30000000, length=0x00100000
-        )
-    )
+    address_map.add_region(base_peripherals)
+    address_map.add_region(user_peripherals)
     address_map.add_region(
         AddressRegion("flash_mem", start_address=0x40000000, length=0x01000000)
     )
@@ -86,8 +84,8 @@ def config():
     system.set_address_map(address_map)
 
     # Peripheral domains initialization
-    base_peripheral_domain = BasePeripheralDomain()
-    user_peripheral_domain = UserPeripheralDomain()
+    base_peripheral_domain = PeripheralDomain(name="base_peripheral_domain")
+    user_peripheral_domain = PeripheralDomain(name="user_peripheral_domain")
 
     # Base peripherals. All base peripherals must be added.
     base_peripheral_domain.add_peripheral(SOC_ctrl(0x00000000))
@@ -123,8 +121,8 @@ def config():
     user_peripheral_domain.add_peripheral(UART(0x00080000))
 
     # Add the peripheral domains to the system
-    system.add_peripheral_domain(base_peripheral_domain)
     system.add_peripheral_domain(user_peripheral_domain)
+    system.add_peripheral_domain(base_peripheral_domain)
 
     interrupts = Interrupts()
     interrupts.add_interrupt("null_intr", 0)

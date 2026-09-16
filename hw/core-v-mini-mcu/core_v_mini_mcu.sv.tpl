@@ -7,10 +7,10 @@
 %>
 
 <%
-  dma = xheep.get_base_peripheral_domain().get_dma()
+  dma = xheep.get_base_peripheral_domain().get_peripheral("dma")
   memory_ss = xheep.memory_ss()
   user_peripheral_domain = xheep.get_user_peripheral_domain()
-  dma = xheep.get_base_peripheral_domain().get_dma()
+  dma = xheep.get_base_peripheral_domain().get_peripheral("dma")
   memory_ss = xheep.memory_ss()
   dma_obi_msb = dma.get_num_master_ports() - 1
 

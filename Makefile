@@ -64,7 +64,7 @@ LINKER ?= on_chip
 TARGET ?= sim
 
 # Mcu-gen configuration files
-X_HEEP_CFG  ?= configs/general.hjson
+X_HEEP_CFG  ?= configs/general.py
 PADS_CFG ?= configs/pad_cfg.py
 
 # MCU-Gen template files to generate
