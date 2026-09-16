@@ -9,6 +9,6 @@
   upstream:
   {
     url: https://github.com/LuigiGiuffrida98/xheep_gen.git
-    rev: 3c0787f4d4b4426518945a34cde4d5cf1ba03230
+    rev: 7c7e3e0cc709d47775c1bd9db00f3621643783f2
   }
 }
