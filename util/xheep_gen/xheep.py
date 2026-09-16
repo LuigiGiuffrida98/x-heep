@@ -26,6 +26,8 @@ from peripherals.base_peripherals import (
 )
 from peripherals.base_peripherals.SOC_ctrl import SOC_ctrl
 
+from copy import deepcopy
+
 
 class XHeep(System):
     """
@@ -116,9 +118,28 @@ class XHeep(System):
         """
         return self._find_domain("user_peripheral_domain") is not None
 
+    def add_missing_peripherals(self):
+        """
+        Add missing peripherals to the domain.
+        """
+        # Add all default peripherals
+        peripherals_to_add = [deepcopy(p) for p in self._default_base_peripherals]
+
+        # Remove peripherals that are already in the domain to obtain the list of missing peripherals
+        for peripheral in self.get_base_peripheral_domain().get_peripherals():
+            for p in peripherals_to_add:
+                if type(peripheral) == type(p):
+                    peripherals_to_add.remove(p)
+                    break
+
+        # Add the missing peripherals
+        for p in peripherals_to_add:
+            self.get_base_peripheral_domain().add_peripheral(p)
+
     # ------------------------------------------------------------
     # Linker Script Configuration
     # ------------------------------------------------------------
+
     def set_linker_script_config(self, linker_script_config: LinkerScript):
         """
         Sets the linker script configuration for stack and heap sizes.
