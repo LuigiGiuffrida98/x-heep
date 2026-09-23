@@ -5,4 +5,3 @@
 `verilator_config
 
 lint_off -rule SYMRSVDWORD -file "*/rtl/spi_device_reg_pkg.sv" -match "Symbol matches C++ common word: 'abort'*"
-lint_off -rule UNUSEDSIGNAL -file "*/rtl/w25q128jw_controller.sv" -match "Signal is not used: '*'"
