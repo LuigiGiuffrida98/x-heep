@@ -4,6 +4,7 @@
 {
   name: "xheep_fpga_support",
   target_dir: "xheep_fpga_support",
+  patch_dir: "patches/xheep_fpga_support",
 
   upstream: {
     url: "https://github.com/x-heep/x-heep-fpga-support.git",
