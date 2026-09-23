@@ -217,51 +217,6 @@ class PeripheralDomain:
         """
         return any(p.get_name() == peripheral_name for p in self._peripherals)
 
-    def get_all_dmas(self):
-        """
-        :return: The DMA peripherals of the domain.
-        :rtype: list[DMA]
-        :raise ValueError: when the domain holds no DMA.
-        """
-        dmas = [deepcopy(p) for p in self._peripherals if isinstance(p, DMA)]
-        if len(dmas) == 0:
-            raise ValueError("No DMA peripheral found")
-        return dmas
-
-    def get_power_manager(self):
-        """
-        :return: The Power_manager peripheral.
-        :rtype: Power_manager
-        :raise ValueError: when the domain holds no Power_manager.
-        """
-        for p in self._peripherals:
-            if isinstance(p, Power_manager):
-                return p
-        raise ValueError("No Power_manager peripheral found")
-
-    def get_W25Q128JW_controller(self):
-        """
-        :return: The W25Q128JW_Controller peripheral.
-        :rtype: W25Q128JW_Controller
-        :raise ValueError: when the domain holds no W25Q128JW_Controller.
-        """
-        for p in self._peripherals:
-            if isinstance(p, W25Q128JW_Controller):
-                return p
-        raise ValueError("No W25Q128JW_Controller peripheral found")
-
-    def get_pdm2pcm(self):
-        """
-        Get the PDM2PCM peripheral. If several are added, the first one is returned.
-
-        :return: The PDM2PCM peripheral, `None` if not present.
-        :rtype: PDM2PCM
-        """
-        for p in self._peripherals:
-            if isinstance(p, PDM2PCM):
-                return p
-        return None
-
     def _resolve_address_length(self, address_length: Optional[int]) -> int:
         """
         Return the address space length to use: the one given by the caller
