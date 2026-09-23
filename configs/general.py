@@ -82,7 +82,7 @@ def config():
         AddressRegion("serial_link", start_address=0x50000000, length=0x01000000)
     )
     address_map.add_region(
-        AddressRegion("ext_slaves", start_address=0xF0000000, length=0x01000000)
+        AddressRegion("ext_slaves", start_address=0xC0000000, length=0x40000000)
     )
     system.set_address_map(address_map)
 
@@ -95,7 +95,7 @@ def config():
     base_peripheral_domain.add_peripheral(Bootrom(0x00010000))
     base_peripheral_domain.add_peripheral(SPI_flash(0x00020000, 0x00008000))
     base_peripheral_domain.add_peripheral(
-        W25Q128JW_Controller(0x00029000, 0x00007000, cache="no")
+        W25Q128JW_Controller(0x00029000, 0x00007000, cache="yes")
     )
     base_peripheral_domain.add_peripheral(
         DMA(
